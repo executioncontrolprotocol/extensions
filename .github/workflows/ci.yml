@@ -1,0 +1,68 @@
+name: ci
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout extensions
+        uses: actions/checkout@v5
+        with:
+          path: executioncontrolprotocol-extensions
+      - name: Checkout core (peer deps via file:)
+        uses: actions/checkout@v5
+        with:
+          repository: GuillaumeCleme/executioncontrolprotocol
+          path: executioncontrolprotocol
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: executioncontrolprotocol-extensions/package-lock.json
+      - name: Install and check
+        working-directory: executioncontrolprotocol-extensions
+        run: |
+          npm ci
+          npm run check
+
+  publish:
+    name: publish
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [check]
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout extensions
+        uses: actions/checkout@v5
+        with:
+          path: executioncontrolprotocol-extensions
+      - name: Checkout core (peer deps via file:)
+        uses: actions/checkout@v5
+        with:
+          repository: GuillaumeCleme/executioncontrolprotocol
+          path: executioncontrolprotocol
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: executioncontrolprotocol-extensions/package-lock.json
+          registry-url: https://registry.npmjs.org
+      - name: Build and publish
+        working-directory: executioncontrolprotocol-extensions
+        run: |
+          npm ci
+          npm run build
+          npm run publish:workspaces
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

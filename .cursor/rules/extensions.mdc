@@ -1,0 +1,32 @@
+---
+description: How to build ECP vendor extensions without host/runtime coupling
+globs: packages/**/*
+alwaysApply: false
+---
+
+# ECP vendor extension packages
+
+Treat every package under `packages/` as published for **third-party** authors: environment-agnostic, minimal dependencies, no imports from Node/Browser host packages.
+
+## Dependencies
+
+| Package | Use for |
+| ------- | ------- |
+| `@executioncontrolprotocol/types` | Protocol types |
+| `@executioncontrolprotocol/core` | `defineExtension`, `capabilityFor`, `catalogExtension` |
+| `zod` | Config and capability I/O schemas — import from `"zod"` |
+| Third-party libs | Vendor SDKs only |
+
+**Do not** depend on `@executioncontrolprotocol/node`, `@executioncontrolprotocol/browser`, `@executioncontrolprotocol/cli`, or `@executioncontrolprotocol/mcp`.
+
+## Registration
+
+1. Build with `defineExtension` / `capabilityFor` / `.build()`.
+2. Call `catalogExtension(def)` at module load (required for string bindings).
+3. Export idempotent `register*Extension(registry?)`.
+
+Keep **npm package name** identical to the extension id (e.g. `@executioncontrolprotocol/fal`).
+
+## Tests
+
+Test handlers and fixtures in isolation. Use `environment()` from `@executioncontrolprotocol/core` for encode/decode if needed. Do not import host runtimes.
