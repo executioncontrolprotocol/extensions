@@ -1,8 +1,8 @@
-import "@executioncontrolprotocol/adobe"
+import "@executioncontrolprotocol/adobe-firefly-services"
 import { environment, extension, env } from "@executioncontrolprotocol/node"
-import { registerAdobeExtension } from "@executioncontrolprotocol/adobe"
+import { registerAdobeFireflyServicesExtension } from "@executioncontrolprotocol/adobe-firefly-services"
 
-registerAdobeExtension()
+registerAdobeFireflyServicesExtension()
 
 /**
  * Thin Adobe Firefly Services smoke environment.
@@ -10,7 +10,7 @@ registerAdobeExtension()
  */
 export default environment("adobe-firefly-smoke", "Adobe Firefly Services smoke")
   .withExtensions([
-    extension("@executioncontrolprotocol/adobe", "Adobe").with({
+    extension("@executioncontrolprotocol/adobe-firefly-services", "Adobe").with({
       clientId: env("ADOBE_CLIENT_ID"),
       clientSecret: env("ADOBE_CLIENT_SECRET"),
     }),

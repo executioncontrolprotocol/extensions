@@ -1,0 +1,38 @@
+{
+  "name": "@executioncontrolprotocol/adobe-firefly-services",
+  "version": "0.1.0",
+  "description": "Adobe Firefly Services extension for ECP (family-prefixed capabilities)",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "openapi"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "fetch:specs": "node ./scripts/fetch-specs.mjs",
+    "generate": "node ./scripts/generate-capabilities.mjs",
+    "codegen": "npm run fetch:specs && npm run generate"
+  },
+  "peerDependencies": {
+    "@executioncontrolprotocol/core": "^0.10.0",
+    "@executioncontrolprotocol/types": "^0.10.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@executioncontrolprotocol/core": "file:../../../executioncontrolprotocol/packages/core",
+    "@executioncontrolprotocol/types": "file:../../../executioncontrolprotocol/packages/types",
+    "typescript": "^5.7.0",
+    "yaml": "^2.9.0",
+    "zod": "^3.24.0"
+  }
+}

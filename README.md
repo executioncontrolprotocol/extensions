@@ -11,7 +11,8 @@ Protocol/platform extensions (formats, secrets, memory, model providers such as 
 | `@executioncontrolprotocol/fal` | `@executioncontrolprotocol/fal` |
 | `@executioncontrolprotocol/slack` | `@executioncontrolprotocol/slack` |
 | `@executioncontrolprotocol/image-sharp` | `@executioncontrolprotocol/image-sharp` |
-| `@executioncontrolprotocol/adobe` | `@executioncontrolprotocol/adobe` (scaffold) |
+| `@executioncontrolprotocol/adobe-firefly-services` | `@executioncontrolprotocol/adobe-firefly-services` |
+| `@executioncontrolprotocol/azure-blob-storage` | `@executioncontrolprotocol/azure-blob-storage` |
 
 npm package names match extension ids. Import and bind with the same identifier:
 
@@ -39,6 +40,8 @@ Vendor workflow examples live in this repo:
 - `examples/03-fal-chain` — FAL generate chain
 - `examples/04-image-prep` — Sharp image prep
 - `examples/02-weekly-brief-with-slack` — memory + OpenAI + Slack
+- `examples/adobe-firefly-smoke` — Adobe Firefly Services auth smoke
+- `examples/azure-adobe-assets` — Azure Blob upload + Firefly Image5 recolor
 
 They require a core monorepo checkout (or published `@executioncontrolprotocol/node`) plus these packages.
 
