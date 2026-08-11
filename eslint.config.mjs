@@ -5,14 +5,26 @@ export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    ignores: ["**/dist/**", "node_modules/**", "coverage/**"],
+    ignores: [
+      "**/dist/**",
+      "node_modules/**",
+      "coverage/**",
+      "**/src/generated/**",
+      "**/openapi/**",
+    ],
   },
   {
-    files: ["scripts/**/*.mjs"],
+    files: ["scripts/**/*.mjs", "packages/*/scripts/**/*.mjs"],
     languageOptions: {
       globals: {
         console: "readonly",
         process: "readonly",
+        fetch: "readonly",
+        URL: "readonly",
+        URLSearchParams: "readonly",
+        Response: "readonly",
+        Request: "readonly",
+        Headers: "readonly",
       },
     },
   },

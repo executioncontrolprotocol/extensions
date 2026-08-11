@@ -1,58 +1,42 @@
 import {
   defineExtension,
-  capabilityFor,
   globalRegistry,
   catalogExtension,
   type Registry,
 } from "@executioncontrolprotocol/core"
 import { z } from "zod"
+import {
+  adobeGeneratedCapabilities,
+  ADOBE_GENERATED_OPERATION_COUNT,
+} from "./generated/index.js"
 
 const EXT_ID = "@executioncontrolprotocol/adobe"
 
 /**
- * Adobe / Firefly extension scaffold.
+ * `@executioncontrolprotocol/adobe` — Adobe Firefly Services extension.
  *
- * Stub `generateImage` proves third-party authoring from outside the core monorepo.
- * Replace the handler with a real Adobe Firefly API client when integrating.
+ * One capability per OpenAPI operation across Firefly Services families
+ * (`firefly`, `photoshop` v2, `express`, `indesign`, `substance3d`, `illustrator`,
+ * `creative-production`, `audio-video`). Capability ids are family-prefixed, e.g.
+ * `@executioncontrolprotocol/adobe.firefly.generate-images`.
+ *
+ * Auth uses OAuth Server-to-Server (`client_credentials`). Bind secrets via
+ * `secrets("adobe/client-id")` / `secrets("adobe/client-secret")` or `env(...)`.
  *
  * @category Extensions
  */
 export const adobeExtension = defineExtension("@executioncontrolprotocol", "adobe")
   .withConfig({
-    /** Adobe API client id (optional until real integration). */
-    clientId: z.string().optional(),
-    /** Adobe API client secret (optional until real integration). */
-    clientSecret: z.string().optional(),
+    /** Adobe Developer Console client id (x-api-key). */
+    clientId: z.string().min(1),
+    /** Adobe Developer Console client secret. */
+    clientSecret: z.string().min(1),
+    /** IMS scopes (comma- or space-separated). */
+    scopes: z.string().optional(),
+    /** Override IMS token URL. */
+    imsEndpoint: z.string().optional(),
   })
-  .withCapabilities([
-    capabilityFor(EXT_ID, "generateImage")
-      .withInput(
-        z.object({
-          /** Text prompt for image generation. */
-          prompt: z.string().min(1),
-          /** Optional model or Firefly endpoint id. */
-          model: z.string().optional(),
-        }),
-      )
-      .withOutput(
-        z.object({
-          /** Whether the stub accepted the request. */
-          ok: z.boolean(),
-          /** Placeholder image URL or asset id. */
-          imageUrl: z.string().optional(),
-          /** Echo of the prompt for debugging. */
-          prompt: z.string(),
-        }),
-      )
-      .withHandler(async (input) => {
-        const parsed = input as { prompt: string; model?: string }
-        return {
-          ok: true,
-          prompt: parsed.prompt,
-          imageUrl: `stub://adobe/firefly?prompt=${encodeURIComponent(parsed.prompt)}`,
-        }
-      }),
-  ])
+  .withCapabilities([...adobeGeneratedCapabilities])
   .build()
 
 catalogExtension(adobeExtension)
@@ -67,5 +51,17 @@ export async function registerAdobeExtension(registry: Registry = globalRegistry
     await registry.registerExtension(adobeExtension)
   }
 }
+
+export { ADOBE_GENERATED_OPERATION_COUNT, adobeGeneratedCapabilities }
+export {
+  createImsTokenProvider,
+  DEFAULT_FIREFLY_SCOPES,
+  DEFAULT_IMS_TOKEN_URL,
+} from "./auth/ims.js"
+export type { AdobeImsConfig, AdobeAccessToken } from "./auth/ims.js"
+export { AdobeHttpError, buildUrl, createAdobeHttpClient } from "./http/client.js"
+export type { AdobeHttpClient, AdobeRequestOptions } from "./http/client.js"
+export { pollAdobeJob } from "./http/async-job.js"
+export type { PollAdobeJobOptions } from "./http/async-job.js"
 
 export default adobeExtension
