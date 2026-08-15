@@ -34,4 +34,5 @@ See `.cursor/rules/extensions.mdc`.
 npm install
 npm run build
 npm run check
+npm run secrets:scan
 ```
