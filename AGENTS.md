@@ -33,6 +33,9 @@ See `.cursor/rules/extensions.mdc`.
 ```sh
 npm install
 npm run build
+npm run lint
 npm run check
 npm run secrets:scan
 ```
+
+Husky pre-commit runs `lint-staged` (secretlint) then `npm run lint`.
