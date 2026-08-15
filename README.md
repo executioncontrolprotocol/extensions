@@ -34,13 +34,19 @@ Published packages still declare `peerDependencies` on the npm range (`^0.10.0`)
 
 ## Examples
 
-Vendor workflow examples live in this repo:
+Vendor workflow examples live in this repo (see `examples/README.md`):
 
 - `examples/03-fal-chain` — FAL generate chain
 - `examples/04-image-prep` — Sharp image prep
 - `examples/02-weekly-brief-with-slack` — memory + OpenAI + Slack
 
 They require a core monorepo checkout (or published `@executioncontrolprotocol/node`) plus these packages.
+
+## Agent skill
+
+```bash
+npx skills add executioncontrolprotocol/extensions --skill ecp-extensions -y
+```
 
 ## Publish
 

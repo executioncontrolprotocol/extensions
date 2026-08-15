@@ -2,6 +2,14 @@
 
 Sibling of the [core ECP monorepo](https://github.com/GuillaumeCleme/executioncontrolprotocol). This repo holds **vendor** extensions only.
 
+## Agent skill
+
+```bash
+npx skills add executioncontrolprotocol/extensions --skill ecp-extensions -y
+```
+
+Consumer Fluent / CLI: docs skill via `npx skills add https://executioncontrolprotocol.io`. Core monorepo: `ecp-core` from the core repo.
+
 ## Boundaries
 
 | May depend on | Must not depend on |
