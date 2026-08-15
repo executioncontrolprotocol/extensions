@@ -1,8 +1,10 @@
 # ECP vendor extensions
 
-First-party **vendor** extensions for [Execution Control Protocol](https://github.com/GuillaumeCleme/executioncontrolprotocol), published from this repo so they exercise the same package boundary as third-party authors.
+First-party **vendor** extensions for [Execution Control Protocol](https://github.com/executioncontrolprotocol/executioncontrolprotocol), published from this repo so they exercise the same package boundary as third-party authors.
 
 Protocol/platform extensions (formats, secrets, memory, model providers such as Ollama) remain in the core monorepo.
+
+This README’s **Packages** table is the canonical vendor inventory. Core docs should link here instead of listing packages.
 
 ## Packages
 

@@ -27,6 +27,12 @@ Treat every package under `packages/` as published for **third-party** authors: 
 
 Keep **npm package name** identical to the extension id (e.g. `@executioncontrolprotocol/fal`).
 
+## Documentation
+
+- This repo’s [README Packages](../README.md#packages) table is the **canonical vendor package inventory**.
+- Core monorepo docs may link to this repo; they must not duplicate per-package vendor lists.
+- When adding or removing a vendor package, update the README Packages table and the package’s own README.
+
 ## Tests
 
 Test handlers and fixtures in isolation. Use `environment()` from `@executioncontrolprotocol/core` for encode/decode if needed. Do not import host runtimes.

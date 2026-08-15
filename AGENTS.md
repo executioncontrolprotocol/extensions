@@ -1,6 +1,8 @@
 # AGENTS.md — vendor extensions monorepo
 
-Sibling of the [core ECP monorepo](https://github.com/GuillaumeCleme/executioncontrolprotocol). This repo holds **vendor** extensions only.
+Sibling of the [core ECP monorepo](https://github.com/executioncontrolprotocol/executioncontrolprotocol). This repo holds **vendor** extensions only.
+
+**Canonical package inventory:** [README Packages](./README.md#packages). Core monorepo docs must link here instead of duplicating vendor lists.
 
 ## Boundaries
 
@@ -17,6 +19,7 @@ Sibling of the [core ECP monorepo](https://github.com/GuillaumeCleme/executionco
 2. **Required:** `catalogExtension(def)` at module load in `src/index.ts`
 3. Export idempotent `register*Extension(registry?)`
 4. Align **npm package name** with **extension id** (`@executioncontrolprotocol/fal` → id `@executioncontrolprotocol/fal`)
+5. When adding/removing a package, update [README.md Packages](./README.md#packages) (this is the inventory core docs link to)
 
 See `.cursor/rules/extensions.mdc`.
 

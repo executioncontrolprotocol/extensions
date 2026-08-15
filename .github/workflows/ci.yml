@@ -17,19 +17,19 @@ jobs:
       - name: Checkout extensions
         uses: actions/checkout@v5
         with:
-          path: executioncontrolprotocol-extensions
+          path: extensions
       - name: Checkout core (peer deps via file:)
         uses: actions/checkout@v5
         with:
-          repository: GuillaumeCleme/executioncontrolprotocol
+          repository: executioncontrolprotocol/executioncontrolprotocol
           path: executioncontrolprotocol
       - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: executioncontrolprotocol-extensions/package-lock.json
+          cache-dependency-path: extensions/package-lock.json
       - name: Install and check
-        working-directory: executioncontrolprotocol-extensions
+        working-directory: extensions
         run: |
           npm ci
           npm run check
@@ -46,20 +46,20 @@ jobs:
       - name: Checkout extensions
         uses: actions/checkout@v5
         with:
-          path: executioncontrolprotocol-extensions
+          path: extensions
       - name: Checkout core (peer deps via file:)
         uses: actions/checkout@v5
         with:
-          repository: GuillaumeCleme/executioncontrolprotocol
+          repository: executioncontrolprotocol/executioncontrolprotocol
           path: executioncontrolprotocol
       - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: executioncontrolprotocol-extensions/package-lock.json
+          cache-dependency-path: extensions/package-lock.json
           registry-url: https://registry.npmjs.org
       - name: Build and publish
-        working-directory: executioncontrolprotocol-extensions
+        working-directory: extensions
         run: |
           npm ci
           npm run build
