@@ -11,6 +11,7 @@ Protocol/platform extensions (formats, secrets, memory, model providers such as 
 | `@executioncontrolprotocol/fal` | `@executioncontrolprotocol/fal` |
 | `@executioncontrolprotocol/slack` | `@executioncontrolprotocol/slack` |
 | `@executioncontrolprotocol/image-sharp` | `@executioncontrolprotocol/image-sharp` |
+| `@executioncontrolprotocol/azure-blob-storage` | `@executioncontrolprotocol/azure-blob-storage` |
 | `@executioncontrolprotocol/adobe` | `@executioncontrolprotocol/adobe` (scaffold) |
 
 npm package names match extension ids. Import and bind with the same identifier:

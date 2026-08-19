@@ -25,7 +25,6 @@ import { runPipeline, runInspect } from "./sharp-runner.js"
 
 const EXT_ID = "@executioncontrolprotocol/image-sharp"
 const NODE_RUNTIME_ID = "@executioncontrolprotocol/node" as const
-const BROWSER_RUNTIME_ID = "@executioncontrolprotocol/browser" as const
 
 function caps(): CapabilityDefinition[] {
   return [
@@ -214,7 +213,7 @@ function caps(): CapabilityDefinition[] {
 
 /** @executioncontrolprotocol/image-sharp extension. @category Extensions */
 export const imageSharpExtension = defineExtension("@executioncontrolprotocol", "image-sharp")
-  .withSupportedRuntimes([NODE_RUNTIME_ID, BROWSER_RUNTIME_ID])
+  .withSupportedRuntimes([NODE_RUNTIME_ID])
   .withConfig({
     storage: z
       .object({

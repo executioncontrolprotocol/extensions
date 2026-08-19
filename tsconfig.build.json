@@ -4,6 +4,7 @@
     { "path": "packages/fal" },
     { "path": "packages/slack" },
     { "path": "packages/image-sharp" },
-    { "path": "packages/adobe" }
+    { "path": "packages/adobe" },
+    { "path": "packages/azure-blob-storage" }
   ]
 }
