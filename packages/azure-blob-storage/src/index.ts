@@ -27,6 +27,9 @@ const EXT_ID = "@executioncontrolprotocol/azure-blob-storage"
  * `accountName` + `accountKey`. Mint read SAS URLs for Adobe Firefly
  * `referenceBlobs` / Photoshop `source.url`.
  *
+ * Browser mixed `upload` hops `create-sas-url` then PUTs from the tab. Allow the
+ * demo origin on the container CORS policy (`PUT`, `x-ms-blob-type`).
+ *
  * @category Extensions
  */
 export const azureBlobStorageExtension = defineExtension(
@@ -49,14 +52,17 @@ export const azureBlobStorageExtension = defineExtension(
     capabilityFor(EXT_ID, "upload")
       .withInput(uploadInputSchema)
       .withOutput(uploadOutputSchema)
+      .withExecution("mixed")
       .withHandler(async (input, ctx) => handleUpload(input, ctx)),
     capabilityFor(EXT_ID, "create-sas-url")
       .withInput(createSasUrlInputSchema)
       .withOutput(createSasUrlOutputSchema)
+      .withExecution("host")
       .withHandler(async (input, ctx) => handleCreateSasUrl(input, ctx)),
     capabilityFor(EXT_ID, "download")
       .withInput(downloadInputSchema)
       .withOutput(downloadOutputSchema)
+      .withExecution("host")
       .withHandler(async (input, ctx) => handleDownload(input, ctx)),
   ])
   .build()
@@ -95,5 +101,4 @@ export {
   downloadOutputSchema,
   handleDownload,
 } from "./capabilities/download.js"
-
 export default azureBlobStorageExtension

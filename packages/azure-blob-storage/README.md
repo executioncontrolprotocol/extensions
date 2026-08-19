@@ -24,11 +24,15 @@ export default environment("azure-demo")
 
 ## Capabilities
 
-| Id | Purpose |
-| -- | ------- |
-| `@executioncontrolprotocol/azure-blob-storage.upload` | Put bytes (`contentBase64` \| `sourceUrl` \| `filePath`); optional `createReadSas` |
-| `@executioncontrolprotocol/azure-blob-storage.create-sas-url` | Mint read/write SAS (`permissions: ["r"]` or `["r","c","w"]` for Photoshop destinations) |
-| `@executioncontrolprotocol/azure-blob-storage.download` | Fetch blob as `contentBase64` |
+| Id | Execution | Purpose |
+| -- | --------- | ------- |
+| `@executioncontrolprotocol/azure-blob-storage.upload` | mixed | Put bytes (`contentBase64` \| `sourceUrl` \| `filePath` \| `source`); optional `createReadSas` |
+| `@executioncontrolprotocol/azure-blob-storage.create-sas-url` | host | Mint read/write SAS (`permissions: ["r"]` or `["r","c","w"]` for Photoshop destinations) |
+| `@executioncontrolprotocol/azure-blob-storage.download` | host | Fetch blob as `contentBase64` |
+
+`upload` is **mixed**: the browser handler reads a stashed `File` (`ecp://browser/<id>`), hops `create-sas-url` to `ecp up`, then `PUT`s from the tab. Node `filePath` / `sourceUrl` / `contentBase64` is unchanged. `create-sas-url` and `download` stay **host** so the account key never leaves the daemon.
+
+Browser PUT requires container CORS for the demo origin (`PUT`, expose `ETag`, allow `x-ms-blob-type` and `Content-Type`).
 
 ## Adobe Firefly
 

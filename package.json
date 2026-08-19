@@ -12,18 +12,31 @@
   "scripts": {
     "build": "tsc -b tsconfig.build.json",
     "clean": "node scripts/clean-dist.mjs",
+    "clean:coverage": "node scripts/clean-dist.mjs coverage",
+    "clean:dist": "node scripts/clean-dist.mjs dist",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run build && npm run lint && npm run test",
-    "publish:workspaces": "node scripts/publish-workspaces.mjs"
+    "secrets:scan": "secretlint \"**/*\"",
+    "check": "npm run build && npm run lint && npm run secrets:scan && npm run test",
+    "publish:workspaces": "node scripts/publish-workspaces.mjs",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*": [
+      "secretlint --no-glob"
+    ]
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
+    "@secretlint/secretlint-rule-preset-recommend": "^13.0.4",
     "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^9.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
+    "secretlint": "^13.0.4",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.0.0",
     "vitest": "^4.0.18",

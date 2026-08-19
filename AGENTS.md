@@ -12,6 +12,14 @@ npx skills add executioncontrolprotocol/extensions --skill ecp-extensions -y
 
 Consumer Fluent / CLI: docs skill via `npx skills add https://executioncontrolprotocol.io`. Core monorepo: `ecp-core` from the core repo.
 
+## Agent skill
+
+```bash
+npx skills add executioncontrolprotocol/extensions --skill ecp-extensions -y
+```
+
+Consumer Fluent / CLI: docs skill via `npx skills add https://executioncontrolprotocol.io`. Core monorepo: `ecp-core` from the core repo.
+
 ## Boundaries
 
 | May depend on | Must not depend on |
@@ -38,5 +46,9 @@ See `.cursor/rules/extensions.mdc`.
 ```sh
 npm install
 npm run build
+npm run lint
 npm run check
+npm run secrets:scan
 ```
+
+Husky pre-commit runs `lint-staged` (secretlint) then `npm run lint`.

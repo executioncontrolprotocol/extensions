@@ -22,7 +22,10 @@ export const downloadOutputSchema = z.object({
  * Download a blob as base64.
  * @category Azure
  */
-export async function handleDownload(input: unknown, ctx: unknown) {
+export async function handleDownload(
+  input: unknown,
+  ctx: unknown,
+): Promise<z.infer<typeof downloadOutputSchema>> {
   const parsed = downloadInputSchema.parse(input)
   const credentials = createAzureBlobCredentials(readAzureConfig(ctx))
   const container = resolveContainer(credentials, parsed.container)

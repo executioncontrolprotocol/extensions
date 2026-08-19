@@ -25,7 +25,10 @@ export const createSasUrlOutputSchema = z.object({
  * Mint a blob SAS URL.
  * @category Azure
  */
-export async function handleCreateSasUrl(input: unknown, ctx: unknown) {
+export async function handleCreateSasUrl(
+  input: unknown,
+  ctx: unknown,
+): Promise<z.infer<typeof createSasUrlOutputSchema>> {
   const parsed = createSasUrlInputSchema.parse(input)
   const credentials = createAzureBlobCredentials(readAzureConfig(ctx))
   const container = resolveContainer(credentials, parsed.container)
