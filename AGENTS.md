@@ -31,6 +31,8 @@ Consumer Fluent / CLI: docs skill via `npx skills add https://executioncontrolpr
 
 See `.cursor/rules/extensions.mdc`.
 
+**No `file:` package links.** Never put `"file:..."` in `package.json` dependency fields. For local unpublished `@executioncontrolprotocol/core` / `types`, use `npm link` after building the core monorepo.
+
 ## Commands
 
 ```sh

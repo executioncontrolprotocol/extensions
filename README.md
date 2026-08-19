@@ -31,9 +31,9 @@ const env = await environment("demo").withExtensions([
 
 Extensions peer on `@executioncontrolprotocol/core`, `@executioncontrolprotocol/types`, and `zod` only. They must not import `@executioncontrolprotocol/node`, `browser`, `cli`, or `mcp`.
 
-**Local / CI dogfood:** `devDependencies` use `file:../executioncontrolprotocol/packages/{core,types}` so a sibling checkout of the core monorepo shares one `globalRegistry` with apps (e.g. browser-demo). CI checks out both repos side by side for the same reason.
+**Local / CI dogfood:** do not use `"file:..."` in `package.json`. For a sibling core checkout, `npm link` `@executioncontrolprotocol/core` and `@executioncontrolprotocol/types` after `npm run build` in the core monorepo so one `globalRegistry` is shared with apps (e.g. browser-demo).
 
-Published packages still declare `peerDependencies` on the npm range (`^0.10.0`) so consumers install peers from the registry.
+Published packages still declare `peerDependencies` on the npm range (`^0.12.0`) so consumers install peers from the registry.
 
 ## Examples
 
