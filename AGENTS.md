@@ -4,6 +4,14 @@ Sibling of the [core ECP monorepo](https://github.com/executioncontrolprotocol/e
 
 **Canonical package inventory:** [README Packages](./README.md#packages). Core monorepo docs must link here instead of duplicating vendor lists.
 
+## Agent skill
+
+```bash
+npx skills add executioncontrolprotocol/extensions --skill ecp-extensions -y
+```
+
+Consumer Fluent / CLI: docs skill via `npx skills add https://executioncontrolprotocol.io`. Core monorepo: `ecp-core` from the core repo.
+
 ## Boundaries
 
 | May depend on | Must not depend on |
