@@ -1,8 +1,9 @@
-import { defineExtension, capabilityFor, globalRegistry, catalogExtension } from "@executioncontrolprotocol/core"
+import { defineExtension, capabilityFor, globalRegistry, catalogExtension, NODE_RUNTIME_ID } from "@executioncontrolprotocol/core"
 import { z } from "zod"
 
 /** @executioncontrolprotocol/slack extension (mock send for v1). @category Extensions */
 export const slackExtension = defineExtension("@executioncontrolprotocol", "slack")
+  .withSupportedRuntimes([NODE_RUNTIME_ID])
   .withConfig({
     botToken: z.string().optional(),
     defaultChannel: z.string().optional(),

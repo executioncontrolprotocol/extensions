@@ -3,6 +3,7 @@ import {
   globalRegistry,
   catalogExtension,
   type Registry,
+  NODE_RUNTIME_ID,
 } from "@executioncontrolprotocol/core"
 import { z } from "zod"
 import {
@@ -30,6 +31,7 @@ export const adobeFireflyServicesExtension = defineExtension(
   "@executioncontrolprotocol",
   "adobe-firefly-services",
 )
+  .withSupportedRuntimes([NODE_RUNTIME_ID])
   .withConfig({
     /** Adobe Developer Console client id (x-api-key). */
     clientId: z.string().min(1),
