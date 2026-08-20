@@ -8,7 +8,7 @@ Requires a core monorepo checkout (or published `@executioncontrolprotocol/node`
 | ------ | ------- |
 | [02-weekly-brief-with-slack](./02-weekly-brief-with-slack) | Slack send + memory / OpenAI |
 | [03-fal-chain](./03-fal-chain) | `fal.generate` chain |
-| [04-image-prep](./04-image-prep) | image-sharp inspect / normalize / derive |
+| [04-image-prep](./04-image-prep) | image-sharp inspect / resize (host-only; CLI or browser hop via `ecp up`) |
 | [adobe-firefly-smoke](./adobe-firefly-smoke) | Adobe Firefly auth smoke |
 | [azure-adobe-assets](./azure-adobe-assets) | Azure Blob upload + Firefly |
 

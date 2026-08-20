@@ -1,11 +1,9 @@
 import {
-  defineExtension,
   capabilityFor,
   globalRegistry,
   catalogExtension,
   type Registry,
 } from "@executioncontrolprotocol/core"
-import { z } from "zod"
 import { handleUpload, uploadInputSchema, uploadOutputSchema } from "./capabilities/upload.js"
 import {
   handleCreateSasUrl,
@@ -17,8 +15,7 @@ import {
   downloadInputSchema,
   downloadOutputSchema,
 } from "./capabilities/download.js"
-
-const EXT_ID = "@executioncontrolprotocol/azure-blob-storage"
+import { buildAzureBlobStorageExtension, EXT_ID } from "./shared.js"
 
 /**
  * `@executioncontrolprotocol/azure-blob-storage` — Azure Blob upload, SAS, and download.
@@ -32,23 +29,7 @@ const EXT_ID = "@executioncontrolprotocol/azure-blob-storage"
  *
  * @category Extensions
  */
-export const azureBlobStorageExtension = defineExtension(
-  "@executioncontrolprotocol",
-  "azure-blob-storage",
-)
-  .withConfig({
-    /** Full Azure Storage connection string. */
-    connectionString: z.string().optional(),
-    /** Storage account name (with accountKey). */
-    accountName: z.string().optional(),
-    /** Storage account key (with accountName). */
-    accountKey: z.string().optional(),
-    /** Default container when capability input omits container. */
-    defaultContainer: z.string().optional(),
-    /** Default SAS lifetime in seconds (default 3600). */
-    defaultSasExpiresInSeconds: z.number().int().positive().optional(),
-  })
-  .withCapabilities([
+export const azureBlobStorageExtension = buildAzureBlobStorageExtension([
     capabilityFor(EXT_ID, "upload")
       .withInput(uploadInputSchema)
       .withOutput(uploadOutputSchema)
@@ -64,8 +45,8 @@ export const azureBlobStorageExtension = defineExtension(
       .withOutput(downloadOutputSchema)
       .withExecution("host")
       .withHandler(async (input, ctx) => handleDownload(input, ctx)),
-  ])
-  .build()
+  ],
+)
 
 catalogExtension(azureBlobStorageExtension)
 

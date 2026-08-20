@@ -36,6 +36,7 @@ Consumer Fluent / CLI: docs skill via `npx skills add https://executioncontrolpr
 3. Export idempotent `register*Extension(registry?)`
 4. Align **npm package name** with **extension id** (`@executioncontrolprotocol/fal` → id `@executioncontrolprotocol/fal`)
 5. When adding/removing a package, update [README.md Packages](./README.md#packages) (this is the inventory core docs link to)
+6. Native/SDK Node graphs: ship `exports["."].browser` catalog (`index.browser.ts`). `catalogExtension` on both entries. No `sharp`, `@azure/storage-blob`, or `node:fs` on the browser graph. Execution stays `local` | `host` | `mixed`; bundler conditions stay `browser` | `node`. Consumers import the package root only.
 
 See `.cursor/rules/extensions.mdc`.
 

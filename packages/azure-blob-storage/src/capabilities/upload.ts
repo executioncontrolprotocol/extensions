@@ -1,50 +1,15 @@
 import { z } from "zod"
-import {
-  handleMixedBrowserBlobUpload,
-  isBrowserFileLocator,
-  type CapabilityContext,
-} from "@executioncontrolprotocol/core"
+import { isBrowserFileLocator } from "@executioncontrolprotocol/core"
 import {
   createAzureBlobCredentials,
   readAzureConfig,
   resolveContainer,
 } from "../client.js"
 import { createBlobSasUrl } from "../sas.js"
+import { handleMixedUpload } from "./upload-mixed.js"
+import { uploadInputSchema, uploadOutputSchema } from "./upload-schema.js"
 
-const CREATE_SAS_CAPABILITY_ID = "@executioncontrolprotocol/azure-blob-storage.create-sas-url"
-
-/** Upload capability input. @category Azure */
-export const uploadInputSchema = z
-  .object({
-    container: z.string().min(1).optional(),
-    blobName: z.string().min(1).optional(),
-    contentType: z.string().min(1).optional(),
-    contentBase64: z.string().min(1).optional(),
-    sourceUrl: z.string().url().optional(),
-    filePath: z.string().min(1).optional(),
-    source: z.string().min(1).optional(),
-    createReadSas: z.boolean().optional(),
-    sasExpiresInSeconds: z.number().int().positive().optional(),
-  })
-  .superRefine((val, ctx) => {
-    const sources = [val.contentBase64, val.sourceUrl, val.filePath, val.source].filter(Boolean)
-    if (sources.length !== 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Provide exactly one of contentBase64, sourceUrl, filePath, or source",
-      })
-    }
-  })
-
-/** Upload capability output. @category Azure */
-export const uploadOutputSchema = z.object({
-  container: z.string(),
-  blobName: z.string(),
-  blobUrl: z.string(),
-  contentType: z.string(),
-  etag: z.string().optional(),
-  sasUrl: z.string().optional(),
-})
+export { uploadInputSchema, uploadOutputSchema }
 
 function locatorFromInput(input: z.infer<typeof uploadInputSchema>): string | undefined {
   if (typeof input.source === "string" && input.source.length > 0) return input.source
@@ -136,20 +101,7 @@ export async function handleUpload(
   const parsed = uploadInputSchema.parse(input)
   const locator = locatorFromInput(parsed)
   if (locator && isBrowserFileLocator(locator)) {
-    return uploadOutputSchema.parse(
-      await handleMixedBrowserBlobUpload(
-        {
-          source: locator,
-          container: parsed.container,
-          blobName: parsed.blobName,
-          contentType: parsed.contentType,
-          createReadSas: parsed.createReadSas,
-          sasExpiresInSeconds: parsed.sasExpiresInSeconds,
-        },
-        ctx as CapabilityContext,
-        CREATE_SAS_CAPABILITY_ID,
-      ),
-    )
+    return handleMixedUpload(input, ctx)
   }
   const nodeInput =
     parsed.source && !parsed.filePath

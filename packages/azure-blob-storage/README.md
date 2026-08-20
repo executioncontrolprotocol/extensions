@@ -34,6 +34,21 @@ export default environment("azure-demo")
 
 Browser PUT requires container CORS for the demo origin (`PUT`, expose `ETag`, allow `x-ms-blob-type` and `Content-Type`).
 
+The Azure SDK stays on the **Node** graph. Web bundlers load `exports["."].browser` (mixed `upload` + catalog for host SAS/download) with no `@azure/storage-blob` or `node:fs`. Import the package root only:
+
+```ts
+import "@executioncontrolprotocol/azure-blob-storage"
+```
+
+```json
+".": {
+  "types": "./dist/index.d.ts",
+  "browser": "./dist/index.browser.js",
+  "node": "./dist/index.js",
+  "import": "./dist/index.js"
+}
+```
+
 ## Adobe Firefly
 
 See [`examples/azure-adobe-assets/`](../../examples/azure-adobe-assets/) — upload a reference image, then call Image5 generate with `referenceBlobs[0].source.url: ref("upload.sasUrl")`.

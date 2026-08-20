@@ -31,6 +31,8 @@ const env = await environment("demo").withExtensions([
 
 Extensions peer on `@executioncontrolprotocol/core`, `@executioncontrolprotocol/types`, and `zod` only. They must not import `@executioncontrolprotocol/node`, `browser`, `cli`, or `mcp`.
 
+Packages with native or Node-only SDKs (`image-sharp`, `azure-blob-storage`) publish `exports["."].browser` so Vite never loads `sharp` / `@azure/storage-blob`. Import the package root; do not import `index.browser` by path.
+
 **Local / CI dogfood:** do not use `"file:..."` in `package.json`. For a sibling core checkout, `npm link` `@executioncontrolprotocol/core` and `@executioncontrolprotocol/types` after `npm run build` in the core monorepo so one `globalRegistry` is shared with apps (e.g. browser-demo).
 
 Published packages still declare `peerDependencies` on the npm range (`^0.12.0`) so consumers install peers from the registry.

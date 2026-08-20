@@ -4,7 +4,24 @@ Node-native Sharp image processing for ECP workflows.
 
 ## Runtime
 
-Requires `@executioncontrolprotocol/node`. Declares `.withSupportedRuntimes(["@executioncontrolprotocol/node"])`.
+Requires `@executioncontrolprotocol/node`. Declares `.withSupportedRuntimes(["@executioncontrolprotocol/node"])`. Capabilities execute as **host**: the browser catalog hops to `ecp up`.
+
+Native `sharp` is **not** on the web graph. The package uses standard `exports` conditions (`browser` → catalog, `node`/`import` → Sharp). Apps import the package root:
+
+```ts
+import "@executioncontrolprotocol/image-sharp"
+```
+
+```json
+".": {
+  "types": "./dist/index.d.ts",
+  "browser": "./dist/index.browser.js",
+  "node": "./dist/index.js",
+  "import": "./dist/index.js"
+}
+```
+
+Vite/webpack pick `browser` automatically. Do not import `index.browser` by path.
 
 ## Binding
 

@@ -1,14 +1,16 @@
-import "@executioncontrolprotocol/image-sharp"
+import {
+  imageSharpExtension,
+  registerImageSharpExtension,
+} from "@executioncontrolprotocol/image-sharp"
 import { environment, extension, policy } from "@executioncontrolprotocol/node"
-import { registerImageSharpExtension } from "@executioncontrolprotocol/image-sharp"
 import { registerImagePolicy } from "@executioncontrolprotocol/policies"
 
-registerImageSharpExtension()
-registerImagePolicy()
+await registerImageSharpExtension()
+await registerImagePolicy()
 
-export default environment("image-prep", "Image prep")
+export default (await environment("image-prep", "Image prep"))
   .withExtensions([
-    extension("@executioncontrolprotocol/image-sharp", "Sharp").with({
+    extension(imageSharpExtension, "Sharp").with({
       limits: {
         allowRemoteUrls: false,
       },

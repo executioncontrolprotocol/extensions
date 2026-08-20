@@ -1,42 +1,33 @@
 import { workflow, step } from "@executioncontrolprotocol/core"
 
-export default workflow("Image prep")
+/** 1×1 PNG (same bytes as image-sharp unit tests). */
+const FIXTURE_PNG_BASE64 =
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+
+export default workflow("Image prep smoke")
   .run([
     step("@executioncontrolprotocol/image-sharp.inspect", "Inspect source")
       .with({
         image: {
-          kind: "file",
-          path: "examples/04-image-prep/fixture.png",
+          kind: "buffer",
+          data: FIXTURE_PNG_BASE64,
+          mediaType: "image/png",
         },
-        include: ["metadata", "stats"],
+        include: ["metadata"],
       })
       .as("imageInfo"),
 
-    step("@executioncontrolprotocol/image-sharp.normalize", "Normalize orientation")
+    step("@executioncontrolprotocol/image-sharp.resize", "Resize to thumbnail")
       .with({
         image: {
-          kind: "file",
-          path: "examples/04-image-prep/fixture.png",
+          kind: "buffer",
+          data: FIXTURE_PNG_BASE64,
+          mediaType: "image/png",
         },
-        output: { format: "webp", quality: 84 },
+        width: 64,
+        height: 64,
+        fit: "cover",
+        output: { format: "webp", quality: 80 },
       })
-      .as("normalized"),
-
-    step("@executioncontrolprotocol/image-sharp.derive", "Create delivery variants")
-      .with({
-        image: { kind: "artifact", uri: "ecp://artifacts/images/normalized.webp" },
-        variants: [
-          {
-            name: "thumb",
-            pipeline: [{ op: "resize", width: 64, height: 64, fit: "cover" }],
-            output: { format: "webp", quality: 78 },
-          },
-          {
-            name: "preview",
-            pipeline: [{ op: "resize", width: 320, fit: "inside" }],
-            output: { format: "webp", quality: 82 },
-          },
-        ],
-      })
-      .as("variants"),
+      .as("thumb"),
   ])

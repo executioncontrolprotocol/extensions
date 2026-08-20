@@ -4,12 +4,10 @@ import {
   SASProtocol,
 } from "@azure/storage-blob"
 import type { AzureBlobCredentials } from "./client.js"
+import { SAS_PERMISSION_CHARS, type SasPermissionChar } from "./permissions.js"
 
-/** Allowed SAS permission letters. @category Azure */
-export const SAS_PERMISSION_CHARS = ["r", "w", "c", "d", "l"] as const
-
-/** Single SAS permission character. @category Azure */
-export type SasPermissionChar = (typeof SAS_PERMISSION_CHARS)[number]
+export { SAS_PERMISSION_CHARS }
+export type { SasPermissionChar }
 
 /**
  * Options for minting a blob SAS URL.

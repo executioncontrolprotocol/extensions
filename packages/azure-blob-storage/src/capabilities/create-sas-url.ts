@@ -4,22 +4,10 @@ import {
   readAzureConfig,
   resolveContainer,
 } from "../client.js"
-import { createBlobSasUrl, SAS_PERMISSION_CHARS } from "../sas.js"
+import { createBlobSasUrl } from "../sas.js"
+import { createSasUrlInputSchema, createSasUrlOutputSchema } from "./create-sas-url-schema.js"
 
-/** Create-SAS capability input. @category Azure */
-export const createSasUrlInputSchema = z.object({
-  container: z.string().min(1).optional(),
-  blobName: z.string().min(1),
-  permissions: z.array(z.enum(SAS_PERMISSION_CHARS)).min(1),
-  expiresInSeconds: z.number().int().positive().optional(),
-})
-
-/** Create-SAS capability output. @category Azure */
-export const createSasUrlOutputSchema = z.object({
-  sasUrl: z.string(),
-  expiresAt: z.string(),
-  permissions: z.string(),
-})
+export { createSasUrlInputSchema, createSasUrlOutputSchema }
 
 /**
  * Mint a blob SAS URL.

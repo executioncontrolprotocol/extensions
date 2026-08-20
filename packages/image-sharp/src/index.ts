@@ -1,5 +1,4 @@
 import {
-  defineExtension,
   capabilityFor,
   globalRegistry,
   catalogExtension,
@@ -22,9 +21,7 @@ import {
   normalizeInputSchema,
 } from "./schemas.js"
 import { runPipeline, runInspect } from "./sharp-runner.js"
-
-const EXT_ID = "@executioncontrolprotocol/image-sharp"
-const NODE_RUNTIME_ID = "@executioncontrolprotocol/node" as const
+import { buildImageSharpExtension, EXT_ID } from "./shared.js"
 
 function caps(): CapabilityDefinition[] {
   return [
@@ -212,45 +209,7 @@ function caps(): CapabilityDefinition[] {
 }
 
 /** @executioncontrolprotocol/image-sharp extension. @category Extensions */
-export const imageSharpExtension = defineExtension("@executioncontrolprotocol", "image-sharp")
-  .withSupportedRuntimes([NODE_RUNTIME_ID])
-  .withConfig({
-    storage: z
-      .object({
-        defaultStore: z.string().optional(),
-        tempPrefix: z.string().default("tmp/image-sharp"),
-        outputPrefix: z.string().default("artifacts/images"),
-      })
-      .optional(),
-    limits: z
-      .object({
-        maxInputBytes: z.number().default(50 * 1024 * 1024),
-        maxOutputBytes: z.number().default(50 * 1024 * 1024),
-        maxPixels: z.number().default(80_000_000),
-        maxWidth: z.number().default(16_384),
-        maxHeight: z.number().default(16_384),
-        allowSvgInput: z.boolean().default(true),
-        allowRemoteUrls: z.boolean().default(false),
-        maxVariantsPerStep: z.number().default(16),
-        maxCompositeImages: z.number().default(8),
-      })
-      .optional(),
-    defaults: z
-      .object({
-        format: z.string().default("webp"),
-        quality: z.number().default(82),
-        stripMetadata: z.boolean().default(true),
-        failOn: z.enum(["none", "truncated", "error", "warning"]).default("warning"),
-      })
-      .optional(),
-    concurrency: z
-      .object({
-        sharpConcurrency: z.number().optional(),
-      })
-      .optional(),
-  })
-  .withCapabilities(caps())
-  .build()
+export const imageSharpExtension = buildImageSharpExtension(caps())
 
 catalogExtension(imageSharpExtension)
 
