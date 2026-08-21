@@ -18,7 +18,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "secrets:scan": "secretlint \"**/*\"",
-    "check": "npm run build && npm run lint && npm run secrets:scan && npm run test",
+    "check:no-file-deps": "node scripts/check-no-file-deps.mjs",
+    "check": "npm run build && npm run lint && npm run secrets:scan && npm run check:no-file-deps && npm run test",
     "publish:workspaces": "node scripts/publish-workspaces.mjs",
     "prepare": "husky"
   },
