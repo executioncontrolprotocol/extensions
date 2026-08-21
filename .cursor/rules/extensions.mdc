@@ -13,7 +13,7 @@ Treat every package under `packages/` as published for **third-party** authors: 
 | Package | Use for |
 | ------- | ------- |
 | `@executioncontrolprotocol/types` | Protocol types |
-| `@executioncontrolprotocol/core` | `defineExtension`, `capabilityFor`, `catalogExtension` |
+| `@executioncontrolprotocol/core` | `defineExtension`, `capabilityFor`, `catalogExtension`, `resolveMedia`, `writeMediaArtifact` |
 | `zod` | Config and capability I/O schemas — import from `"zod"` |
 | Third-party libs | Vendor SDKs only |
 
@@ -30,6 +30,8 @@ Treat every package under `packages/` as published for **third-party** authors: 
 Keep **npm package name** identical to the extension id (e.g. `@executioncontrolprotocol/fal`).
 
 If the Node implementation imports native modules or Node-only SDKs, add a standard `exports["."].browser` catalog (`src/index.browser.ts`). Call `catalogExtension` on both entries. The browser graph must not import `sharp`, `@azure/storage-blob`, or `node:fs`. Capability execution remains `local` | `host` | `mixed`; do not rename those to bundler conditions. Consumers `import "@scope/name"` only.
+
+**Media I/O:** call `resolveMedia` / `writeMediaArtifact` from core for buffers, paths, URLs, artifacts, and `ecp://browser/…` locators. Do not copy Sharp-style local artifact maps.
 
 ## Documentation
 

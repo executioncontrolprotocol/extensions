@@ -23,6 +23,10 @@ import "@executioncontrolprotocol/image-sharp"
 
 Vite/webpack pick `browser` automatically. Do not import `index.browser` by path.
 
+## Media I/O
+
+Image bytes are resolved and written through core (`resolveMedia` / `writeMediaArtifact`). This package only runs Sharp ops. Prefer `ImageRef` kinds (`buffer`, `file`, `url`, `artifact`); browser uploads use `ecp://browser/…` on `file.path`.
+
 ## Binding
 
 ```ts

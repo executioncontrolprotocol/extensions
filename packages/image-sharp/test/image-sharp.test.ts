@@ -109,6 +109,27 @@ describe("@executioncontrolprotocol/image-sharp", () => {
         },
         makeCtx()
       )
-    ).rejects.toThrow(/Remote URL/)
+    ).rejects.toThrow(/Remote URL|allowRemoteUrls/)
+  })
+
+  it("resolves ecp://browser file refs via ctx.blobs through core media", async () => {
+    const { createCapabilityBlobStore, stashCapabilityBlob } = await import(
+      "@executioncontrolprotocol/core"
+    )
+    const blobs = createCapabilityBlobStore()
+    const png = Buffer.from(FIXTURE_PNG_BASE64, "base64")
+    const locator = stashCapabilityBlob(blobs, {
+      name: "in.png",
+      type: "image/png",
+      size: png.length,
+      arrayBuffer: async () =>
+        png.buffer.slice(png.byteOffset, png.byteOffset + png.byteLength) as ArrayBuffer,
+    })
+    const artifacts = createCapabilityArtifactStore()
+    const out = (await capability("@executioncontrolprotocol/image-sharp.inspect")(
+      { image: { kind: "file", path: locator }, include: ["metadata"] },
+      { ...makeCtx(artifacts), blobs }
+    )) as { metadata: { width?: number } }
+    expect(out.metadata.width).toBe(1)
   })
 })
