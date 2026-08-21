@@ -12,11 +12,12 @@ export interface ReadImageResult {
   sizeBytes: number
 }
 
-const artifactStore = new Map<string, Buffer>()
+/** Legacy process-local fallback for unit tests without `ctx.artifacts`. */
+const legacyArtifactStore = new Map<string, Buffer>()
 
-/** Clear in-memory artifact store (tests). @category Extensions */
+/** Clear legacy in-memory artifact store (tests). @category Extensions */
 export function clearImageArtifactStore(): void {
-  artifactStore.clear()
+  legacyArtifactStore.clear()
 }
 
 async function readFileFromPath(path: string): Promise<Buffer> {
@@ -42,6 +43,24 @@ async function readBrowserLocator(
     mediaType: mediaType || blob.type || undefined,
     sizeBytes: buffer.length,
   }
+}
+
+function readStoredArtifact(
+  uri: string,
+  ctx: CapabilityContext,
+  mediaType?: string
+): ReadImageResult {
+  const fromCtx = ctx.artifacts?.get(uri)
+  if (fromCtx) {
+    return {
+      buffer: Buffer.from(fromCtx.bytes),
+      mediaType: mediaType ?? fromCtx.mediaType,
+      sizeBytes: fromCtx.size,
+    }
+  }
+  const legacy = legacyArtifactStore.get(uri)
+  if (!legacy) throw new Error(`Artifact not found: ${uri}`)
+  return { buffer: legacy, mediaType, sizeBytes: legacy.length }
 }
 
 /** Read image reference to buffer. @category Extensions */
@@ -94,9 +113,7 @@ export async function readImageToBuffer(
         }
         throw new Error(`Artifact not found: ${ref.uri}`)
       }
-      const stored = artifactStore.get(ref.uri)
-      if (!stored) throw new Error(`Artifact not found: ${ref.uri}`)
-      return { buffer: stored, mediaType: ref.mediaType, sizeBytes: stored.length }
+      return readStoredArtifact(ref.uri, ctx, ref.mediaType)
     }
     default:
       throw new Error("Unsupported image reference kind")
@@ -142,7 +159,18 @@ export async function writeArtifact(
     }
   }
 
-  artifactStore.set(uri, data)
+  const bytes = new Uint8Array(data)
+  if (ctx.artifacts) {
+    ctx.artifacts.set(uri, {
+      mediaType: options.mediaType,
+      name,
+      size: data.length,
+      bytes,
+    })
+  } else {
+    legacyArtifactStore.set(uri, data)
+  }
+
   return {
     kind: IMAGE_REF_KINDS.ARTIFACT,
     uri,

@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from "vitest"
-import { globalRegistry } from "@executioncontrolprotocol/core"
+import { createCapabilityArtifactStore, globalRegistry } from "@executioncontrolprotocol/core"
 import {
   registerImageSharpExtension,
   imageSharpExtension,
@@ -15,18 +15,26 @@ function capability(id: string): Handler {
   return cap.handler as Handler
 }
 
-const ctx = {
-  extensionConfig: {
-    limits: { allowRemoteUrls: false, maxPixels: 80_000_000 },
-    defaults: { format: "png", quality: 90, stripMetadata: true, failOn: "warning" },
-  },
-  usage: { increment: () => undefined },
-  capabilities: { call: async () => ({}) },
-  store: { merge: async () => undefined, set: async () => undefined, replace: async () => undefined, append: async () => undefined },
-  state: {},
-  run: { id: "r1", input: {} },
-  step: { id: "s1", capabilityId: "@executioncontrolprotocol/image-sharp.transform" },
-  logger: { info: () => undefined, warn: () => undefined, error: () => undefined },
+function makeCtx(artifacts = createCapabilityArtifactStore()) {
+  return {
+    extensionConfig: {
+      limits: { allowRemoteUrls: false, maxPixels: 80_000_000 },
+      defaults: { format: "png", quality: 90, stripMetadata: true, failOn: "warning" },
+    },
+    usage: { increment: () => undefined },
+    capabilities: { call: async () => ({}) },
+    store: {
+      merge: async () => undefined,
+      set: async () => undefined,
+      replace: async () => undefined,
+      append: async () => undefined,
+    },
+    state: {},
+    run: { id: "r1", input: {} },
+    step: { id: "s1", capabilityId: "@executioncontrolprotocol/image-sharp.transform" },
+    logger: { info: () => undefined, warn: () => undefined, error: () => undefined },
+    artifacts,
+  }
 }
 
 const bufferImage = {
@@ -51,24 +59,31 @@ describe("@executioncontrolprotocol/image-sharp", () => {
   it("inspect returns metadata and derived facts", async () => {
     const out = (await capability("@executioncontrolprotocol/image-sharp.inspect")(
       { image: bufferImage, include: ["metadata"] },
-      ctx
+      makeCtx()
     )) as { metadata: { width?: number }; derived: { orientation: string } }
     expect(out.metadata.width).toBe(1)
     expect(out.derived.orientation).toBe("square")
   })
 
-  it("transform resizes and returns artifact ref", async () => {
+  it("transform resizes and stores artifact on ctx.artifacts", async () => {
+    const artifacts = createCapabilityArtifactStore()
     const out = (await capability("@executioncontrolprotocol/image-sharp.transform")(
       {
         image: bufferImage,
         pipeline: [{ op: "resize", width: 2, height: 2, fit: "fill" }],
         output: { format: "png" },
       },
-      ctx
-    )) as { image: { kind: string; uri: string }; info: { width: number; height: number } }
+      makeCtx(artifacts)
+    )) as {
+      image: { kind: string; uri: string; mediaType?: string }
+      info: { width: number; height: number }
+    }
     expect(out.image.kind).toBe("artifact")
     expect(out.info.width).toBe(2)
     expect(out.info.height).toBe(2)
+    const stored = artifacts.get(out.image.uri)
+    expect(stored?.mediaType).toBe("image/png")
+    expect(stored?.size).toBeGreaterThan(0)
   })
 
   it("derive produces named variants", async () => {
@@ -80,7 +95,7 @@ describe("@executioncontrolprotocol/image-sharp", () => {
           { name: "tiny", pipeline: [{ op: "resize", width: 1, height: 1 }] },
         ],
       },
-      ctx
+      makeCtx()
     )) as { variants: Record<string, unknown> }
     expect(Object.keys(out.variants)).toEqual(["small", "tiny"])
   })
@@ -92,7 +107,7 @@ describe("@executioncontrolprotocol/image-sharp", () => {
           image: { kind: "url", url: "https://example.com/x.png" },
           pipeline: [],
         },
-        ctx
+        makeCtx()
       )
     ).rejects.toThrow(/Remote URL/)
   })
