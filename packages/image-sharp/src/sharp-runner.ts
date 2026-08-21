@@ -27,8 +27,9 @@ async function loadSharp(): Promise<SharpModule> {
   try {
     const mod = await import("sharp")
     return mod.default
-  } catch {
-    throw new Error(SHARP_UNAVAILABLE_MESSAGE)
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err)
+    throw new Error(`${SHARP_UNAVAILABLE_MESSAGE} (${detail})`)
   }
 }
 

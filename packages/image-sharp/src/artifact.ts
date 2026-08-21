@@ -1,6 +1,6 @@
 import type { ImageRef } from "@executioncontrolprotocol/types"
 import { IMAGE_REF_KINDS } from "@executioncontrolprotocol/types"
-import type { CapabilityContext } from "@executioncontrolprotocol/core"
+import { isBrowserFileLocator, type CapabilityContext } from "@executioncontrolprotocol/core"
 
 /** Read image result. @category Extensions */
 export interface ReadImageResult {
@@ -27,6 +27,23 @@ async function readFileFromPath(path: string): Promise<Buffer> {
   return fs.readFile(path)
 }
 
+async function readBrowserLocator(
+  locator: string,
+  ctx: CapabilityContext,
+  mediaType?: string
+): Promise<ReadImageResult> {
+  const blob = ctx.blobs?.get(locator)
+  if (!blob) {
+    throw new Error(`No file stashed for locator ${locator}`)
+  }
+  const buffer = Buffer.from(await blob.arrayBuffer())
+  return {
+    buffer,
+    mediaType: mediaType || blob.type || undefined,
+    sizeBytes: buffer.length,
+  }
+}
+
 /** Read image reference to buffer. @category Extensions */
 export async function readImageToBuffer(
   ref: ImageRef,
@@ -41,6 +58,9 @@ export async function readImageToBuffer(
       return { buffer, mediaType: ref.mediaType, sizeBytes: buffer.length }
     }
     case IMAGE_REF_KINDS.FILE: {
+      if (isBrowserFileLocator(ref.path)) {
+        return readBrowserLocator(ref.path, ctx, ref.mediaType)
+      }
       const buffer = await readFileFromPath(ref.path)
       return { buffer, mediaType: ref.mediaType, sizeBytes: buffer.length }
     }
@@ -56,6 +76,9 @@ export async function readImageToBuffer(
       return { buffer, mediaType, sizeBytes: buffer.length }
     }
     case IMAGE_REF_KINDS.ARTIFACT: {
+      if (isBrowserFileLocator(ref.uri)) {
+        return readBrowserLocator(ref.uri, ctx, ref.mediaType)
+      }
       if (ref.uri.startsWith("ecp://storage/")) {
         const key = ref.uri.slice("ecp://storage/".length)
         const result = (await ctx.capabilities.call("@executioncontrolprotocol/storage.read", {
