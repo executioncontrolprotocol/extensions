@@ -112,6 +112,36 @@ describe("@executioncontrolprotocol/image-sharp", () => {
     ).rejects.toThrow(/Remote URL|allowRemoteUrls/)
   })
 
+  it("rejects non-image media type after resolve", async () => {
+    await expect(
+      capability("@executioncontrolprotocol/image-sharp.inspect")(
+        {
+          image: {
+            kind: "buffer",
+            data: FIXTURE_PNG_BASE64,
+            mediaType: "application/pdf",
+          },
+        },
+        makeCtx()
+      )
+    ).rejects.toThrow(/not allowed/)
+  })
+
+  it("rejects non-image media type after resolve", async () => {
+    await expect(
+      capability("@executioncontrolprotocol/image-sharp.inspect")(
+        {
+          image: {
+            kind: "buffer",
+            data: FIXTURE_PNG_BASE64,
+            mediaType: "application/pdf",
+          },
+        },
+        makeCtx()
+      )
+    ).rejects.toThrow(/not allowed/)
+  })
+
   it("resolves ecp://browser file refs via ctx.blobs through core media", async () => {
     const { createCapabilityBlobStore, stashCapabilityBlob } = await import(
       "@executioncontrolprotocol/core"

@@ -1,12 +1,12 @@
 import type { SharpOptions } from "sharp"
-import type { ImageRef } from "@executioncontrolprotocol/types"
+import type { FileRef } from "@executioncontrolprotocol/types"
 import type { CapabilityContext } from "@executioncontrolprotocol/core"
 import { readImageToBuffer, writeArtifact, mediaTypeForFormat } from "./artifact.js"
 import { applyOperation } from "./operations.js"
 import { applyOutputOptions } from "./output.js"
 import {
   assertDimensions,
-  assertImageRefAllowed,
+  assertFileRefAllowed,
   assertOutputBytes,
   assertPipelineCounts,
   resolveDefaultOutput,
@@ -35,7 +35,7 @@ async function loadSharp(): Promise<SharpModule> {
 
 /** Options for {@link runPipeline}. @category Extensions */
 export interface RunPipelineOptions {
-  image: ImageRef
+  image: FileRef
   pipeline: SharpPipelineOperation[]
   output?: OutputOptions
   animated?: boolean
@@ -53,7 +53,7 @@ export async function runPipeline(
   const limits = resolveLimits(cfg)
   const defaults = resolveDefaultOutput(cfg)
 
-  assertImageRefAllowed(options.image, limits)
+  assertFileRefAllowed(options.image, limits)
   assertPipelineCounts(options.pipeline, options.variantCount ?? 1, limits)
 
   const source = await readImageToBuffer(options.image, ctx)
@@ -102,7 +102,7 @@ export async function runPipeline(
 
 /** Run inspect-only pass on an image. @category Extensions */
 export async function runInspect(
-  imageRef: ImageRef,
+  imageRef: FileRef,
   include: string[] | undefined,
   ctx: Ctx,
   animated?: boolean,
@@ -111,7 +111,7 @@ export async function runInspect(
   const sharp = await loadSharp()
   const cfg = ctx.extensionConfig ?? {}
   const limits = resolveLimits(cfg)
-  assertImageRefAllowed(imageRef, limits)
+  assertFileRefAllowed(imageRef, limits)
   const source = await readImageToBuffer(imageRef, ctx)
 
   const instance = sharp(source.buffer, {

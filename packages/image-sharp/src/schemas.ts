@@ -1,5 +1,8 @@
 import { z } from "zod"
-import { imageRefSchema, IMAGE_OUTPUT_FORMATS } from "@executioncontrolprotocol/types"
+import { fileRefSchema, IMAGE_OUTPUT_FORMATS } from "@executioncontrolprotocol/types"
+
+/** Image input refs with UI MIME hint (`image/*`). @category Extensions */
+export const imageFileRefSchema = fileRefSchema({ contentMediaType: "image/*" })
 
 /** Color input for Sharp operations. @category Extensions */
 export const colorInputSchema = z.union([
@@ -93,7 +96,7 @@ const affineOpSchema = z.object({
 })
 
 const compositeLayerSchema = z.object({
-  image: imageRefSchema,
+  image: imageFileRefSchema,
   left: z.number().optional(),
   top: z.number().optional(),
   gravity: z.string().optional(),
@@ -191,7 +194,7 @@ const thresholdOpSchema = z.object({
 
 const booleanOpSchema = z.object({
   op: z.literal("boolean"),
-  image: imageRefSchema,
+  image: imageFileRefSchema,
   operator: z.enum(["and", "or", "eor"]),
 })
 
@@ -290,7 +293,7 @@ export type OutputOptions = z.infer<typeof outputOptionsSchema>
 
 /** Transform capability input. @category Extensions */
 export const transformInputSchema = z.object({
-  image: imageRefSchema,
+  image: imageFileRefSchema,
   pipeline: z.array(sharpPipelineOperationSchema).default([]),
   output: outputOptionsSchema.optional(),
   animated: z.boolean().optional(),
@@ -299,7 +302,7 @@ export const transformInputSchema = z.object({
 
 /** Transform capability output. @category Extensions */
 export const transformOutputSchema = z.object({
-  image: imageRefSchema,
+  image: imageFileRefSchema,
   info: z.object({
     format: z.string(),
     width: z.number(),
@@ -313,14 +316,14 @@ export const transformOutputSchema = z.object({
   operations: z.array(sharpPipelineOperationSchema).optional(),
   source: z
     .object({
-      image: imageRefSchema,
+      image: imageFileRefSchema,
     })
     .optional(),
 })
 
 /** Inspect capability input. @category Extensions */
 export const inspectInputSchema = z.object({
-  image: imageRefSchema,
+  image: imageFileRefSchema,
   include: z
     .array(z.enum(["metadata", "stats", "dominantColor", "hash"]))
     .optional(),
@@ -330,7 +333,7 @@ export const inspectInputSchema = z.object({
 
 /** Inspect capability output. @category Extensions */
 export const inspectOutputSchema = z.object({
-  image: imageRefSchema,
+  image: imageFileRefSchema,
   metadata: z.record(z.string(), z.unknown()),
   stats: z.unknown().optional(),
   derived: z.object({
@@ -349,14 +352,14 @@ export const deriveVariantSchema = z.object({
 
 /** Derive capability input. @category Extensions */
 export const deriveInputSchema = z.object({
-  image: imageRefSchema,
+  image: imageFileRefSchema,
   variants: z.array(deriveVariantSchema),
 })
 
 /** Derive capability output. @category Extensions */
 export const deriveOutputSchema = z.object({
   variants: z.record(z.string(), transformOutputSchema),
-  source: z.object({ image: imageRefSchema }),
+  source: z.object({ image: imageFileRefSchema }),
 })
 
 /** Resize convenience input. @category Extensions */
@@ -372,7 +375,7 @@ export const resizeInputSchema = transformInputSchema.extend({
 
 /** Crop convenience input. @category Extensions */
 export const cropInputSchema = z.object({
-  image: imageRefSchema,
+  image: imageFileRefSchema,
   box: z.object({
     left: z.number(),
     top: z.number(),
@@ -391,7 +394,7 @@ export const thumbnailSizeSchema = z.object({
 
 /** Thumbnail convenience input. @category Extensions */
 export const thumbnailInputSchema = z.object({
-  image: imageRefSchema,
+  image: imageFileRefSchema,
   sizes: z.array(thumbnailSizeSchema),
   fit: resizeOpSchema.shape.fit.optional(),
   output: outputOptionsSchema.optional(),
@@ -399,19 +402,19 @@ export const thumbnailInputSchema = z.object({
 
 /** Composite convenience input. @category Extensions */
 export const compositeInputSchema = z.object({
-  image: imageRefSchema,
+  image: imageFileRefSchema,
   overlays: z.array(compositeLayerSchema),
   output: outputOptionsSchema.optional(),
 })
 
 /** Convert convenience input. @category Extensions */
 export const convertInputSchema = z.object({
-  image: imageRefSchema,
+  image: imageFileRefSchema,
   output: outputOptionsSchema,
 })
 
 /** Normalize convenience input. @category Extensions */
 export const normalizeInputSchema = z.object({
-  image: imageRefSchema,
+  image: imageFileRefSchema,
   output: outputOptionsSchema.optional(),
 })

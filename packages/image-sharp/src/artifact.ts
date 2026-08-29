@@ -1,5 +1,6 @@
-import type { ImageRef } from "@executioncontrolprotocol/types"
+import type { FileRef } from "@executioncontrolprotocol/types"
 import {
+  assertMediaType,
   resolveMedia,
   writeMediaArtifact,
   type MediaCapabilityContext,
@@ -19,12 +20,16 @@ export interface ReadImageResult {
 
 type Ctx = MediaCapabilityContext
 
+/** Expected MIME types for image inputs after {@link resolveMedia}. */
+export const IMAGE_INPUT_MEDIA_TYPES = "image/*"
+
 /**
- * Resolve an {@link ImageRef} to a Node Buffer via core {@link resolveMedia}.
+ * Resolve a {@link FileRef} to a Node Buffer via core {@link resolveMedia}.
  * @category Extensions
  */
-export async function readImageToBuffer(ref: ImageRef, ctx: Ctx): Promise<ReadImageResult> {
+export async function readImageToBuffer(ref: FileRef, ctx: Ctx): Promise<ReadImageResult> {
   const resolved: ResolvedMedia = await resolveMedia(ref, ctx)
+  assertMediaType(resolved.mediaType, IMAGE_INPUT_MEDIA_TYPES)
   return {
     buffer: Buffer.from(resolved.bytes),
     mediaType: resolved.mediaType,
@@ -36,14 +41,14 @@ export async function readImageToBuffer(ref: ImageRef, ctx: Ctx): Promise<ReadIm
 export type WriteArtifactOptions = WriteMediaArtifactOptions
 
 /**
- * Write buffer as artifact {@link ImageRef} via core {@link writeMediaArtifact}.
+ * Write buffer as artifact {@link FileRef} via core {@link writeMediaArtifact}.
  * @category Extensions
  */
 export async function writeArtifact(
   data: Buffer,
   options: WriteArtifactOptions,
   ctx: Ctx
-): Promise<ImageRef> {
+): Promise<FileRef> {
   const prefix = options.prefix ?? "artifacts/images"
   return writeMediaArtifact(new Uint8Array(data), { ...options, prefix }, ctx)
 }

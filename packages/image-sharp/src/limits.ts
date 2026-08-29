@@ -1,5 +1,5 @@
-import type { ImageRef } from "@executioncontrolprotocol/types"
-import { IMAGE_REF_KINDS } from "@executioncontrolprotocol/types"
+import type { FileRef } from "@executioncontrolprotocol/types"
+import { FILE_REF_KINDS } from "@executioncontrolprotocol/types"
 import type { OutputOptions } from "./schemas.js"
 
 /** Resolved extension limits. @category Extensions */
@@ -64,22 +64,25 @@ export function assertDimensions(
   }
 }
 
-/** Validate image ref kind against extension limits. @category Extensions */
-export function assertImageRefAllowed(ref: ImageRef, limits: ImageSharpLimits): void {
-  if (ref.kind === IMAGE_REF_KINDS.URL && !limits.allowRemoteUrls) {
+/** Validate file ref kind against extension limits. @category Extensions */
+export function assertFileRefAllowed(ref: FileRef, limits: ImageSharpLimits): void {
+  if (ref.kind === FILE_REF_KINDS.URL && !limits.allowRemoteUrls) {
     throw new Error("Remote URL image refs are disabled")
   }
   if (!limits.allowSvgInput) {
-    const mt = ref.kind === IMAGE_REF_KINDS.URL ? undefined : ref.mediaType
+    const mt = ref.kind === FILE_REF_KINDS.URL ? undefined : ref.mediaType
     if (mt?.includes("svg")) throw new Error("SVG input is disabled")
   }
   if (
-    (ref.kind === IMAGE_REF_KINDS.ARTIFACT || ref.kind === IMAGE_REF_KINDS.FILE) &&
+    (ref.kind === FILE_REF_KINDS.ARTIFACT || ref.kind === FILE_REF_KINDS.FILE) &&
     ref.sizeBytes !== undefined
   ) {
     assertInputBytes(ref.sizeBytes, limits)
   }
 }
+
+/** @deprecated Prefer {@link assertFileRefAllowed}. */
+export const assertImageRefAllowed = assertFileRefAllowed
 
 /** Count composite images in pipeline. @category Extensions */
 export function countCompositeImages(
