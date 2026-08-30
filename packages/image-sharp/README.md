@@ -25,7 +25,7 @@ Vite/webpack pick `browser` automatically. Do not import `index.browser` by path
 
 ## Media I/O
 
-Image bytes are resolved and written through core (`resolveMedia` / `writeMediaArtifact`). This package only runs Sharp ops. Prefer `FileRef` kinds (`buffer`, `file`, `url`, `artifact`); browser uploads use `ecp://browser/…` on `file.path`. Input schemas use `fileRefSchema({ contentMediaType: "image/*" })` so UIs can filter file pickers; MIME is enforced after `resolveMedia`.
+Image bytes are resolved and written through core (`resolveFile` / `writeMediaArtifact`). This package only runs Sharp ops. Prefer `FileRef` kinds (`buffer`, `file`, `url`, `artifact`); browser uploads use `ecp://browser/…` on `file.path`. Input schemas use `fileRefSchema({ contentMediaType: "image/*" })` so UIs can filter file pickers; MIME is enforced after `resolveFile`.
 
 ## Binding
 

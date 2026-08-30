@@ -1,7 +1,7 @@
 import type { SharpOptions } from "sharp"
 import type { FileRef } from "@executioncontrolprotocol/types"
 import type { CapabilityContext } from "@executioncontrolprotocol/core"
-import { readImageToBuffer, writeArtifact, mediaTypeForFormat } from "./artifact.js"
+import { readImageToBuffer, writeArtifact, mediaTypeForFormat, defaultArtifactNameForFormat } from "./artifact.js"
 import { applyOperation } from "./operations.js"
 import { applyOutputOptions } from "./output.js"
 import {
@@ -78,7 +78,7 @@ export async function runPipeline(
   const format = info.format ?? defaults.format ?? "webp"
   const image = await writeArtifact(data, {
     mediaType: mediaTypeForFormat(format),
-    name: options.output?.artifact?.name,
+    name: options.output?.artifact?.name ?? defaultArtifactNameForFormat(format),
     prefix: options.output?.artifact?.prefix,
     store: options.output?.artifact?.store,
   }, ctx)

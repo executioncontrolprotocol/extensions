@@ -37,7 +37,7 @@ Consumer Fluent / CLI: docs skill via `npx skills add https://executioncontrolpr
 4. Align **npm package name** with **extension id** (`@executioncontrolprotocol/fal` → id `@executioncontrolprotocol/fal`)
 5. When adding/removing a package, update [README.md Packages](./README.md#packages) (this is the inventory core docs link to)
 6. Native/SDK Node graphs: ship `exports["."].browser` catalog (`index.browser.ts`). `catalogExtension` on both entries. No `sharp`, `@azure/storage-blob`, or `node:fs` on the browser graph. Execution stays `local` | `host` | `mixed`; bundler conditions stay `browser` | `node`. Consumers import the package root only.
-7. **Media I/O:** use `resolveMedia` / `writeMediaArtifact` from `@executioncontrolprotocol/core` for buffers, paths, URLs, artifacts, and `ecp://browser/…` locators. Do not reimplement fs/fetch/artifact maps in the extension.
+7. **Media I/O:** use `resolveFile` / `writeMediaArtifact` from `@executioncontrolprotocol/core` for buffers, paths, URLs, artifacts, and `ecp://browser/…` locators. Do not reimplement fs/fetch/artifact maps in the extension.
 
 See `.cursor/rules/extensions.mdc`.
 

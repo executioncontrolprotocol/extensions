@@ -1,10 +1,10 @@
 import type { FileRef } from "@executioncontrolprotocol/types"
 import {
   assertMediaType,
-  resolveMedia,
+  resolveFile,
   writeMediaArtifact,
-  type MediaCapabilityContext,
-  type ResolvedMedia,
+  type FileCapabilityContext,
+  type ResolvedFile,
   type WriteMediaArtifactOptions,
 } from "@executioncontrolprotocol/core"
 
@@ -18,17 +18,17 @@ export interface ReadImageResult {
   sizeBytes: number
 }
 
-type Ctx = MediaCapabilityContext
+type Ctx = FileCapabilityContext
 
-/** Expected MIME types for image inputs after {@link resolveMedia}. */
+/** Expected MIME types for image inputs after {@link resolveFile}. */
 export const IMAGE_INPUT_MEDIA_TYPES = "image/*"
 
 /**
- * Resolve a {@link FileRef} to a Node Buffer via core {@link resolveMedia}.
+ * Resolve a {@link FileRef} to a Node Buffer via core {@link resolveFile}.
  * @category Extensions
  */
 export async function readImageToBuffer(ref: FileRef, ctx: Ctx): Promise<ReadImageResult> {
-  const resolved: ResolvedMedia = await resolveMedia(ref, ctx)
+  const resolved: ResolvedFile = await resolveFile(ref, ctx)
   assertMediaType(resolved.mediaType, IMAGE_INPUT_MEDIA_TYPES)
   return {
     buffer: Buffer.from(resolved.bytes),
@@ -72,6 +72,12 @@ export function mediaTypeForFormat(format: string): string {
     default:
       return `image/${format}`
   }
+}
+
+/** Default artifact basename for a Sharp output format. @category Extensions */
+export function defaultArtifactNameForFormat(format: string): string {
+  const ext = format === "jpeg" ? "jpg" : format
+  return `output.${ext}`
 }
 
 /** @deprecated Legacy no-op; use `ctx.artifacts` from the runtime. @category Extensions */
