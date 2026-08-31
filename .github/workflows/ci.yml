@@ -44,20 +44,31 @@ jobs:
         uses: actions/checkout@v5
         with:
           path: extensions
-      - name: Checkout core (peer deps via file:)
+      - name: Checkout core monorepo
         uses: actions/checkout@v5
         with:
           repository: executioncontrolprotocol/executioncontrolprotocol
+          ref: development
           path: executioncontrolprotocol
       - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: extensions/package-lock.json
-      - name: Install and check
-        working-directory: extensions
+          cache-dependency-path: |
+            extensions/package-lock.json
+            executioncontrolprotocol/package-lock.json
+      - name: Build core (peer deps for extensions)
+        working-directory: executioncontrolprotocol
         run: |
           npm ci
+          npm run build
+      - name: Install and check extensions
+        working-directory: extensions
+        env:
+          ECP_ROOT: ${{ github.workspace }}/executioncontrolprotocol
+        run: |
+          npm ci
+          npm run link:ecp
           npm run check
 
   publish:
@@ -73,22 +84,32 @@ jobs:
         uses: actions/checkout@v5
         with:
           path: extensions
-      - name: Checkout core (peer deps via file:)
+      - name: Checkout core monorepo
         uses: actions/checkout@v5
         with:
           repository: executioncontrolprotocol/executioncontrolprotocol
+          ref: development
           path: executioncontrolprotocol
       - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: extensions/package-lock.json
+          cache-dependency-path: |
+            extensions/package-lock.json
+            executioncontrolprotocol/package-lock.json
           registry-url: https://registry.npmjs.org
-      - name: Build and publish
-        working-directory: extensions
+      - name: Build core (peer deps for extensions)
+        working-directory: executioncontrolprotocol
         run: |
           npm ci
           npm run build
-          npm run publish:workspaces
+      - name: Build and publish extensions
+        working-directory: extensions
         env:
+          ECP_ROOT: ${{ github.workspace }}/executioncontrolprotocol
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm ci
+          npm run link:ecp
+          npm run build
+          npm run publish:workspaces
