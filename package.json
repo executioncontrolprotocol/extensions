@@ -1,6 +1,6 @@
 {
   "name": "@executioncontrolprotocol/extensions-workspace",
-  "version": "0.1.0",
+  "version": "0.13.0",
   "description": "First-party vendor extensions for Execution Control Protocol (ECP)",
   "private": true,
   "engines": {
@@ -19,7 +19,9 @@
     "test:watch": "vitest",
     "secrets:scan": "secretlint \"**/*\"",
     "check:no-file-deps": "node scripts/check-no-file-deps.mjs",
+    "link:ecp": "node scripts/link-ecp-core.mjs",
     "check": "npm run build && npm run lint && npm run secrets:scan && npm run check:no-file-deps && npm run test",
+    "version:bump": "node scripts/bump-all-ecp-versions.mjs",
     "publish:workspaces": "node scripts/publish-workspaces.mjs",
     "prepare": "husky"
   },

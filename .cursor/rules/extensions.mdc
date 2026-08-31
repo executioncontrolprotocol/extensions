@@ -19,7 +19,7 @@ Treat every package under `packages/` as published for **third-party** authors: 
 
 **Do not** depend on `@executioncontrolprotocol/node`, `@executioncontrolprotocol/browser`, `@executioncontrolprotocol/cli`, or `@executioncontrolprotocol/mcp`.
 
-**No `file:` package links.** Never put `"file:..."` in `package.json` dependency fields. It breaks CI and consumer installs. For local unpublished `@executioncontrolprotocol/core` / `types`, use `npm link` (or wait for npm). Keep registry ranges in `peerDependencies` (e.g. `^0.12.0`).
+**No `file:` package links.** Never put `"file:..."` in `package.json` dependency fields. It breaks CI and consumer installs. For local unpublished `@executioncontrolprotocol/core` / `types`, use `npm link` (or wait for npm). Keep registry ranges in `peerDependencies` (e.g. `^0.13.0`).
 
 ## Registration
 

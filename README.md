@@ -33,9 +33,9 @@ Extensions peer on `@executioncontrolprotocol/core`, `@executioncontrolprotocol/
 
 Packages with native or Node-only SDKs (`image-sharp`, `azure-blob-storage`) publish `exports["."].browser` so Vite never loads `sharp` / `@azure/storage-blob`. Import the package root; do not import `index.browser` by path.
 
-**Local / CI dogfood:** do not use `"file:..."` in `package.json`. For a sibling core checkout, `npm link` `@executioncontrolprotocol/core` and `@executioncontrolprotocol/types` after `npm run build` in the core monorepo so one `globalRegistry` is shared with apps (e.g. browser-demo).
+**Local / CI dogfood:** do not use `"file:..."` in `package.json`. For a sibling core checkout, run `npm run link:ecp` after `npm run build` in the core monorepo (junction-links `core` and `types` into `node_modules`). Until `@executioncontrolprotocol/core@0.13.0` is on npm, `npm install` alone will fail with `ETARGET`; link first, then build.
 
-Published packages still declare `peerDependencies` on the npm range (`^0.12.0`) so consumers install peers from the registry.
+Published packages still declare `peerDependencies` on the npm range (`^0.13.0`) so consumers install peers from the registry.
 
 ## Examples
 

@@ -13,7 +13,7 @@ cd examples/04-image-prep
 npm install
 ```
 
-`node` / `policies` resolve from npm at `^0.12.0`. The **CLI** is installed from the sibling core checkout (`file:../../../executioncontrolprotocol/packages/cli`) so `ecp up --env` is available — that flag is not in published `@executioncontrolprotocol/cli@0.12.0`.
+`node` / `policies` resolve from npm at `^0.13.0`. Use `npm link` for the CLI from the sibling core checkout so `ecp up --env` is available when running unpublished builds.
 
 ## 1. CLI smoke test
 
