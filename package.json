@@ -12,11 +12,12 @@
     "clean": "node scripts/clean-dist.mjs",
     "clean:coverage": "node scripts/clean-dist.mjs coverage",
     "clean:dist": "node scripts/clean-dist.mjs dist",
-    "lint": "eslint .",
+    "lint": "eslint . && pnpm run lint:yaml",
     "test": "vitest run",
     "test:watch": "vitest",
     "secrets:scan": "secretlint \"**/*\"",
     "check:no-file-deps": "node scripts/check-no-file-deps.mjs",
+    "lint:yaml": "node scripts/lint-yaml.mjs",
     "link:ecp": "node scripts/link-ecp-core.mjs",
     "ci:setup": "node scripts/ci-setup-ecp.mjs",
     "check": "pnpm run build && pnpm run lint && pnpm run secrets:scan && pnpm run check:no-file-deps && pnpm run test",
@@ -27,6 +28,9 @@
   "lint-staged": {
     "*": [
       "secretlint --no-glob"
+    ],
+    "*.{yml,yaml}": [
+      "node scripts/lint-yaml.mjs"
     ]
   },
   "devDependencies": {
@@ -42,6 +46,6 @@
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
     "vitest": "catalog:",
-    "yaml": "^2.9.0"
+    "yaml": "catalog:"
   }
 }
