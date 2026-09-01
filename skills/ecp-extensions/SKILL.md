@@ -23,9 +23,10 @@ Also respect local `AGENTS.md` and `.cursor/rules/extensions.mdc` when this clon
 ## Commands
 
 ```sh
-npm install
-npm run build
-npm run check
+pnpm install
+pnpm run build
+pnpm run check
+pnpm run link:ecp   # after building sibling core monorepo
 ```
 
 Canonical package inventory: [README Packages](https://github.com/executioncontrolprotocol/extensions#packages).

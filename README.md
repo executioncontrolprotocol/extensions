@@ -33,9 +33,32 @@ Extensions peer on `@executioncontrolprotocol/core`, `@executioncontrolprotocol/
 
 Packages with native or Node-only SDKs (`image-sharp`, `azure-blob-storage`) publish `exports["."].browser` so Vite never loads `sharp` / `@azure/storage-blob`. Import the package root; do not import `index.browser` by path.
 
-**Local / CI dogfood:** do not use `"file:..."` in `package.json`. Vendor packages declare `@executioncontrolprotocol/core` / `types` as **peerDependencies** only (not devDependencies), so `npm ci` does not require an unpublished registry version. CI and local builds run `npm run link:ecp` after building the sibling core monorepo (junction-links `core` and `types` into `node_modules`).
+**Local / CI dogfood:** do not use `"file:..."` in `package.json`. Vendor packages declare `@executioncontrolprotocol/core` / `types` as **peerDependencies** only (not devDependencies), so `pnpm install` does not require an unpublished registry version. After building the sibling core monorepo, run `pnpm run link:ecp` (junction-links `core` and `types` into `node_modules`).
 
 Published packages still declare `peerDependencies` on the npm range (`^0.13.0`) so consumers install peers from the registry.
+
+## Quick start
+
+**Published npm (no local core checkout):**
+
+```sh
+pnpm install
+pnpm run build
+pnpm run check
+```
+
+**Local development with sibling core:**
+
+```sh
+# from ../executioncontrolprotocol
+pnpm install && pnpm run build
+
+# from this repo
+pnpm install
+pnpm run link:ecp
+pnpm run build
+pnpm run check
+```
 
 ## Examples
 
@@ -55,6 +78,13 @@ They require a core monorepo checkout (or published `@executioncontrolprotocol/n
 npx skills add executioncontrolprotocol/extensions --skill ecp-extensions -y
 ```
 
+## CI (two-track)
+
+- **`main`:** registry install only — verifies against published `@executioncontrolprotocol/core` / `types`.
+- **`development`:** CI checks out core at `development`, runs `pnpm run ci:setup`, then `pnpm run check`.
+
+See [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
 ## Publish
 
-On push to `main`, CI runs `npm run publish:workspaces` (requires `NPM_TOKEN`). Versions in this repo are independent of the core monorepo.
+On push to `main`, CI runs `pnpm run publish:workspaces` (requires `NPM_TOKEN`). Versions in this repo are independent of the core monorepo.

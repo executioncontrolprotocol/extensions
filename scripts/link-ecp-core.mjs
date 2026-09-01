@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 /**
  * Junction-link @executioncontrolprotocol/core and types from the sibling core monorepo.
- * Use before local builds when ^0.13.0 is not on npm yet (avoids registry ETARGET on npm install).
  *
  * Usage:
- *   node scripts/link-ecp-core.mjs
- *   ECP_ROOT=../executioncontrolprotocol node scripts/link-ecp-core.mjs
+ *   pnpm link:ecp
+ *   ECP_ROOT=../executioncontrolprotocol pnpm link:ecp
  */
 import { existsSync, mkdirSync, rmSync, symlinkSync } from "node:fs"
 import path from "node:path"
@@ -37,7 +36,8 @@ function main() {
     const segment = name.split("/")[1]
     const src = path.join(ecpRoot, "packages", segment)
     if (!existsSync(path.join(src, "dist"))) {
-      console.warn(`Warning: ${name} has no dist/ — run npm run build in the core monorepo first`)
+      console.error(`Missing dist/ for ${name} — run pnpm build in the core monorepo first`)
+      process.exit(1)
     }
     const dest = path.join(extensionsRoot, "node_modules", ...name.split("/"))
     ensureSymlink(dest, src)
