@@ -6,11 +6,12 @@ import { fileURLToPath } from "node:url"
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..")
 const packagesDir = join(root, "packages")
+const workspaceVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version
 
 for (const dirName of readdirSync(packagesDir)) {
   const file = join(packagesDir, dirName, "package.json")
   const json = JSON.parse(readFileSync(file, "utf8"))
-  json.version = "0.13.1"
+  json.version = workspaceVersion
   if (json.peerDependencies) {
     for (const name of Object.keys(json.peerDependencies)) {
       if (name.startsWith("@executioncontrolprotocol/")) {

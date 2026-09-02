@@ -22,7 +22,7 @@ cd examples/04-image-prep
 pnpm install
 ```
 
-`@executioncontrolprotocol/node` and `@executioncontrolprotocol/policies` resolve from npm at `^0.13.0`. For unpublished CLI builds, link the CLI from the core checkout (`pnpm link --global` in `packages/cli` after `pnpm run build`).
+`@executioncontrolprotocol/node` and `@executioncontrolprotocol/policies` resolve from npm at `^0.13.2`. For unpublished CLI builds, link the CLI from the core checkout (`pnpm link --global` in `packages/cli` after `pnpm run build`).
 
 ## 1. CLI smoke test
 

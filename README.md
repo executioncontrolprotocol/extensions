@@ -35,7 +35,7 @@ Packages with native or Node-only SDKs (`image-sharp`, `azure-blob-storage`) pub
 
 **Local / CI dogfood:** do not use `"file:..."` in `package.json`. Vendor packages declare `@executioncontrolprotocol/core` / `types` as **peerDependencies** only (not devDependencies), so `pnpm install` does not require an unpublished registry version. After building the sibling core monorepo, run `pnpm run link:ecp` (junction-links `core` and `types` into `node_modules`).
 
-Published packages still declare `peerDependencies` on the npm range (`^0.13.0`) so consumers install peers from the registry.
+Published packages still declare `peerDependencies` on the npm range (`^0.13.2`) so consumers install peers from the registry.
 
 ## Quick start
 
