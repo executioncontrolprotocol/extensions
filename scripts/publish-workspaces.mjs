@@ -49,7 +49,7 @@ function topoSort(list) {
 
 for (const p of topoSort(packages)) {
   console.log(`Publishing ${p.name}@${p.version}…`)
-  execSync(`npm publish --workspace=${p.name} --access public`, {
+  execSync(`pnpm publish --filter ${p.name} --access public --no-git-checks`, {
     cwd: root,
     stdio: "inherit",
     env: process.env,

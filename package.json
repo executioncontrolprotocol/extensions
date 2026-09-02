@@ -1,26 +1,26 @@
 {
   "name": "@executioncontrolprotocol/extensions-workspace",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "description": "First-party vendor extensions for Execution Control Protocol (ECP)",
   "private": true,
+  "packageManager": "pnpm@10.12.1",
   "engines": {
     "node": ">=22.0.0"
   },
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "build": "tsc -b tsconfig.build.json",
     "clean": "node scripts/clean-dist.mjs",
     "clean:coverage": "node scripts/clean-dist.mjs coverage",
     "clean:dist": "node scripts/clean-dist.mjs dist",
-    "lint": "eslint .",
+    "lint": "eslint . && pnpm run lint:yaml",
     "test": "vitest run",
     "test:watch": "vitest",
     "secrets:scan": "secretlint \"**/*\"",
     "check:no-file-deps": "node scripts/check-no-file-deps.mjs",
+    "lint:yaml": "node scripts/lint-yaml.mjs",
     "link:ecp": "node scripts/link-ecp-core.mjs",
-    "check": "npm run build && npm run lint && npm run secrets:scan && npm run check:no-file-deps && npm run test",
+    "ci:setup": "node scripts/ci-setup-ecp.mjs",
+    "check": "pnpm run build && pnpm run lint && pnpm run secrets:scan && pnpm run check:no-file-deps && pnpm run test",
     "version:bump": "node scripts/bump-all-ecp-versions.mjs",
     "publish:workspaces": "node scripts/publish-workspaces.mjs",
     "prepare": "husky"
@@ -28,21 +28,24 @@
   "lint-staged": {
     "*": [
       "secretlint --no-glob"
+    ],
+    "*.{yml,yaml}": [
+      "node scripts/lint-yaml.mjs"
     ]
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
     "@secretlint/secretlint-rule-preset-recommend": "^13.0.4",
-    "@types/node": "^22.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
-    "eslint": "^9.0.0",
+    "@types/node": "catalog:",
+    "@typescript-eslint/eslint-plugin": "catalog:",
+    "@typescript-eslint/parser": "catalog:",
+    "eslint": "catalog:",
     "husky": "^9.1.7",
     "lint-staged": "^17.3.0",
     "secretlint": "^13.0.4",
-    "typescript": "^5.7.0",
-    "typescript-eslint": "^8.0.0",
-    "vitest": "^4.0.18",
-    "yaml": "^2.9.0"
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vitest": "catalog:",
+    "yaml": "catalog:"
   }
 }

@@ -4,20 +4,29 @@ Sharp steps are **host** capabilities: they run on Node via `@executioncontrolpr
 
 ## Prerequisites
 
-Build the extensions monorepo first (`npm run build` from repo root). This example installs **`@executioncontrolprotocol/image-sharp`** from `file:../../packages/image-sharp` (not on npm yet).
+Build the extensions monorepo first. Do **not** use `file:` deps — link peers from the sibling core checkout.
 
 ```sh
-cd ../../../extensions
-npm install && npm run build
+# core monorepo (sibling checkout)
+cd ../../../executioncontrolprotocol
+pnpm install && pnpm run build
+
+# extensions monorepo
+cd ../extensions
+pnpm install
+pnpm run link:ecp
+pnpm run build
+
+# this example
 cd examples/04-image-prep
-npm install
+pnpm install
 ```
 
-`node` / `policies` resolve from npm at `^0.13.0`. Use `npm link` for the CLI from the sibling core checkout so `ecp up --env` is available when running unpublished builds.
+`@executioncontrolprotocol/node` and `@executioncontrolprotocol/policies` resolve from npm at `^0.13.0`. For unpublished CLI builds, link the CLI from the core checkout (`pnpm link --global` in `packages/cli` after `pnpm run build`).
 
 ## 1. CLI smoke test
 
-From `examples/04-image-prep` (after linking above):
+From `examples/04-image-prep` (after setup above):
 
 ```sh
 ecp validate workflow.ts --env environment.ts
@@ -39,7 +48,7 @@ npx ecp up --env environment.ts --open-url http://localhost:5173/
 
 ### Browser demo
 
-1. Run the demo: `npm run dev` in [browser-demo](https://github.com/executioncontrolprotocol/browser-demo).
+1. Run the demo: `pnpm run dev` in [browser-demo](https://github.com/executioncontrolprotocol/browser-demo).
 2. Confirm pairing (Settings, or URL query params from `ecp up`).
 3. Paste the Fluent workflow from `workflow.ts` into the Code panel.
 4. Run the workflow.
