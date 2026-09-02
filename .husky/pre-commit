@@ -6,3 +6,5 @@ fi
 pnpm exec lint-staged
 pnpm run check:no-file-deps
 pnpm run lint
+pnpm run build
+pnpm run test

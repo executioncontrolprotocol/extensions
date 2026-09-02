@@ -47,9 +47,9 @@ pnpm run check
 pnpm run secrets:scan
 ```
 
-Husky pre-commit runs `lint-staged` (secretlint) then `pnpm run lint`.
+Husky pre-commit runs `lint-staged` (secretlint), `pnpm run lint`, `pnpm run build`, and `pnpm run test`.
 
 ## CI (two-track)
 
-- **`main`:** `pnpm install --frozen-lockfile` and `pnpm run check` against **published** `@executioncontrolprotocol/core` / `types` from the npm registry.
-- **`development` (and PRs not targeting `main`):** CI checks out the sibling [core monorepo](https://github.com/executioncontrolprotocol/executioncontrolprotocol) at `development`, runs `pnpm run ci:setup` (build + `link:ecp`), then `pnpm run check`.
+- **`main`:** `pnpm install --frozen-lockfile` and CI (`build`, `lint`, `test`) against **published** `@executioncontrolprotocol/core` / `types` from the npm registry.
+- **`development` (and PRs not targeting `main`):** CI checks out the sibling [core monorepo](https://github.com/executioncontrolprotocol/executioncontrolprotocol) at `development`, runs `pnpm run ci:setup` (build + `link:ecp`), then `pnpm run build`, `pnpm run lint`, and `pnpm run test`.

@@ -72,9 +72,18 @@ jobs:
           ECP_ROOT: ${{ github.workspace }}/executioncontrolprotocol
           CI_LINK_PACKAGES: "@executioncontrolprotocol/core,@executioncontrolprotocol/types"
         run: pnpm run ci:setup
-      - name: Check extensions
+      - name: Build
         working-directory: extensions
-        run: pnpm run check
+        run: pnpm run build
+      - name: "Forbid file: package links"
+        working-directory: extensions
+        run: pnpm run check:no-file-deps
+      - name: Lint
+        working-directory: extensions
+        run: pnpm run lint
+      - name: Test
+        working-directory: extensions
+        run: pnpm run test
 
   publish:
     name: publish
