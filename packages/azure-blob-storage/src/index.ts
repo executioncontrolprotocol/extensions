@@ -65,6 +65,7 @@ export async function registerAzureBlobStorageExtension(
 
 export {
   createAzureBlobCredentials,
+  parseAccountKeyFromConnectionString,
   readAzureConfig,
   resolveContainer,
 } from "./client.js"

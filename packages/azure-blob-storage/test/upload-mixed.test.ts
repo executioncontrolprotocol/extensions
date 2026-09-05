@@ -65,4 +65,43 @@ describe("@executioncontrolprotocol/azure-blob-storage upload", () => {
     )
     expect(global.fetch).toHaveBeenCalled()
   })
+
+  it("createReadSas hops a second create-sas-url with read permissions", async () => {
+    const store = createCapabilityBlobStore()
+    const locator = stashCapabilityBlob(store, {
+      name: "photo.png",
+      type: "image/png",
+      size: 3,
+      arrayBuffer: async () => new Uint8Array([1, 2, 3]).buffer,
+    })
+    const call = vi
+      .fn()
+      .mockResolvedValueOnce({
+        sasUrl: "https://acct.blob.core.windows.net/assets/n?sig=w",
+        container: "assets",
+      })
+      .mockResolvedValueOnce({
+        sasUrl: "https://acct.blob.core.windows.net/assets/n?sig=r",
+      })
+    vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true })))
+    const ctx = {
+      blobs: store,
+      capabilities: { call },
+    } as unknown as CapabilityContext
+    const out = await handleUpload(
+      { source: locator, container: "assets", blobName: "n", createReadSas: true },
+      ctx,
+    )
+    expect(out.sasUrl).toBe("https://acct.blob.core.windows.net/assets/n?sig=r")
+    expect(call).toHaveBeenNthCalledWith(
+      1,
+      "@executioncontrolprotocol/azure-blob-storage.create-sas-url",
+      expect.objectContaining({ permissions: ["c", "w"] }),
+    )
+    expect(call).toHaveBeenNthCalledWith(
+      2,
+      "@executioncontrolprotocol/azure-blob-storage.create-sas-url",
+      expect.objectContaining({ permissions: ["r"] }),
+    )
+  })
 })

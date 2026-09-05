@@ -93,9 +93,12 @@ export function createAzureBlobCredentials(config: AzureBlobStorageConfig): Azur
 }
 
 /**
- * @param connectionString
+ * Parse AccountKey from an Azure Storage connection string.
+ * @category Azure
  */
-function parseAccountKeyFromConnectionString(connectionString: string): string | undefined {
+export function parseAccountKeyFromConnectionString(
+  connectionString: string,
+): string | undefined {
   const match = /AccountKey=([^;]+)/i.exec(connectionString)
   return match?.[1]
 }

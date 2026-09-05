@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { fileRefSchema } from "@executioncontrolprotocol/types"
 
 /** Download capability input. @category Azure */
 export const downloadInputSchema = z.object({
@@ -8,7 +9,8 @@ export const downloadInputSchema = z.object({
 
 /** Download capability output. @category Azure */
 export const downloadOutputSchema = z.object({
-  contentBase64: z.string(),
+  /** Artifact {@link FileRef} written via core {@link writeMediaArtifact}. */
+  file: fileRefSchema(),
   contentType: z.string(),
   blobName: z.string(),
 })

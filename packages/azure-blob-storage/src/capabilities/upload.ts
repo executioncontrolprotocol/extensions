@@ -1,5 +1,13 @@
 import { z } from "zod"
-import { isBrowserFileLocator } from "@executioncontrolprotocol/core"
+import {
+  FILE_REF_KINDS,
+  type FileRef,
+} from "@executioncontrolprotocol/types"
+import {
+  isBrowserFileLocator,
+  resolveFile,
+  type FileCapabilityContext,
+} from "@executioncontrolprotocol/core"
 import {
   createAzureBlobCredentials,
   readAzureConfig,
@@ -18,42 +26,67 @@ function locatorFromInput(input: z.infer<typeof uploadInputSchema>): string | un
 }
 
 /**
- * Resolve upload bytes from Node inputs (path, URL, or base64).
+ * Map upload capability input to a portable {@link FileRef} for {@link resolveFile}.
  * @category Azure
  */
-export async function resolveUploadBytes(input: z.infer<typeof uploadInputSchema>): Promise<{
-  buffer: Buffer
-  contentType: string
-}> {
+export function fileRefFromUploadInput(
+  input: z.infer<typeof uploadInputSchema>,
+): FileRef {
   if (input.contentBase64) {
-    const buffer = Buffer.from(input.contentBase64, "base64")
-    return { buffer, contentType: input.contentType ?? "application/octet-stream" }
+    return {
+      kind: FILE_REF_KINDS.BUFFER,
+      data: input.contentBase64,
+      mediaType: input.contentType,
+    }
   }
   if (input.sourceUrl) {
-    const res = await fetch(input.sourceUrl)
-    if (!res.ok) throw new Error(`Failed to fetch sourceUrl (${res.status})`)
-    const buffer = Buffer.from(await res.arrayBuffer())
-    const contentType =
-      input.contentType ?? res.headers.get("content-type") ?? "application/octet-stream"
-    return { buffer, contentType }
+    return {
+      kind: FILE_REF_KINDS.URL,
+      url: input.sourceUrl,
+      mediaType: input.contentType,
+    }
   }
-  if (input.filePath) {
-    const { readFile } = await import("node:fs/promises")
-    const buffer = await readFile(input.filePath)
-    return { buffer, contentType: input.contentType ?? "application/octet-stream" }
+  const path = input.filePath ?? input.source
+  if (path) {
+    return {
+      kind: FILE_REF_KINDS.FILE,
+      path,
+      mediaType: input.contentType,
+    }
   }
   throw new Error("No upload source provided")
 }
 
+/**
+ * Resolve upload bytes via core {@link resolveFile} (path, URL, or base64).
+ * @category Azure
+ */
+export async function resolveUploadBytes(
+  input: z.infer<typeof uploadInputSchema>,
+  ctx: FileCapabilityContext,
+): Promise<{
+  buffer: Buffer
+  contentType: string
+}> {
+  const ref = fileRefFromUploadInput(input)
+  const resolved = await resolveFile(ref, ctx, {
+    allowRemoteUrls: ref.kind === FILE_REF_KINDS.URL,
+  })
+  return {
+    buffer: Buffer.from(resolved.bytes),
+    contentType: input.contentType ?? resolved.mediaType ?? "application/octet-stream",
+  }
+}
+
 async function handleNodeUpload(
   parsed: z.infer<typeof uploadInputSchema>,
-  ctx: unknown,
+  ctx: FileCapabilityContext,
 ): Promise<z.infer<typeof uploadOutputSchema>> {
   const { randomUUID } = await import("node:crypto")
   const credentials = createAzureBlobCredentials(readAzureConfig(ctx))
   const container = resolveContainer(credentials, parsed.container)
   const blobName = parsed.blobName ?? randomUUID()
-  const { buffer, contentType } = await resolveUploadBytes(parsed)
+  const { buffer, contentType } = await resolveUploadBytes(parsed, ctx)
 
   const blockBlob = credentials.client
     .getContainerClient(container)
@@ -91,7 +124,7 @@ async function handleNodeUpload(
  * Upload a blob to Azure Blob Storage.
  * Browser locators (`ecp://browser/<id>`) run mixed: hop create-sas-url, PUT from the tab.
  * Container CORS must allow the demo origin for that PUT.
- * Node `filePath` / `sourceUrl` / `contentBase64` is unchanged.
+ * Node sources use core {@link resolveFile} for `filePath` / `sourceUrl` / `contentBase64`.
  * @category Azure
  */
 export async function handleUpload(
@@ -107,5 +140,5 @@ export async function handleUpload(
     parsed.source && !parsed.filePath
       ? { ...parsed, filePath: parsed.source, source: undefined }
       : parsed
-  return handleNodeUpload(nodeInput, ctx)
+  return handleNodeUpload(nodeInput, ctx as FileCapabilityContext)
 }

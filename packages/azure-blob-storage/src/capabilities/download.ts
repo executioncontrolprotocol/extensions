@@ -1,5 +1,9 @@
 import { z } from "zod"
 import {
+  writeMediaArtifact,
+  type FileCapabilityContext,
+} from "@executioncontrolprotocol/core"
+import {
   createAzureBlobCredentials,
   readAzureConfig,
   resolveContainer,
@@ -9,7 +13,7 @@ import { downloadInputSchema, downloadOutputSchema } from "./download-schema.js"
 export { downloadInputSchema, downloadOutputSchema }
 
 /**
- * Download a blob as base64.
+ * Download a blob and store bytes via core {@link writeMediaArtifact}.
  * @category Azure
  */
 export async function handleDownload(
@@ -17,7 +21,8 @@ export async function handleDownload(
   ctx: unknown,
 ): Promise<z.infer<typeof downloadOutputSchema>> {
   const parsed = downloadInputSchema.parse(input)
-  const credentials = createAzureBlobCredentials(readAzureConfig(ctx))
+  const fileCtx = ctx as FileCapabilityContext
+  const credentials = createAzureBlobCredentials(readAzureConfig(fileCtx))
   const container = resolveContainer(credentials, parsed.container)
   const blob = credentials.client.getContainerClient(container).getBlobClient(parsed.blobName)
   const download = await blob.download()
@@ -29,9 +34,15 @@ export async function handleDownload(
     chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
   }
   const buffer = Buffer.concat(chunks)
+  const contentType = download.contentType ?? "application/octet-stream"
+  const file = await writeMediaArtifact(new Uint8Array(buffer), {
+    mediaType: contentType,
+    name: parsed.blobName,
+    prefix: "artifacts/azure-blob",
+  }, fileCtx)
   return downloadOutputSchema.parse({
-    contentBase64: buffer.toString("base64"),
-    contentType: download.contentType ?? "application/octet-stream",
+    file,
+    contentType,
     blobName: parsed.blobName,
   })
 }

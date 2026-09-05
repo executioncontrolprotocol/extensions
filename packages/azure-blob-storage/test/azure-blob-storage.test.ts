@@ -1,4 +1,7 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest"
+import { mkdtemp, writeFile } from "node:fs/promises"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
 import { globalRegistry } from "@executioncontrolprotocol/core"
 
 const uploadData = vi.fn()
@@ -56,6 +59,9 @@ vi.mock("@azure/storage-blob", () => {
 const {
   azureBlobStorageExtension,
   registerAzureBlobStorageExtension,
+  createAzureBlobCredentials,
+  createBlobSasUrl,
+  parseAccountKeyFromConnectionString,
 } = await import("../src/index.js")
 
 type Handler = (input: unknown, ctx: unknown) => Promise<unknown>
@@ -72,6 +78,7 @@ const ctx = {
     accountKey: "dGVzdGtleQ==",
     defaultContainer: "artifacts",
   },
+  artifacts: new Map(),
 }
 
 describe("@executioncontrolprotocol/azure-blob-storage", () => {
@@ -84,10 +91,12 @@ describe("@executioncontrolprotocol/azure-blob-storage", () => {
     generateBlobSASQueryParameters.mockReturnValue({
       toString: () => "sv=2024&sig=fake",
     })
+    ctx.artifacts = new Map()
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
+    vi.unstubAllGlobals()
   })
 
   it("registers upload, create-sas-url, and download", () => {
@@ -134,6 +143,104 @@ describe("@executioncontrolprotocol/azure-blob-storage", () => {
     expect(generateBlobSASQueryParameters).toHaveBeenCalled()
   })
 
+  it("parses AccountKey from a connection string", () => {
+    expect(
+      parseAccountKeyFromConnectionString(
+        "DefaultEndpointsProtocol=https;AccountName=acct;AccountKey=abc123==;EndpointSuffix=core.windows.net",
+      ),
+    ).toBe("abc123==")
+    expect(parseAccountKeyFromConnectionString("AccountName=acct;EndpointSuffix=core.windows.net")).toBe(
+      undefined,
+    )
+  })
+
+  it("connectionString config yields sharedKey for SAS", () => {
+    const credentials = createAzureBlobCredentials({
+      connectionString:
+        "DefaultEndpointsProtocol=https;AccountName=fromcs;AccountKey=dGVzdGtleQ==;EndpointSuffix=core.windows.net",
+      defaultContainer: "artifacts",
+    })
+    expect(credentials.accountName).toBe("fromcs")
+    expect(credentials.sharedKey).toBeDefined()
+    const sas = createBlobSasUrl({
+      credentials,
+      container: "artifacts",
+      blobName: "x.bin",
+      permissions: ["r"],
+      expiresInSeconds: 60,
+    })
+    expect(sas.sasUrl).toContain("sig=fake")
+  })
+
+  it("rejects SAS when connectionString has no AccountKey", () => {
+    const credentials = createAzureBlobCredentials({
+      connectionString:
+        "DefaultEndpointsProtocol=https;AccountName=fromcs;EndpointSuffix=core.windows.net",
+      defaultContainer: "artifacts",
+    })
+    expect(credentials.sharedKey).toBeUndefined()
+    expect(() =>
+      createBlobSasUrl({
+        credentials,
+        container: "artifacts",
+        blobName: "x.bin",
+        permissions: ["r"],
+        expiresInSeconds: 60,
+      }),
+    ).toThrow(/account key/i)
+  })
+
+  it("upload from sourceUrl uses resolveFile fetch", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({
+        ok: true,
+        headers: { get: (h: string) => (h === "content-type" ? "image/png" : null) },
+        arrayBuffer: async () => new Uint8Array([9, 9]).buffer,
+      })),
+    )
+    const out = (await capability("@executioncontrolprotocol/azure-blob-storage.upload")(
+      {
+        sourceUrl: "https://example.com/photo.png",
+        blobName: "photo.png",
+      },
+      ctx,
+    )) as { blobName: string; contentType: string }
+
+    expect(out.blobName).toBe("photo.png")
+    expect(out.contentType).toBe("image/png")
+    expect(uploadData).toHaveBeenCalledWith(
+      expect.any(Buffer),
+      expect.objectContaining({
+        blobHTTPHeaders: { blobContentType: "image/png" },
+      }),
+    )
+    expect(global.fetch).toHaveBeenCalledWith(
+      "https://example.com/photo.png",
+      expect.anything(),
+    )
+  })
+
+  it("upload from filePath reads local bytes", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "azure-blob-"))
+    const filePath = join(dir, "local.txt")
+    await writeFile(filePath, "from-disk")
+
+    const out = (await capability("@executioncontrolprotocol/azure-blob-storage.upload")(
+      {
+        filePath,
+        contentType: "text/plain",
+        blobName: "local.txt",
+      },
+      ctx,
+    )) as { blobName: string; contentType: string }
+
+    expect(out.blobName).toBe("local.txt")
+    expect(out.contentType).toBe("text/plain")
+    const [buffer] = uploadData.mock.calls[0] as [Buffer]
+    expect(buffer.toString("utf8")).toBe("from-disk")
+  })
+
   it("create-sas-url returns expiresAt and permissions", async () => {
     const out = (await capability(
       "@executioncontrolprotocol/azure-blob-storage.create-sas-url",
@@ -151,7 +258,7 @@ describe("@executioncontrolprotocol/azure-blob-storage", () => {
     expect(Date.parse(out.expiresAt)).toBeGreaterThan(Date.now())
   })
 
-  it("download returns contentBase64", async () => {
+  it("download writes an artifact FileRef", async () => {
     async function* body() {
       yield Buffer.from("world")
     }
@@ -163,18 +270,25 @@ describe("@executioncontrolprotocol/azure-blob-storage", () => {
     const out = (await capability("@executioncontrolprotocol/azure-blob-storage.download")(
       { blobName: "hello.txt" },
       ctx,
-    )) as { contentBase64: string; contentType: string; blobName: string }
+    )) as {
+      file: { kind: string; uri: string; mediaType?: string }
+      contentType: string
+      blobName: string
+    }
 
     expect(out.blobName).toBe("hello.txt")
     expect(out.contentType).toBe("text/plain")
-    expect(Buffer.from(out.contentBase64, "base64").toString("utf8")).toBe("world")
+    expect(out.file.kind).toBe("artifact")
+    expect(out.file.uri).toContain("hello.txt")
+    expect(out.file.mediaType).toBe("text/plain")
+    expect(ctx.artifacts.has(out.file.uri)).toBe(true)
   })
 
   it("throws without credentials", async () => {
     await expect(
       capability("@executioncontrolprotocol/azure-blob-storage.upload")(
         { contentBase64: "YQ==", blobName: "a" },
-        { extensionConfig: {} },
+        { extensionConfig: {}, artifacts: new Map() },
       ),
     ).rejects.toThrow(/connectionString|accountName/)
   })
