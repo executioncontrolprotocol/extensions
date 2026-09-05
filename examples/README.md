@@ -11,6 +11,7 @@ Requires a core monorepo checkout (or published `@executioncontrolprotocol/node`
 | [04-image-prep](./04-image-prep) | image-sharp inspect / resize (host-only; CLI or browser hop via `ecp up`) |
 | [adobe-firefly-smoke](./adobe-firefly-smoke) | Adobe Firefly auth smoke |
 | [azure-adobe-assets](./azure-adobe-assets) | Azure Blob upload + Firefly |
+| [azure-photoshop-manifest](./azure-photoshop-manifest) | Azure Blob + Photoshop `photoshop-generate-manifest` (host `ecp up --env`) |
 
 Core protocol / CLI examples: https://github.com/executioncontrolprotocol/executioncontrolprotocol/tree/main/examples
 
