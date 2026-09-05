@@ -377,6 +377,37 @@ function main() {
 
     writeFileSync(join(familyDir, "capabilities.ts"), capLines.join("\n"), "utf8")
 
+    // Browser catalog: same I/O schemas, hostHop handlers (no IMS / invoke graph).
+    const browserCapLines = []
+    browserCapLines.push(`/* eslint-disable */`)
+    browserCapLines.push(`/** Generated Adobe ${family} browser catalog — do not edit. */`)
+    browserCapLines.push(`import { capabilityFor } from "@executioncontrolprotocol/core"`)
+    browserCapLines.push(`import { z } from "zod"`)
+    browserCapLines.push(`import * as schemas from "./schemas.js"`)
+    browserCapLines.push(`import { HOST_HOP_MESSAGE } from "../../shared.js"`)
+    browserCapLines.push(``)
+    browserCapLines.push(`const EXT_ID = ${JSON.stringify(EXT_ID)}`)
+    browserCapLines.push(`async function hostHop(): Promise<never> {`)
+    browserCapLines.push(`  throw new Error(HOST_HOP_MESSAGE)`)
+    browserCapLines.push(`}`)
+    browserCapLines.push(``)
+
+    for (const op of ops) {
+      const qualify = (expr) =>
+        expr.replace(/\bSchema_([A-Za-z0-9_]+)\b/g, "schemas.Schema_$1")
+      const inputZod = qualify(op.inputZod)
+      const outputZod = qualify(op.outputZod)
+      browserCapLines.push(`/** ${op.summary || op.opName} */`)
+      browserCapLines.push(
+        `export const ${op.exportName} = capabilityFor(EXT_ID, ${JSON.stringify(op.opName)})`,
+      )
+      browserCapLines.push(`  .withInput(${inputZod})`)
+      browserCapLines.push(`  .withOutput(${outputZod})`)
+      browserCapLines.push(`  .withHandler(hostHop)`)
+      browserCapLines.push(``)
+    }
+    writeFileSync(join(familyDir, "capabilities.browser.ts"), browserCapLines.join("\n"), "utf8")
+
     const exportsList = ops.map((o) => o.exportName).join(", ")
     writeFileSync(
       join(familyDir, "index.ts"),
@@ -387,6 +418,8 @@ function main() {
 
   const importLines = []
   const arrayItems = []
+  const browserImportLines = []
+  const browserArrayItems = []
   const seenImport = new Map()
   for (const r of registry) {
     if (!seenImport.has(r.importPath)) {
@@ -398,8 +431,11 @@ function main() {
   for (const [path, names] of seenImport) {
     const alias = `fam${i++}`
     importLines.push(`import * as ${alias} from "${path}"`)
+    const browserPath = path.replace(/capabilities\.js$/, "capabilities.browser.js")
+    browserImportLines.push(`import * as ${alias} from "${browserPath}"`)
     for (const name of names) {
       arrayItems.push(`${alias}.${name}`)
+      browserArrayItems.push(`${alias}.${name}`)
     }
   }
 
@@ -416,6 +452,12 @@ function main() {
   writeFileSync(
     join(generatedDir, "index.ts"),
     `/** Generated Adobe capability registry — do not edit. */\n${importLines.join("\n")}\n\n/** All generated Adobe capability builders. */\nexport const adobeGeneratedCapabilities = [\n  ${arrayItems.join(",\n  ")},\n] as const\n\nexport const ADOBE_GENERATED_OPERATION_COUNT = ${registry.length} as const\n`,
+    "utf8",
+  )
+
+  writeFileSync(
+    join(generatedDir, "index.browser.ts"),
+    `/** Generated Adobe browser capability registry — do not edit. */\n${browserImportLines.join("\n")}\n\n/** All generated Adobe browser catalog capability builders (host hop). */\nexport const adobeGeneratedCapabilities = [\n  ${browserArrayItems.join(",\n  ")},\n] as const\n\nexport const ADOBE_GENERATED_OPERATION_COUNT = ${registry.length} as const\n`,
     "utf8",
   )
 

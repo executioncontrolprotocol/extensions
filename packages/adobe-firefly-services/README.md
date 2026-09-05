@@ -36,10 +36,13 @@ export default environment("adobe-demo")
 | `creative-production` | `creative-production/workflow-builder-api.yaml` | Workflow Builder |
 | `audio-video` | `audio-video/*.json` | Audio/Video + translate/lipsync |
 
-Capability ids: `@executioncontrolprotocol/adobe-firefly-services.<family>-<kebab-operationId>`  
+Capability ids: `@executioncontrolprotocol/adobe-firefly-services.<family>-<kebab-operationId>` (single segment after the package; no extra `.`)  
 Examples:
 - `@executioncontrolprotocol/adobe-firefly-services.firefly-generate-images-v3-async`
 - `@executioncontrolprotocol/adobe-firefly-services.firefly-generate-images-v5-async` (Image5)
+- `@executioncontrolprotocol/adobe-firefly-services.photoshop-generate-manifest`
+
+Browser apps import the package root; bundlers resolve `exports["."].browser` to a host-hop catalog (no IMS). Pair `ecp up --env …` for real execution.
 
 Photoshop v1 and standalone Lightroom OpenAPI are **out of scope** (v2 supersedes them).
 

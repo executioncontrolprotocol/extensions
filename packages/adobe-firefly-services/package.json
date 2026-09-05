@@ -1,7 +1,7 @@
 {
   "name": "@executioncontrolprotocol/adobe-firefly-services",
   "version": "0.13.2",
-  "description": "Adobe Firefly Services extension for ECP (family-prefixed capabilities)",
+  "description": "Adobe Firefly Services extension for ECP (family-prefixed kebab capability ids)",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -9,6 +9,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "browser": "./dist/index.browser.js",
+      "node": "./dist/index.js",
       "import": "./dist/index.js"
     }
   },
