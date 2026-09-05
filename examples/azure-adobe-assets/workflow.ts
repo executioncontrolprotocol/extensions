@@ -22,7 +22,7 @@ export default workflow("Azure Blob + Firefly Image5 recolor")
       .as("upload"),
 
     step(
-      "@executioncontrolprotocol/adobe-firefly-services.firefly.generate-images-v5-async",
+      "@executioncontrolprotocol/adobe-firefly-services.firefly-generate-images-v5-async",
       "Image5 recolor",
     )
       .with({

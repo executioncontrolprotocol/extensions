@@ -8,7 +8,7 @@ import { invokeAdobeOperation } from "../../runtime/invoke.js"
 const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 
 /** Perform a data merge */
-export const indesign_data_merge = capabilityFor(EXT_ID, "indesign.data-merge")
+export const indesign_data_merge = capabilityFor(EXT_ID, "indesign-data-merge")
   .withInput(z.object({
   body: schemas.Schema_MergeDataRequest,
   poll: z.boolean().optional(),
@@ -42,7 +42,7 @@ export const indesign_data_merge = capabilityFor(EXT_ID, "indesign.data-merge")
   })
 
 /** Get data merge tags */
-export const indesign_data_merge_tags = capabilityFor(EXT_ID, "indesign.data-merge-tags")
+export const indesign_data_merge_tags = capabilityFor(EXT_ID, "indesign-data-merge-tags")
   .withInput(z.object({
   body: schemas.Schema_MergeDataTagsRequest,
   poll: z.boolean().optional(),
@@ -76,7 +76,7 @@ export const indesign_data_merge_tags = capabilityFor(EXT_ID, "indesign.data-mer
   })
 
 /** Remap links */
-export const indesign_remap_links = capabilityFor(EXT_ID, "indesign.remap-links")
+export const indesign_remap_links = capabilityFor(EXT_ID, "indesign-remap-links")
   .withInput(z.object({
   headers: z.object({
   "x-aem-token": z.string()
@@ -113,7 +113,7 @@ export const indesign_remap_links = capabilityFor(EXT_ID, "indesign.remap-links"
   })
 
 /** Create JPEG, PNG, or PDF renditions */
-export const indesign_rendition_job = capabilityFor(EXT_ID, "indesign.rendition-job")
+export const indesign_rendition_job = capabilityFor(EXT_ID, "indesign-rendition-job")
   .withInput(z.object({
   body: schemas.Schema_CreateRenditionRequest,
   poll: z.boolean().optional(),
@@ -147,7 +147,7 @@ export const indesign_rendition_job = capabilityFor(EXT_ID, "indesign.rendition-
   })
 
 /** List custom scripts API */
-export const indesign_list_custom_scripts = capabilityFor(EXT_ID, "indesign.list-custom-scripts")
+export const indesign_list_custom_scripts = capabilityFor(EXT_ID, "indesign-list-custom-scripts")
   .withInput(z.object({
   query: z.object({
   "page": z.number().int().optional()
@@ -177,7 +177,7 @@ export const indesign_list_custom_scripts = capabilityFor(EXT_ID, "indesign.list
   })
 
 /** Submit a Custom Script */
-export const indesign_submit_custom_script = capabilityFor(EXT_ID, "indesign.submit-custom-script")
+export const indesign_submit_custom_script = capabilityFor(EXT_ID, "indesign-submit-custom-script")
   .withInput(z.object({
   poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
@@ -212,7 +212,7 @@ export const indesign_submit_custom_script = capabilityFor(EXT_ID, "indesign.sub
   })
 
 /** Submit a custom script execution request */
-export const indesign_execute_custom_script = capabilityFor(EXT_ID, "indesign.execute-custom-script")
+export const indesign_execute_custom_script = capabilityFor(EXT_ID, "indesign-execute-custom-script")
   .withInput(z.object({
   path: z.object({
   "script_id": z.string(),
@@ -250,7 +250,7 @@ export const indesign_execute_custom_script = capabilityFor(EXT_ID, "indesign.ex
   })
 
 /** Get Custom Script details */
-export const indesign_get_custom_script_details = capabilityFor(EXT_ID, "indesign.get-custom-script-details")
+export const indesign_get_custom_script_details = capabilityFor(EXT_ID, "indesign-get-custom-script-details")
   .withInput(z.object({
   path: z.object({
   "script_name": z.string()
@@ -280,7 +280,7 @@ export const indesign_get_custom_script_details = capabilityFor(EXT_ID, "indesig
   })
 
 /** Delete a Custom Script */
-export const indesign_delete_custom_script = capabilityFor(EXT_ID, "indesign.delete-custom-script")
+export const indesign_delete_custom_script = capabilityFor(EXT_ID, "indesign-delete-custom-script")
   .withInput(z.object({
   path: z.object({
   "script_name": z.string()
@@ -310,7 +310,7 @@ export const indesign_delete_custom_script = capabilityFor(EXT_ID, "indesign.del
   })
 
 /** Update Custom Script App Version */
-export const indesign_update_script_app_version = capabilityFor(EXT_ID, "indesign.update-script-app-version")
+export const indesign_update_script_app_version = capabilityFor(EXT_ID, "indesign-update-script-app-version")
   .withInput(z.object({
   path: z.object({
   "script_name": z.string()
@@ -345,7 +345,7 @@ export const indesign_update_script_app_version = capabilityFor(EXT_ID, "indesig
   })
 
 /** Get Current App Versions */
-export const indesign_list_app_versions = capabilityFor(EXT_ID, "indesign.list-app-versions")
+export const indesign_list_app_versions = capabilityFor(EXT_ID, "indesign-list-app-versions")
   .withInput(z.object({
   poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
@@ -372,7 +372,7 @@ export const indesign_list_app_versions = capabilityFor(EXT_ID, "indesign.list-a
   })
 
 /** Get document information */
-export const indesign_get_document_info = capabilityFor(EXT_ID, "indesign.get-document-info")
+export const indesign_get_document_info = capabilityFor(EXT_ID, "indesign-get-document-info")
   .withInput(z.object({
   body: schemas.Schema_DocumentInfoRequest,
   poll: z.boolean().optional(),
@@ -406,7 +406,7 @@ export const indesign_get_document_info = capabilityFor(EXT_ID, "indesign.get-do
   })
 
 /** Get status - Document Info API */
-export const indesign_get_document_info_job_status = capabilityFor(EXT_ID, "indesign.get-document-info-job-status")
+export const indesign_get_document_info_job_status = capabilityFor(EXT_ID, "indesign-get-document-info-job-status")
   .withInput(z.object({
   path: z.object({
   "document-info_job_id": z.string()
@@ -436,7 +436,7 @@ export const indesign_get_document_info_job_status = capabilityFor(EXT_ID, "inde
   })
 
 /** Convert PDF to InDesign document */
-export const indesign_convert_pdfto_in_design = capabilityFor(EXT_ID, "indesign.convert-pdfto-in-design")
+export const indesign_convert_pdfto_in_design = capabilityFor(EXT_ID, "indesign-convert-pdfto-in-design")
   .withInput(z.object({
   body: schemas.Schema_ConvertToInDesignRequest,
   poll: z.boolean().optional(),
@@ -470,7 +470,7 @@ export const indesign_convert_pdfto_in_design = capabilityFor(EXT_ID, "indesign.
   })
 
 /** Get status - Convert PDF to InDesign API */
-export const indesign_get_convert_pdfto_in_design_job_status = capabilityFor(EXT_ID, "indesign.get-convert-pdfto-in-design-job-status")
+export const indesign_get_convert_pdfto_in_design_job_status = capabilityFor(EXT_ID, "indesign-get-convert-pdfto-in-design-job-status")
   .withInput(z.object({
   path: z.object({
   "convert-pdf-to-indesign_job_id": z.string()
@@ -500,7 +500,7 @@ export const indesign_get_convert_pdfto_in_design_job_status = capabilityFor(EXT
   })
 
 /** Get the status of a job */
-export const indesign_get_job_status = capabilityFor(EXT_ID, "indesign.get-job-status")
+export const indesign_get_job_status = capabilityFor(EXT_ID, "indesign-get-job-status")
   .withInput(z.object({
   path: z.object({
   "id": z.string()

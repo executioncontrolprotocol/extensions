@@ -8,7 +8,7 @@ import { invokeAdobeOperation } from "../../runtime/invoke.js"
 const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 
 /** Execute a batch of assets through a workflow */
-export const creative_production_batch_execute = capabilityFor(EXT_ID, "creative-production.batch-execute")
+export const creative_production_batch_execute = capabilityFor(EXT_ID, "creative-production-batch-execute")
   .withInput(z.object({
   headers: z.object({
   "api-version": z.enum(["1.0"]).optional()
@@ -39,7 +39,7 @@ export const creative_production_batch_execute = capabilityFor(EXT_ID, "creative
   })
 
 /** List batches */
-export const creative_production_list_batches = capabilityFor(EXT_ID, "creative-production.list-batches")
+export const creative_production_list_batches = capabilityFor(EXT_ID, "creative-production-list-batches")
   .withInput(z.object({
   query: z.object({
   "status": z.enum(["pending", "running", "completed", "failed", "cancelled"]).optional(),
@@ -77,7 +77,7 @@ export const creative_production_list_batches = capabilityFor(EXT_ID, "creative-
   })
 
 /** Get batch status */
-export const creative_production_get_batch_status = capabilityFor(EXT_ID, "creative-production.get-batch-status")
+export const creative_production_get_batch_status = capabilityFor(EXT_ID, "creative-production-get-batch-status")
   .withInput(z.object({
   path: z.object({
   "batchId": z.string()
@@ -110,7 +110,7 @@ export const creative_production_get_batch_status = capabilityFor(EXT_ID, "creat
   })
 
 /** Cancel a batch */
-export const creative_production_cancel_batch = capabilityFor(EXT_ID, "creative-production.cancel-batch")
+export const creative_production_cancel_batch = capabilityFor(EXT_ID, "creative-production-cancel-batch")
   .withInput(z.object({
   path: z.object({
   "batchId": z.string()
@@ -155,7 +155,7 @@ export const creative_production_cancel_batch = capabilityFor(EXT_ID, "creative-
   })
 
 /** List individual execution results */
-export const creative_production_list_batch_executions = capabilityFor(EXT_ID, "creative-production.list-batch-executions")
+export const creative_production_list_batch_executions = capabilityFor(EXT_ID, "creative-production-list-batch-executions")
   .withInput(z.object({
   path: z.object({
   "batchId": z.string()

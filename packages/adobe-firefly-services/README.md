@@ -36,10 +36,10 @@ export default environment("adobe-demo")
 | `creative-production` | `creative-production/workflow-builder-api.yaml` | Workflow Builder |
 | `audio-video` | `audio-video/*.json` | Audio/Video + translate/lipsync |
 
-Capability ids: `@executioncontrolprotocol/adobe-firefly-services.<family>.<kebab-operationId>`  
+Capability ids: `@executioncontrolprotocol/adobe-firefly-services.<family>-<kebab-operationId>`  
 Examples:
-- `@executioncontrolprotocol/adobe-firefly-services.firefly.generate-images-v3-async`
-- `@executioncontrolprotocol/adobe-firefly-services.firefly.generate-images-v5-async` (Image5)
+- `@executioncontrolprotocol/adobe-firefly-services.firefly-generate-images-v3-async`
+- `@executioncontrolprotocol/adobe-firefly-services.firefly-generate-images-v5-async` (Image5)
 
 Photoshop v1 and standalone Lightroom OpenAPI are **out of scope** (v2 supersedes them).
 

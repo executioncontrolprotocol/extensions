@@ -8,7 +8,7 @@ import { invokeAdobeOperation } from "../../runtime/invoke.js"
 const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 
 /** Generate 3D object composite */
-export const substance3d_v1_composites_compose = capabilityFor(EXT_ID, "substance3d.v1/composites/compose")
+export const substance3d_v1_composites_compose = capabilityFor(EXT_ID, "substance3d-v1-composites-compose")
   .withInput(z.object({
   query: z.object({
   "wait": z.boolean().optional()
@@ -42,7 +42,7 @@ export const substance3d_v1_composites_compose = capabilityFor(EXT_ID, "substanc
   })
 
 /** Create 3D scene */
-export const substance3d_v1_scenes_assemble = capabilityFor(EXT_ID, "substance3d.v1/scenes/assemble")
+export const substance3d_v1_scenes_assemble = capabilityFor(EXT_ID, "substance3d-v1-scenes-assemble")
   .withInput(z.object({
   query: z.object({
   "wait": z.boolean().optional()
@@ -73,7 +73,7 @@ export const substance3d_v1_scenes_assemble = capabilityFor(EXT_ID, "substance3d
   })
 
 /** Convert 3D files */
-export const substance3d_v1_scenes_convert = capabilityFor(EXT_ID, "substance3d.v1/scenes/convert")
+export const substance3d_v1_scenes_convert = capabilityFor(EXT_ID, "substance3d-v1-scenes-convert")
   .withInput(z.object({
   query: z.object({
   "wait": z.boolean().optional()
@@ -104,7 +104,7 @@ export const substance3d_v1_scenes_convert = capabilityFor(EXT_ID, "substance3d.
   })
 
 /** Describe 3D scene */
-export const substance3d_v1_scenes_describe = capabilityFor(EXT_ID, "substance3d.v1/scenes/describe")
+export const substance3d_v1_scenes_describe = capabilityFor(EXT_ID, "substance3d-v1-scenes-describe")
   .withInput(z.object({
   query: z.object({
   "wait": z.boolean().optional()
@@ -135,7 +135,7 @@ export const substance3d_v1_scenes_describe = capabilityFor(EXT_ID, "substance3d
   })
 
 /** Render 3D object */
-export const substance3d_v1_scenes_render = capabilityFor(EXT_ID, "substance3d.v1/scenes/render")
+export const substance3d_v1_scenes_render = capabilityFor(EXT_ID, "substance3d-v1-scenes-render")
   .withInput(z.object({
   query: z.object({
   "wait": z.boolean().optional()
@@ -166,7 +166,7 @@ export const substance3d_v1_scenes_render = capabilityFor(EXT_ID, "substance3d.v
   })
 
 /** Render 3D object (basic version) */
-export const substance3d_v1_scenes_render_basic = capabilityFor(EXT_ID, "substance3d.v1/scenes/render-basic")
+export const substance3d_v1_scenes_render_basic = capabilityFor(EXT_ID, "substance3d-v1-scenes-render-basic")
   .withInput(z.object({
   query: z.object({
   "wait": z.boolean().optional()
@@ -197,7 +197,7 @@ export const substance3d_v1_scenes_render_basic = capabilityFor(EXT_ID, "substan
   })
 
 /** Create Space */
-export const substance3d_create_space_v1 = capabilityFor(EXT_ID, "substance3d.create-space-v1")
+export const substance3d_create_space_v1 = capabilityFor(EXT_ID, "substance3d-create-space-v1")
   .withInput(z.object({
   poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
@@ -224,7 +224,7 @@ export const substance3d_create_space_v1 = capabilityFor(EXT_ID, "substance3d.cr
   })
 
 /** Create Space API */
-export const substance3d_create_space_v2 = capabilityFor(EXT_ID, "substance3d.create-space-v2")
+export const substance3d_create_space_v2 = capabilityFor(EXT_ID, "substance3d-create-space-v2")
   .withInput(z.object({
   poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
@@ -251,7 +251,7 @@ export const substance3d_create_space_v2 = capabilityFor(EXT_ID, "substance3d.cr
   })
 
 /** Create Space From Frame IO API */
-export const substance3d_create_space_from_frame_io_v2 = capabilityFor(EXT_ID, "substance3d.create-space-from-frame-io-v2")
+export const substance3d_create_space_from_frame_io_v2 = capabilityFor(EXT_ID, "substance3d-create-space-from-frame-io-v2")
   .withInput(z.object({
   body: schemas.Schema_rest_base_FileFrameIO,
   poll: z.boolean().optional(),
@@ -279,7 +279,7 @@ export const substance3d_create_space_from_frame_io_v2 = capabilityFor(EXT_ID, "
   })
 
 /** Create Space From Next Frame IO API */
-export const substance3d_create_space_from_next_frame_io_v2 = capabilityFor(EXT_ID, "substance3d.create-space-from-next-frame-io-v2")
+export const substance3d_create_space_from_next_frame_io_v2 = capabilityFor(EXT_ID, "substance3d-create-space-from-next-frame-io-v2")
   .withInput(z.object({
   body: schemas.Schema_rest_base_FileNextFrameIO,
   poll: z.boolean().optional(),
@@ -307,7 +307,7 @@ export const substance3d_create_space_from_next_frame_io_v2 = capabilityFor(EXT_
   })
 
 /** Create Space from URL API */
-export const substance3d_create_space_url_v2 = capabilityFor(EXT_ID, "substance3d.create-space-url-v2")
+export const substance3d_create_space_url_v2 = capabilityFor(EXT_ID, "substance3d-create-space-url-v2")
   .withInput(z.object({
   body: z.array(schemas.Schema_rest_base_FileURL).nullable(),
   poll: z.boolean().optional(),

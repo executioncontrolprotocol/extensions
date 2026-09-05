@@ -8,7 +8,7 @@ import { invokeAdobeOperation } from "../../runtime/invoke.js"
 const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 
 /** Generate images */
-export const firefly_generate_images_v3_async = capabilityFor(EXT_ID, "firefly.generate-images-v3-async")
+export const firefly_generate_images_v3_async = capabilityFor(EXT_ID, "firefly-generate-images-v3-async")
   .withInput(z.object({
   headers: z.object({
   "x-model-version": z.enum(["image3", "image3_custom", "image4_standard", "image4_ultra", "image4_custom"]).optional()
@@ -39,7 +39,7 @@ export const firefly_generate_images_v3_async = capabilityFor(EXT_ID, "firefly.g
   })
 
 /** Generate images with Image5 */
-export const firefly_generate_images_v5_async = capabilityFor(EXT_ID, "firefly.generate-images-v5-async")
+export const firefly_generate_images_v5_async = capabilityFor(EXT_ID, "firefly-generate-images-v5-async")
   .withInput(z.object({
   headers: z.object({
   "x-model-version": z.enum(["image5"])
@@ -70,7 +70,7 @@ export const firefly_generate_images_v5_async = capabilityFor(EXT_ID, "firefly.g
   })
 
 /** Generate similar images */
-export const firefly_generate_similar_images_v3_async = capabilityFor(EXT_ID, "firefly.generate-similar-images-v3-async")
+export const firefly_generate_similar_images_v3_async = capabilityFor(EXT_ID, "firefly-generate-similar-images-v3-async")
   .withInput(z.object({
   headers: z.object({
   "x-model-version": z.enum(["image3", "image4_standard", "image4_ultra"]).optional()
@@ -101,7 +101,7 @@ export const firefly_generate_similar_images_v3_async = capabilityFor(EXT_ID, "f
   })
 
 /** Expand image */
-export const firefly_expand_images_v3_async = capabilityFor(EXT_ID, "firefly.expand-images-v3-async")
+export const firefly_expand_images_v3_async = capabilityFor(EXT_ID, "firefly-expand-images-v3-async")
   .withInput(z.object({
   body: schemas.Schema_ExpandImageRequestV3,
   poll: z.boolean().optional(),
@@ -129,7 +129,7 @@ export const firefly_expand_images_v3_async = capabilityFor(EXT_ID, "firefly.exp
   })
 
 /** Fill image */
-export const firefly_fill_images_v3_async = capabilityFor(EXT_ID, "firefly.fill-images-v3-async")
+export const firefly_fill_images_v3_async = capabilityFor(EXT_ID, "firefly-fill-images-v3-async")
   .withInput(z.object({
   body: schemas.Schema_FillImageRequestV3,
   poll: z.boolean().optional(),
@@ -157,7 +157,7 @@ export const firefly_fill_images_v3_async = capabilityFor(EXT_ID, "firefly.fill-
   })
 
 /** Generate object composite */
-export const firefly_generate_object_composite_v3_async = capabilityFor(EXT_ID, "firefly.generate-object-composite-v3-async")
+export const firefly_generate_object_composite_v3_async = capabilityFor(EXT_ID, "firefly-generate-object-composite-v3-async")
   .withInput(z.object({
   body: schemas.Schema_GenerateObjectCompositeRequestV3,
   poll: z.boolean().optional(),
@@ -185,7 +185,7 @@ export const firefly_generate_object_composite_v3_async = capabilityFor(EXT_ID, 
   })
 
 /** Generate precise composite */
-export const firefly_precise_composite = capabilityFor(EXT_ID, "firefly.precise-composite")
+export const firefly_precise_composite = capabilityFor(EXT_ID, "firefly-precise-composite")
   .withInput(z.object({
   headers: z.object({
   "content-type": z.enum(["application/json"])
@@ -216,7 +216,7 @@ export const firefly_precise_composite = capabilityFor(EXT_ID, "firefly.precise-
   })
 
 /** Generate adaptive composite */
-export const firefly_adaptive_composite = capabilityFor(EXT_ID, "firefly.adaptive-composite")
+export const firefly_adaptive_composite = capabilityFor(EXT_ID, "firefly-adaptive-composite")
   .withInput(z.object({
   headers: z.object({
   "content-type": z.enum(["application/json"])
@@ -247,7 +247,7 @@ export const firefly_adaptive_composite = capabilityFor(EXT_ID, "firefly.adaptiv
   })
 
 /** Upscale image */
-export const firefly_precise_upsampler_v3_async = capabilityFor(EXT_ID, "firefly.precise-upsampler-v3-async")
+export const firefly_precise_upsampler_v3_async = capabilityFor(EXT_ID, "firefly-precise-upsampler-v3-async")
   .withInput(z.object({
   headers: z.object({
   "x-model-version": z.enum(["precise_upsampler_v1"]).optional()
@@ -278,7 +278,7 @@ export const firefly_precise_upsampler_v3_async = capabilityFor(EXT_ID, "firefly
   })
 
 /** Generate video */
-export const firefly_generate_video_v3 = capabilityFor(EXT_ID, "firefly.generate-video-v3")
+export const firefly_generate_video_v3 = capabilityFor(EXT_ID, "firefly-generate-video-v3")
   .withInput(z.object({
   headers: z.object({
   "x-model-version": z.enum(["video1_standard"])
@@ -309,7 +309,7 @@ export const firefly_generate_video_v3 = capabilityFor(EXT_ID, "firefly.generate
   })
 
 /** Retrieve custom models */
-export const firefly_get_custom_models = capabilityFor(EXT_ID, "firefly.get-custom-models")
+export const firefly_get_custom_models = capabilityFor(EXT_ID, "firefly-get-custom-models")
   .withInput(z.object({
   query: z.object({
   "sortBy": z.enum(["assetName", "createdDate", "modifiedDate"]).optional(),
@@ -346,7 +346,7 @@ export const firefly_get_custom_models = capabilityFor(EXT_ID, "firefly.get-cust
   })
 
 /** Upload image */
-export const firefly_storage_image_v2 = capabilityFor(EXT_ID, "firefly.storage-image-v2")
+export const firefly_storage_image_v2 = capabilityFor(EXT_ID, "firefly-storage-image-v2")
   .withInput(z.object({
   poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
@@ -373,7 +373,7 @@ export const firefly_storage_image_v2 = capabilityFor(EXT_ID, "firefly.storage-i
   })
 
 /** Get job status */
-export const firefly_job_result_v3 = capabilityFor(EXT_ID, "firefly.job-result-v3")
+export const firefly_job_result_v3 = capabilityFor(EXT_ID, "firefly-job-result-v3")
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
@@ -403,7 +403,7 @@ export const firefly_job_result_v3 = capabilityFor(EXT_ID, "firefly.job-result-v
   })
 
 /** Cancel job */
-export const firefly_cancel_job_v4 = capabilityFor(EXT_ID, "firefly.cancel-job-v4")
+export const firefly_cancel_job_v4 = capabilityFor(EXT_ID, "firefly-cancel-job-v4")
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()

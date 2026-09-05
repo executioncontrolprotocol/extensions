@@ -8,7 +8,7 @@ import { invokeAdobeOperation } from "../../runtime/invoke.js"
 const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 
 /** Auto crop */
-export const photoshop_auto_crop = capabilityFor(EXT_ID, "photoshop.auto-crop")
+export const photoshop_auto_crop = capabilityFor(EXT_ID, "photoshop-auto-crop")
   .withInput(z.object({
   body: schemas.Schema_AutoCropRequest,
   poll: z.boolean().optional(),
@@ -36,7 +36,7 @@ export const photoshop_auto_crop = capabilityFor(EXT_ID, "photoshop.auto-crop")
   })
 
 /** Create an artboard */
-export const photoshop_create_artboard = capabilityFor(EXT_ID, "photoshop.create-artboard")
+export const photoshop_create_artboard = capabilityFor(EXT_ID, "photoshop-create-artboard")
   .withInput(z.object({
   body: schemas.Schema_CreateArtboardRequest,
   poll: z.boolean().optional(),
@@ -64,7 +64,7 @@ export const photoshop_create_artboard = capabilityFor(EXT_ID, "photoshop.create
   })
 
 /** Create or edit a composite */
-export const photoshop_create_composite = capabilityFor(EXT_ID, "photoshop.create-composite")
+export const photoshop_create_composite = capabilityFor(EXT_ID, "photoshop-create-composite")
   .withInput(z.object({
   body: schemas.Schema_CreateCompositeRequest,
   poll: z.boolean().optional(),
@@ -92,7 +92,7 @@ export const photoshop_create_composite = capabilityFor(EXT_ID, "photoshop.creat
   })
 
 /** Edit an image with various adjustments */
-export const photoshop_edit = capabilityFor(EXT_ID, "photoshop.edit")
+export const photoshop_edit = capabilityFor(EXT_ID, "photoshop-edit")
   .withInput(z.object({
   body: schemas.Schema_EditRequest,
   poll: z.boolean().optional(),
@@ -120,7 +120,7 @@ export const photoshop_edit = capabilityFor(EXT_ID, "photoshop.edit")
   })
 
 /** Execute Photoshop actions, scripts, and transformations */
-export const photoshop_execute_actions = capabilityFor(EXT_ID, "photoshop.execute-actions")
+export const photoshop_execute_actions = capabilityFor(EXT_ID, "photoshop-execute-actions")
   .withInput(z.object({
   body: schemas.Schema_ActionsRequest,
   poll: z.boolean().optional(),
@@ -148,7 +148,7 @@ export const photoshop_execute_actions = capabilityFor(EXT_ID, "photoshop.execut
   })
 
 /** Generate a manifest for given input image */
-export const photoshop_generate_manifest = capabilityFor(EXT_ID, "photoshop.generate-manifest")
+export const photoshop_generate_manifest = capabilityFor(EXT_ID, "photoshop-generate-manifest")
   .withInput(z.object({
   body: schemas.Schema_GenerateManifestRequest,
   poll: z.boolean().optional(),
@@ -176,7 +176,7 @@ export const photoshop_generate_manifest = capabilityFor(EXT_ID, "photoshop.gene
   })
 
 /** Get Job Status */
-export const photoshop_get_job_status = capabilityFor(EXT_ID, "photoshop.get-job-status")
+export const photoshop_get_job_status = capabilityFor(EXT_ID, "photoshop-get-job-status")
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()

@@ -8,7 +8,7 @@ import { invokeAdobeOperation } from "../../runtime/invoke.js"
 const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 
 /** Get available voices */
-export const audio_video_voices = capabilityFor(EXT_ID, "audio-video.voices")
+export const audio_video_voices = capabilityFor(EXT_ID, "audio-video-voices")
   .withInput(z.object({
   poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
@@ -35,7 +35,7 @@ export const audio_video_voices = capabilityFor(EXT_ID, "audio-video.voices")
   })
 
 /** Generate speech from text */
-export const audio_video_generate_speech = capabilityFor(EXT_ID, "audio-video.generate-speech")
+export const audio_video_generate_speech = capabilityFor(EXT_ID, "audio-video-generate-speech")
   .withInput(z.object({
   body: schemas.Schema_TTSRequest,
   poll: z.boolean().optional(),
@@ -63,7 +63,7 @@ export const audio_video_generate_speech = capabilityFor(EXT_ID, "audio-video.ge
   })
 
 /** Get job status */
-export const audio_video_status = capabilityFor(EXT_ID, "audio-video.status")
+export const audio_video_status = capabilityFor(EXT_ID, "audio-video-status")
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
@@ -93,7 +93,7 @@ export const audio_video_status = capabilityFor(EXT_ID, "audio-video.status")
   })
 
 /** Describe template */
-export const audio_video_template_describe = capabilityFor(EXT_ID, "audio-video.template-describe")
+export const audio_video_template_describe = capabilityFor(EXT_ID, "audio-video-template-describe")
   .withInput(z.object({
   body: schemas.Schema_TemplateDescribeRequest,
   poll: z.boolean().optional(),
@@ -121,7 +121,7 @@ export const audio_video_template_describe = capabilityFor(EXT_ID, "audio-video.
   })
 
 /** Fetch video rendering presets */
-export const audio_video_get_presets = capabilityFor(EXT_ID, "audio-video.get-presets")
+export const audio_video_get_presets = capabilityFor(EXT_ID, "audio-video-get-presets")
   .withInput(z.object({
   poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
@@ -148,7 +148,7 @@ export const audio_video_get_presets = capabilityFor(EXT_ID, "audio-video.get-pr
   })
 
 /** Render template */
-export const audio_video_template_render = capabilityFor(EXT_ID, "audio-video.template-render")
+export const audio_video_template_render = capabilityFor(EXT_ID, "audio-video-template-render")
   .withInput(z.object({
   body: schemas.Schema_TemplateRenderRequest,
   poll: z.boolean().optional(),
@@ -176,7 +176,7 @@ export const audio_video_template_render = capabilityFor(EXT_ID, "audio-video.te
   })
 
 /** Cancel a render job */
-export const audio_video_cancel_render_job = capabilityFor(EXT_ID, "audio-video.cancel-render-job")
+export const audio_video_cancel_render_job = capabilityFor(EXT_ID, "audio-video-cancel-render-job")
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
@@ -209,7 +209,7 @@ export const audio_video_cancel_render_job = capabilityFor(EXT_ID, "audio-video.
   })
 
 /** List render jobs */
-export const audio_video_list_render_jobs = capabilityFor(EXT_ID, "audio-video.list-render-jobs")
+export const audio_video_list_render_jobs = capabilityFor(EXT_ID, "audio-video-list-render-jobs")
   .withInput(z.object({
   query: z.object({
   "filter": z.string().optional(),
@@ -244,7 +244,7 @@ export const audio_video_list_render_jobs = capabilityFor(EXT_ID, "audio-video.l
   })
 
 /** Reframe video */
-export const audio_video_generate_reframed_video = capabilityFor(EXT_ID, "audio-video.generate-reframed-video")
+export const audio_video_generate_reframed_video = capabilityFor(EXT_ID, "audio-video-generate-reframed-video")
   .withInput(z.object({
   body: z.object({
   "video": z.object({
@@ -290,7 +290,7 @@ export const audio_video_generate_reframed_video = capabilityFor(EXT_ID, "audio-
   })
 
 /** Transcribe media */
-export const audio_video_transcribe = capabilityFor(EXT_ID, "audio-video.transcribe")
+export const audio_video_transcribe = capabilityFor(EXT_ID, "audio-video-transcribe")
   .withInput(z.object({
   body: schemas.Schema_TranscribeRequest,
   poll: z.boolean().optional(),
@@ -318,7 +318,7 @@ export const audio_video_transcribe = capabilityFor(EXT_ID, "audio-video.transcr
   })
 
 /** Dub audio or video */
-export const audio_video_dub = capabilityFor(EXT_ID, "audio-video.dub")
+export const audio_video_dub = capabilityFor(EXT_ID, "audio-video-dub")
   .withInput(z.object({
   body: schemas.Schema_DubRequest,
   poll: z.boolean().optional(),
@@ -346,7 +346,7 @@ export const audio_video_dub = capabilityFor(EXT_ID, "audio-video.dub")
   })
 
 /** Get available avatars */
-export const audio_video_avatars = capabilityFor(EXT_ID, "audio-video.avatars")
+export const audio_video_avatars = capabilityFor(EXT_ID, "audio-video-avatars")
   .withInput(z.object({
   poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
@@ -373,7 +373,7 @@ export const audio_video_avatars = capabilityFor(EXT_ID, "audio-video.avatars")
   })
 
 /** Reframe video v2 */
-export const audio_video_generate_reframed_video_v2 = capabilityFor(EXT_ID, "audio-video.generate-reframed-video-v2")
+export const audio_video_generate_reframed_video_v2 = capabilityFor(EXT_ID, "audio-video-generate-reframed-video-v2")
   .withInput(z.object({
   body: z.object({
   "video": schemas.Schema_VideoInputV2,
@@ -426,7 +426,7 @@ export const audio_video_generate_reframed_video_v2 = capabilityFor(EXT_ID, "aud
   })
 
 /** Get job result */
-export const audio_video_job_result_v2 = capabilityFor(EXT_ID, "audio-video.job-result-v2")
+export const audio_video_job_result_v2 = capabilityFor(EXT_ID, "audio-video-job-result-v2")
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
@@ -536,7 +536,7 @@ export const audio_video_job_result_v2 = capabilityFor(EXT_ID, "audio-video.job-
   })
 
 /** Generate avatar video from text */
-export const audio_video_generate_avatar = capabilityFor(EXT_ID, "audio-video.generate-avatar")
+export const audio_video_generate_avatar = capabilityFor(EXT_ID, "audio-video-generate-avatar")
   .withInput(z.object({
   body: schemas.Schema_AvatarRequest,
   poll: z.boolean().optional(),
@@ -564,7 +564,7 @@ export const audio_video_generate_avatar = capabilityFor(EXT_ID, "audio-video.ge
   })
 
 /** Transcribe media */
-export const audio_video_transcribe__v1_transcribe = capabilityFor(EXT_ID, "audio-video.transcribe-transcribe")
+export const audio_video_transcribe__v1_transcribe = capabilityFor(EXT_ID, "audio-video-transcribe-transcribe")
   .withInput(z.object({
   body: schemas.Schema_TranscribeRequest,
   poll: z.boolean().optional(),
@@ -592,7 +592,7 @@ export const audio_video_transcribe__v1_transcribe = capabilityFor(EXT_ID, "audi
   })
 
 /** Dub audio or video */
-export const audio_video_dub__v1_dub = capabilityFor(EXT_ID, "audio-video.dub-dub")
+export const audio_video_dub__v1_dub = capabilityFor(EXT_ID, "audio-video-dub-dub")
   .withInput(z.object({
   body: schemas.Schema_DubRequest,
   poll: z.boolean().optional(),
@@ -620,7 +620,7 @@ export const audio_video_dub__v1_dub = capabilityFor(EXT_ID, "audio-video.dub-du
   })
 
 /** Get the result for a job */
-export const audio_video_job_result = capabilityFor(EXT_ID, "audio-video.job-result")
+export const audio_video_job_result = capabilityFor(EXT_ID, "audio-video-job-result")
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()

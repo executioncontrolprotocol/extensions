@@ -8,7 +8,7 @@ import { invokeAdobeOperation } from "../../runtime/invoke.js"
 const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 
 /** Tagged documents */
-export const express_tagged_documents = capabilityFor(EXT_ID, "express.tagged-documents")
+export const express_tagged_documents = capabilityFor(EXT_ID, "express-tagged-documents")
   .withInput(z.object({
   query: z.object({
   "start": z.number().int().optional(),
@@ -40,7 +40,7 @@ export const express_tagged_documents = capabilityFor(EXT_ID, "express.tagged-do
   })
 
 /** Tagged document details */
-export const express_tagged_document_details = capabilityFor(EXT_ID, "express.tagged-document-details")
+export const express_tagged_document_details = capabilityFor(EXT_ID, "express-tagged-document-details")
   .withInput(z.object({
   path: z.object({
   "documentId": z.string()
@@ -73,7 +73,7 @@ export const express_tagged_document_details = capabilityFor(EXT_ID, "express.ta
   })
 
 /** Generate variation */
-export const express_generate_variation = capabilityFor(EXT_ID, "express.generate-variation")
+export const express_generate_variation = capabilityFor(EXT_ID, "express-generate-variation")
   .withInput(z.object({
   body: schemas.Schema_GenerateVariationRequest,
   poll: z.boolean().optional(),
@@ -101,7 +101,7 @@ export const express_generate_variation = capabilityFor(EXT_ID, "express.generat
   })
 
 /** Export rendition */
-export const express_export_rendition = capabilityFor(EXT_ID, "express.export-rendition")
+export const express_export_rendition = capabilityFor(EXT_ID, "express-export-rendition")
   .withInput(z.object({
   body: schemas.Schema_ExportRenditionRequest,
   poll: z.boolean().optional(),
@@ -129,7 +129,7 @@ export const express_export_rendition = capabilityFor(EXT_ID, "express.export-re
   })
 
 /** Job status */
-export const express_get_job_status = capabilityFor(EXT_ID, "express.get-job-status")
+export const express_get_job_status = capabilityFor(EXT_ID, "express-get-job-status")
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()

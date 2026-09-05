@@ -7,7 +7,7 @@ import { workflow, step } from "@executioncontrolprotocol/core"
 export default workflow("Adobe Firefly smoke")
   .run([
     step(
-      "@executioncontrolprotocol/adobe-firefly-services.firefly.generate-images-v3-async",
+      "@executioncontrolprotocol/adobe-firefly-services.firefly-generate-images-v3-async",
       "Generate images",
     )
       .with({

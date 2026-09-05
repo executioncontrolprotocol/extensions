@@ -8,7 +8,7 @@ import { invokeAdobeOperation } from "../../runtime/invoke.js"
 const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 
 /** Submit a Custom Script */
-export const illustrator_register_custom_script_capability = capabilityFor(EXT_ID, "illustrator.register-custom-script-capability")
+export const illustrator_register_custom_script_capability = capabilityFor(EXT_ID, "illustrator-register-custom-script-capability")
   .withInput(z.object({
   poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
@@ -35,7 +35,7 @@ export const illustrator_register_custom_script_capability = capabilityFor(EXT_I
   })
 
 /** Submit a custom script execution request */
-export const illustrator_execute_custom_script_capability = capabilityFor(EXT_ID, "illustrator.execute-custom-script-capability")
+export const illustrator_execute_custom_script_capability = capabilityFor(EXT_ID, "illustrator-execute-custom-script-capability")
   .withInput(z.object({
   path: z.object({
   "orgId": z.string(),
@@ -67,7 +67,7 @@ export const illustrator_execute_custom_script_capability = capabilityFor(EXT_ID
   })
 
 /** Retrieve job status */
-export const illustrator_custom_scripts_job_status = capabilityFor(EXT_ID, "illustrator.custom-scripts-job-status")
+export const illustrator_custom_scripts_job_status = capabilityFor(EXT_ID, "illustrator-custom-scripts-job-status")
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
@@ -97,7 +97,7 @@ export const illustrator_custom_scripts_job_status = capabilityFor(EXT_ID, "illu
   })
 
 /** Data merge */
-export const illustrator_data_merge = capabilityFor(EXT_ID, "illustrator.data-merge")
+export const illustrator_data_merge = capabilityFor(EXT_ID, "illustrator-data-merge")
   .withInput(z.object({
   body: schemas.Schema_DataMergeRequest,
   poll: z.boolean().optional(),
@@ -125,7 +125,7 @@ export const illustrator_data_merge = capabilityFor(EXT_ID, "illustrator.data-me
   })
 
 /** Create rendition */
-export const illustrator_create_rendition = capabilityFor(EXT_ID, "illustrator.create-rendition")
+export const illustrator_create_rendition = capabilityFor(EXT_ID, "illustrator-create-rendition")
   .withInput(z.object({
   body: schemas.Schema_CreateRenditionRequest,
   poll: z.boolean().optional(),
@@ -153,7 +153,7 @@ export const illustrator_create_rendition = capabilityFor(EXT_ID, "illustrator.c
   })
 
 /** Submit a job */
-export const illustrator_trace_image = capabilityFor(EXT_ID, "illustrator.trace-image")
+export const illustrator_trace_image = capabilityFor(EXT_ID, "illustrator-trace-image")
   .withInput(z.object({
   body: schemas.Schema_VectorizeRequest,
   poll: z.boolean().optional(),
@@ -181,7 +181,7 @@ export const illustrator_trace_image = capabilityFor(EXT_ID, "illustrator.trace-
   })
 
 /** Retrieve job status */
-export const illustrator_image_trace_job_status = capabilityFor(EXT_ID, "illustrator.image-trace-job-status")
+export const illustrator_image_trace_job_status = capabilityFor(EXT_ID, "illustrator-image-trace-job-status")
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
@@ -211,7 +211,7 @@ export const illustrator_image_trace_job_status = capabilityFor(EXT_ID, "illustr
   })
 
 /** Retrieve job status */
-export const illustrator_facade_job_status = capabilityFor(EXT_ID, "illustrator.facade-job-status")
+export const illustrator_facade_job_status = capabilityFor(EXT_ID, "illustrator-facade-job-status")
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()

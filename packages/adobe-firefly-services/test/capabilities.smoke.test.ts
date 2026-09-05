@@ -3,7 +3,7 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest"
 import { parse as parseYaml } from "yaml"
-import { globalRegistry, NODE_RUNTIME_ID, resolveCapabilityExecution } from "@executioncontrolprotocol/core"
+import { globalRegistry, NODE_RUNTIME_ID, resolveCapabilityExecution, capabilityIdSchema } from "@executioncontrolprotocol/core"
 import {
   adobeFireflyServicesExtension,
   registerAdobeFireflyServicesExtension,
@@ -105,6 +105,13 @@ describe("@executioncontrolprotocol/adobe-firefly-services capabilities", () => 
     ).toBe("host")
   })
 
+  it("emits capability ids that pass capabilityIdSchema", () => {
+    for (const id of meta.operations) {
+      const parsed = capabilityIdSchema.safeParse(id)
+      expect(parsed.success, `${id}: ${parsed.error?.message}`).toBe(true)
+    }
+  })
+
   it("exposes Zod input/output schemas on every capability", () => {
     for (const cap of adobeFireflyServicesExtension.capabilities) {
       expect(cap.inputSchema, cap.id).toBeDefined()
@@ -117,35 +124,35 @@ describe("@executioncontrolprotocol/adobe-firefly-services capabilities", () => 
   it("sample fixtures safeParse for representative family inputs", () => {
     const fixtures: { id: string; input: unknown }[] = [
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.firefly.generate-images-v3-async",
+        id: "@executioncontrolprotocol/adobe-firefly-services.firefly-generate-images-v3-async",
         input: { body: { prompt: "sunset" } },
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.photoshop.get-job-status",
+        id: "@executioncontrolprotocol/adobe-firefly-services.photoshop-get-job-status",
         input: { path: { jobId: "job-1" } },
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.express.get-job-status",
+        id: "@executioncontrolprotocol/adobe-firefly-services.express-get-job-status",
         input: { path: { jobId: "job-2" } },
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.indesign.list-app-versions",
+        id: "@executioncontrolprotocol/adobe-firefly-services.indesign-list-app-versions",
         input: {},
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.substance3d.create-space-v1",
+        id: "@executioncontrolprotocol/adobe-firefly-services.substance3d-create-space-v1",
         input: {},
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.illustrator.facade-job-status",
+        id: "@executioncontrolprotocol/adobe-firefly-services.illustrator-facade-job-status",
         input: { path: { jobId: "job-3" } },
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.creative-production.list-batches",
+        id: "@executioncontrolprotocol/adobe-firefly-services.creative-production-list-batches",
         input: {},
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.audio-video.voices",
+        id: "@executioncontrolprotocol/adobe-firefly-services.audio-video-voices",
         input: {},
       },
     ]
@@ -229,35 +236,35 @@ describe("@executioncontrolprotocol/adobe-firefly-services capabilities", () => 
 
     const cases: { id: string; input: unknown }[] = [
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.firefly.generate-images-v3-async",
+        id: "@executioncontrolprotocol/adobe-firefly-services.firefly-generate-images-v3-async",
         input: { body: { prompt: "dunes" } },
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.photoshop.get-job-status",
+        id: "@executioncontrolprotocol/adobe-firefly-services.photoshop-get-job-status",
         input: { path: { jobId: "ps-1" } },
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.express.get-job-status",
+        id: "@executioncontrolprotocol/adobe-firefly-services.express-get-job-status",
         input: { path: { jobId: "ex-1" } },
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.indesign.list-app-versions",
+        id: "@executioncontrolprotocol/adobe-firefly-services.indesign-list-app-versions",
         input: {},
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.substance3d.create-space-v1",
+        id: "@executioncontrolprotocol/adobe-firefly-services.substance3d-create-space-v1",
         input: {},
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.illustrator.facade-job-status",
+        id: "@executioncontrolprotocol/adobe-firefly-services.illustrator-facade-job-status",
         input: { path: { jobId: "ai-1" } },
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.creative-production.list-batches",
+        id: "@executioncontrolprotocol/adobe-firefly-services.creative-production-list-batches",
         input: {},
       },
       {
-        id: "@executioncontrolprotocol/adobe-firefly-services.audio-video.voices",
+        id: "@executioncontrolprotocol/adobe-firefly-services.audio-video-voices",
         input: {},
       },
     ]

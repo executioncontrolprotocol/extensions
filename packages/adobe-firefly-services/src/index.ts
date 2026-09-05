@@ -19,7 +19,7 @@ const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
  * One capability per OpenAPI operation across Firefly Services families
  * (`firefly`, `photoshop` v2, `express`, `indesign`, `substance3d`, `illustrator`,
  * `creative-production`, `audio-video`). Capability ids are family-prefixed, e.g.
- * `@executioncontrolprotocol/adobe-firefly-services.firefly.generate-images-v5-async`.
+ * `@executioncontrolprotocol/adobe-firefly-services.firefly-generate-images-v5-async`.
  *
  * Auth uses OAuth Server-to-Server (`client_credentials`). Bind secrets via
  * `secrets("adobe-firefly-services/client-id")` /

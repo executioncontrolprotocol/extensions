@@ -192,16 +192,23 @@ function buildInputZod(operation, doc, emitter, context) {
  * @param {string} path
  */
 function capabilityOpName(family, operationId, method, path) {
+  // Single kebab segment after the package id (capabilityIdSchema: @ns/pkg.name).
+  let suffix
   if (operationId) {
     const remapped = OPERATION_ID_REMAP[operationId]
-    if (remapped) return `${family}.${remapped}`
-    return `${family}.${toKebab(operationId)}`
+    suffix = remapped ?? toKebab(operationId)
+  } else {
+    const fromPath = path
+      .replace(/^\//, "")
+      .replace(/\{([^}]+)\}/g, "by-$1")
+      .replace(/\//g, "-")
+    suffix = toKebab(`${method}-${fromPath}`)
   }
-  const fromPath = path
-    .replace(/^\//, "")
-    .replace(/\{([^}]+)\}/g, "by-$1")
-    .replace(/\//g, "-")
-  return `${family}.${toKebab(`${method}-${fromPath}`)}`
+  return `${family}-${suffix}`
+    .replace(/[^a-z0-9-]+/gi, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .toLowerCase()
 }
 
 /**
