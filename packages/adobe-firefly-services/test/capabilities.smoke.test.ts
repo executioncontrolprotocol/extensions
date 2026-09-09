@@ -182,6 +182,45 @@ describe("@executioncontrolprotocol/adobe-firefly-services capabilities", () => 
     }
   })
 
+  it("classifies operations into async-submit, status-cancel, and sync", () => {
+    expect(meta.operationClasses).toEqual({
+      "async-submit": 48,
+      "status-cancel": 16,
+      sync: 20,
+    })
+    expect(meta.operationClassById["@executioncontrolprotocol/adobe-firefly-services.photoshop-generate-manifest"]).toBe(
+      "async-submit",
+    )
+    expect(meta.operationClassById["@executioncontrolprotocol/adobe-firefly-services.photoshop-get-job-status"]).toBe(
+      "status-cancel",
+    )
+    expect(meta.operationClassById["@executioncontrolprotocol/adobe-firefly-services.audio-video-voices"]).toBe("sync")
+    expect(
+      meta.operationClassById["@executioncontrolprotocol/adobe-firefly-services.firefly-generate-images-v5-async"],
+    ).toBe("async-submit")
+  })
+
+  it("async-submit inputs keep wait knobs and do not require poll", () => {
+    const cap = adobeFireflyServicesExtension.capabilities.find(
+      (c) => c.id === "@executioncontrolprotocol/adobe-firefly-services.photoshop-generate-manifest",
+    )
+    expect(cap).toBeDefined()
+    const ok = cap!.inputSchema!.safeParse({
+      body: {
+        image: { source: { url: "https://x.example/a.psd" } },
+        outputs: [
+          {
+            mediaType: "application/json",
+            destination: { storageType: "azure", url: "https://x.example/m.json" },
+          },
+        ],
+      },
+      pollIntervalMs: 1000,
+    })
+    expect(ok.success, JSON.stringify(ok.error?.format())).toBe(true)
+    expect(ok.data).not.toHaveProperty("poll")
+  })
+
   it("invokes one mocked call per family", async () => {
     const fetchImpl = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input)
@@ -193,6 +232,13 @@ describe("@executioncontrolprotocol/adobe-firefly-services capabilities", () => 
           jobId: "ff-1",
           statusUrl: "https://firefly-api.adobe.io/v3/status/ff-1",
           cancelUrl: "https://firefly-api.adobe.io/v3/cancel/ff-1",
+        })
+      }
+      if (url.includes("firefly-api.adobe.io") && url.includes("/v3/status/ff-1")) {
+        return jsonResponse({
+          status: "succeeded",
+          jobId: "ff-1",
+          result: { outputs: [{ seed: 1, image: { url: "https://cdn.example/out.png" } }] },
         })
       }
       if (url.includes("photoshop-api.adobe.io") && url.includes("/v2/status/")) {
@@ -273,5 +319,49 @@ describe("@executioncontrolprotocol/adobe-firefly-services capabilities", () => 
       await expect(capability(id)(input, ctx), id).resolves.toBeDefined()
     }
     expect(fetchImpl.mock.calls.some((c) => String(c[0]).includes("ims"))).toBe(true)
+  })
+
+  it("photoshop-generate-manifest polls and returns manifest JSON", async () => {
+    const fetchImpl = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url.includes("adobelogin.com") || url.includes("/ims/token")) {
+        return jsonResponse({ access_token: "tok", expires_in: 3600 })
+      }
+      if (url.includes("photoshop-api.adobe.io") && url.includes("/v2/generate-manifest")) {
+        return jsonResponse({
+          jobId: "m-1",
+          statusUrl: "https://photoshop-api.adobe.io/v2/status/m-1",
+        })
+      }
+      if (url.includes("photoshop-api.adobe.io") && url.includes("/v2/status/m-1")) {
+        return jsonResponse({ jobId: "m-1", status: "succeeded", result: {} })
+      }
+      if (url.includes("blob.example/manifest.json")) {
+        return jsonResponse({ layers: [{ id: 7, name: "Headline" }], name: "Poster" })
+      }
+      return jsonResponse({ unexpected: url }, 500)
+    })
+    vi.stubGlobal("fetch", fetchImpl)
+
+    const out = await capability(
+      "@executioncontrolprotocol/adobe-firefly-services.photoshop-generate-manifest",
+    )(
+      {
+        body: {
+          image: { source: { url: "https://blob.example/a.psd" } },
+          outputs: [
+            {
+              mediaType: "application/json",
+              destination: { storageType: "azure", url: "https://blob.example/manifest.json" },
+            },
+          ],
+        },
+        pollIntervalMs: 1,
+        pollTimeoutMs: 5_000,
+      },
+      ctx,
+    )
+
+    expect(out).toEqual({ layers: [{ id: 7, name: "Headline" }], name: "Poster" })
   })
 })

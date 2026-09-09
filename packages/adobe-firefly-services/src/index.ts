@@ -52,7 +52,15 @@ export {
 export type { AdobeImsConfig, AdobeAccessToken } from "./auth/ims.js"
 export { AdobeHttpError, buildUrl, createAdobeHttpClient } from "./http/client.js"
 export type { AdobeHttpClient, AdobeRequestOptions } from "./http/client.js"
-export { pollAdobeJob } from "./http/async-job.js"
+export { extractAdobeStatusUrl, pollAdobeJob } from "./http/async-job.js"
 export type { PollAdobeJobOptions } from "./http/async-job.js"
+export {
+  collectManifestDestinationUrls,
+  extractEmbeddedManifestJson,
+  materializePhotoshopManifest,
+  photoshopManifestDocumentSchema,
+  photoshopManifestLayerSchema,
+} from "./runtime/photoshop-manifest.js"
+export type { AdobeAsyncMode, AdobeMaterializeMode, AdobeOperationInput } from "./runtime/invoke.js"
 
 export default adobeFireflyServicesExtension

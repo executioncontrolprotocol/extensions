@@ -14,10 +14,7 @@ export const express_tagged_documents = capabilityFor(EXT_ID, "express-tagged-do
   "start": z.number().int().optional(),
   "limit": z.number().int().optional(),
   "sortBy": schemas.Schema_TaggedDocumentsSortBy.optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_TaggedDocumentsResponse)
   .withHandler(async (input, ctx) => {
@@ -30,12 +27,10 @@ export const express_tagged_documents = capabilityFor(EXT_ID, "express-tagged-do
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_TaggedDocumentsResponse,
+      asyncMode: "none",
     })
   })
 
@@ -47,10 +42,7 @@ export const express_tagged_document_details = capabilityFor(EXT_ID, "express-ta
 }),
   query: z.object({
   "start": z.number().int().optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_TaggedDocumentDetailsResponse)
   .withHandler(async (input, ctx) => {
@@ -63,12 +55,10 @@ export const express_tagged_document_details = capabilityFor(EXT_ID, "express-ta
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_TaggedDocumentDetailsResponse,
+      asyncMode: "none",
     })
   })
 
@@ -76,11 +66,10 @@ export const express_tagged_document_details = capabilityFor(EXT_ID, "express-ta
 export const express_generate_variation = capabilityFor(EXT_ID, "express-generate-variation")
   .withInput(z.object({
   body: schemas.Schema_GenerateVariationRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobResponse)
+  .withOutput(schemas.Schema_GenerateVariationResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -91,12 +80,12 @@ export const express_generate_variation = capabilityFor(EXT_ID, "express-generat
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobResponse,
+      outputSchema: schemas.Schema_GenerateVariationResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -104,11 +93,10 @@ export const express_generate_variation = capabilityFor(EXT_ID, "express-generat
 export const express_export_rendition = capabilityFor(EXT_ID, "express-export-rendition")
   .withInput(z.object({
   body: schemas.Schema_ExportRenditionRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobResponse)
+  .withOutput(schemas.Schema_ExportRenditionResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -119,12 +107,12 @@ export const express_export_rendition = capabilityFor(EXT_ID, "express-export-re
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobResponse,
+      outputSchema: schemas.Schema_ExportRenditionResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -133,10 +121,7 @@ export const express_get_job_status = capabilityFor(EXT_ID, "express-get-job-sta
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(z.union([schemas.Schema_JobStatusResponse, schemas.Schema_ExportRenditionResponse, schemas.Schema_GenerateVariationResponse]))
   .withHandler(async (input, ctx) => {
@@ -149,11 +134,9 @@ export const express_get_job_status = capabilityFor(EXT_ID, "express-get-job-sta
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: z.union([schemas.Schema_JobStatusResponse, schemas.Schema_ExportRenditionResponse, schemas.Schema_GenerateVariationResponse]),
+      asyncMode: "none",
     })
   })

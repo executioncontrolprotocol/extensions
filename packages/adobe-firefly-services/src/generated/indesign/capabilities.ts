@@ -11,14 +11,10 @@ const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 export const indesign_data_merge = capabilityFor(EXT_ID, "indesign-data-merge")
   .withInput(z.object({
   body: schemas.Schema_MergeDataRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -29,15 +25,12 @@ export const indesign_data_merge = capabilityFor(EXT_ID, "indesign-data-merge")
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}),
+      outputSchema: schemas.Schema_succeededEvent,
+      asyncMode: "submit",
     })
   })
 
@@ -45,14 +38,10 @@ export const indesign_data_merge = capabilityFor(EXT_ID, "indesign-data-merge")
 export const indesign_data_merge_tags = capabilityFor(EXT_ID, "indesign-data-merge-tags")
   .withInput(z.object({
   body: schemas.Schema_MergeDataTagsRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -63,15 +52,12 @@ export const indesign_data_merge_tags = capabilityFor(EXT_ID, "indesign-data-mer
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}),
+      outputSchema: schemas.Schema_succeededEvent,
+      asyncMode: "submit",
     })
   })
 
@@ -82,14 +68,10 @@ export const indesign_remap_links = capabilityFor(EXT_ID, "indesign-remap-links"
   "x-aem-token": z.string()
 }).optional(),
   body: schemas.Schema_RemapLinksRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -100,15 +82,12 @@ export const indesign_remap_links = capabilityFor(EXT_ID, "indesign-remap-links"
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}),
+      outputSchema: schemas.Schema_succeededEvent,
+      asyncMode: "submit",
     })
   })
 
@@ -116,14 +95,10 @@ export const indesign_remap_links = capabilityFor(EXT_ID, "indesign-remap-links"
 export const indesign_rendition_job = capabilityFor(EXT_ID, "indesign-rendition-job")
   .withInput(z.object({
   body: schemas.Schema_CreateRenditionRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -134,15 +109,12 @@ export const indesign_rendition_job = capabilityFor(EXT_ID, "indesign-rendition-
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}),
+      outputSchema: schemas.Schema_succeededEvent,
+      asyncMode: "submit",
     })
   })
 
@@ -151,10 +123,7 @@ export const indesign_list_custom_scripts = capabilityFor(EXT_ID, "indesign-list
   .withInput(z.object({
   query: z.object({
   "page": z.number().int().optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_CustomScriptsListResponse)
   .withHandler(async (input, ctx) => {
@@ -167,27 +136,20 @@ export const indesign_list_custom_scripts = capabilityFor(EXT_ID, "indesign-list
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_CustomScriptsListResponse,
+      asyncMode: "none",
     })
   })
 
 /** Submit a Custom Script */
 export const indesign_submit_custom_script = capabilityFor(EXT_ID, "indesign-submit-custom-script")
   .withInput(z.object({
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "capability": z.string().optional(),
-  "version": z.string().optional(),
-  "url": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -198,16 +160,12 @@ export const indesign_submit_custom_script = capabilityFor(EXT_ID, "indesign-sub
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: z.object({
-  "capability": z.string().optional(),
-  "version": z.string().optional(),
-  "url": z.string().optional()
-}),
+      outputSchema: schemas.Schema_succeededEvent,
+      asyncMode: "submit",
     })
   })
 
@@ -219,14 +177,10 @@ export const indesign_execute_custom_script = capabilityFor(EXT_ID, "indesign-ex
   "script_name": z.string()
 }),
   body: schemas.Schema_BaseJobRequestWithOutput,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -237,15 +191,12 @@ export const indesign_execute_custom_script = capabilityFor(EXT_ID, "indesign-ex
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}),
+      outputSchema: schemas.Schema_succeededEvent,
+      asyncMode: "submit",
     })
   })
 
@@ -254,10 +205,7 @@ export const indesign_get_custom_script_details = capabilityFor(EXT_ID, "indesig
   .withInput(z.object({
   path: z.object({
   "script_name": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(schemas.Schema_CustomScriptDetails)
   .withHandler(async (input, ctx) => {
@@ -270,12 +218,10 @@ export const indesign_get_custom_script_details = capabilityFor(EXT_ID, "indesig
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_CustomScriptDetails,
+      asyncMode: "none",
     })
   })
 
@@ -284,10 +230,7 @@ export const indesign_delete_custom_script = capabilityFor(EXT_ID, "indesign-del
   .withInput(z.object({
   path: z.object({
   "script_name": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(z.object({}))
   .withHandler(async (input, ctx) => {
@@ -300,12 +243,10 @@ export const indesign_delete_custom_script = capabilityFor(EXT_ID, "indesign-del
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: z.object({}),
+      asyncMode: "none",
     })
   })
 
@@ -315,10 +256,7 @@ export const indesign_update_script_app_version = capabilityFor(EXT_ID, "indesig
   path: z.object({
   "script_name": z.string()
 }),
-  body: schemas.Schema_AppVersionUpdateRequest,
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+  body: schemas.Schema_AppVersionUpdateRequest
 }))
   .withOutput(z.object({
   "message": z.string().optional()
@@ -333,24 +271,18 @@ export const indesign_update_script_app_version = capabilityFor(EXT_ID, "indesig
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: z.object({
   "message": z.string().optional()
 }),
+      asyncMode: "none",
     })
   })
 
 /** Get Current App Versions */
 export const indesign_list_app_versions = capabilityFor(EXT_ID, "indesign-list-app-versions")
-  .withInput(z.object({
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
+  .withInput(z.object({}))
   .withOutput(z.array(schemas.Schema_AppVersionInfo))
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
@@ -362,12 +294,10 @@ export const indesign_list_app_versions = capabilityFor(EXT_ID, "indesign-list-a
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: z.array(schemas.Schema_AppVersionInfo),
+      asyncMode: "none",
     })
   })
 
@@ -375,14 +305,10 @@ export const indesign_list_app_versions = capabilityFor(EXT_ID, "indesign-list-a
 export const indesign_get_document_info = capabilityFor(EXT_ID, "indesign-get-document-info")
   .withInput(z.object({
   body: schemas.Schema_DocumentInfoRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -393,15 +319,12 @@ export const indesign_get_document_info = capabilityFor(EXT_ID, "indesign-get-do
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}),
+      outputSchema: schemas.Schema_succeededEvent,
+      asyncMode: "submit",
     })
   })
 
@@ -410,10 +333,7 @@ export const indesign_get_document_info_job_status = capabilityFor(EXT_ID, "inde
   .withInput(z.object({
   path: z.object({
   "document-info_job_id": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(z.union([schemas.Schema_notstartedEvent, schemas.Schema_runningEvent, schemas.Schema_succeededEvent, schemas.Schema_failedEvent, schemas.Schema_partialSuccessEvent]))
   .withHandler(async (input, ctx) => {
@@ -426,12 +346,10 @@ export const indesign_get_document_info_job_status = capabilityFor(EXT_ID, "inde
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: z.union([schemas.Schema_notstartedEvent, schemas.Schema_runningEvent, schemas.Schema_succeededEvent, schemas.Schema_failedEvent, schemas.Schema_partialSuccessEvent]),
+      asyncMode: "none",
     })
   })
 
@@ -439,14 +357,10 @@ export const indesign_get_document_info_job_status = capabilityFor(EXT_ID, "inde
 export const indesign_convert_pdfto_in_design = capabilityFor(EXT_ID, "indesign-convert-pdfto-in-design")
   .withInput(z.object({
   body: schemas.Schema_ConvertToInDesignRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -457,15 +371,12 @@ export const indesign_convert_pdfto_in_design = capabilityFor(EXT_ID, "indesign-
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}),
+      outputSchema: schemas.Schema_succeededEvent,
+      asyncMode: "submit",
     })
   })
 
@@ -474,10 +385,7 @@ export const indesign_get_convert_pdfto_in_design_job_status = capabilityFor(EXT
   .withInput(z.object({
   path: z.object({
   "convert-pdf-to-indesign_job_id": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(z.union([schemas.Schema_notstartedEvent, schemas.Schema_runningEvent, schemas.Schema_succeededEvent, schemas.Schema_failedEvent, schemas.Schema_partialSuccessEvent]))
   .withHandler(async (input, ctx) => {
@@ -490,12 +398,10 @@ export const indesign_get_convert_pdfto_in_design_job_status = capabilityFor(EXT
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: z.union([schemas.Schema_notstartedEvent, schemas.Schema_runningEvent, schemas.Schema_succeededEvent, schemas.Schema_failedEvent, schemas.Schema_partialSuccessEvent]),
+      asyncMode: "none",
     })
   })
 
@@ -508,10 +414,7 @@ export const indesign_get_job_status = capabilityFor(EXT_ID, "indesign-get-job-s
   query: z.object({
   "size": z.number().int().min(1).optional(),
   "page": z.number().int().min(0).optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(z.union([schemas.Schema_notstartedEvent, schemas.Schema_runningEvent, schemas.Schema_succeededEvent, schemas.Schema_failedEvent, schemas.Schema_partialSuccessEvent]))
   .withHandler(async (input, ctx) => {
@@ -524,11 +427,9 @@ export const indesign_get_job_status = capabilityFor(EXT_ID, "indesign-get-job-s
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: z.union([schemas.Schema_notstartedEvent, schemas.Schema_runningEvent, schemas.Schema_succeededEvent, schemas.Schema_failedEvent, schemas.Schema_partialSuccessEvent]),
+      asyncMode: "none",
     })
   })

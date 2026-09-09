@@ -1,8 +1,24 @@
 # Azure Blob + Photoshop generate-manifest
 
-Upload a PSD to Azure, mint a write SAS for the JSON destination, call
-`@executioncontrolprotocol/adobe-firefly-services.photoshop-generate-manifest`
-(with `poll: true`), then download the manifest blob.
+Upload a PSD to Azure, mint a write SAS for the JSON destination, then call
+`@executioncontrolprotocol/adobe-firefly-services.photoshop-generate-manifest`.
+The capability **polls Adobe internally** and returns the **PSD manifest JSON**
+(layer tree) as the step output under `.as("manifest")`.
+
+## Author-time inspection
+
+Use a test session to stop after the manifest step, inspect layer ids, then
+append edit steps that `ref("manifest.layers.0.id")` (or the path that matches
+your PSD):
+
+```sh
+ecp test start workflow.ts --env environment.ts -o session.json
+ecp test run --to manifest --env environment.ts --session session.json
+# inspect session.state.manifest, then extend the workflow with create-composite refs
+```
+
+Production `ecp run` re-executes the prefix; `ref()` resolves at runtime from
+committed state.
 
 ## Prerequisites
 

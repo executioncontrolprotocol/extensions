@@ -14,11 +14,10 @@ export const creative_production_batch_execute = capabilityFor(EXT_ID, "creative
   "api-version": z.enum(["1.0"]).optional()
 }).optional(),
   body: schemas.Schema_BatchExecuteRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_BatchExecuteAcceptedResponse)
+  .withOutput(schemas.Schema_BatchStatusResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -29,12 +28,12 @@ export const creative_production_batch_execute = capabilityFor(EXT_ID, "creative
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_BatchExecuteAcceptedResponse,
+      outputSchema: schemas.Schema_BatchStatusResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -51,10 +50,7 @@ export const creative_production_list_batches = capabilityFor(EXT_ID, "creative-
 }).optional(),
   headers: z.object({
   "api-version": z.enum(["1.0"]).optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_ListBatchesResponse)
   .withHandler(async (input, ctx) => {
@@ -67,12 +63,10 @@ export const creative_production_list_batches = capabilityFor(EXT_ID, "creative-
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_ListBatchesResponse,
+      asyncMode: "none",
     })
   })
 
@@ -84,10 +78,7 @@ export const creative_production_get_batch_status = capabilityFor(EXT_ID, "creat
 }),
   headers: z.object({
   "api-version": z.enum(["1.0"]).optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_BatchStatusResponse)
   .withHandler(async (input, ctx) => {
@@ -100,12 +91,10 @@ export const creative_production_get_batch_status = capabilityFor(EXT_ID, "creat
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_BatchStatusResponse,
+      asyncMode: "none",
     })
   })
 
@@ -117,10 +106,7 @@ export const creative_production_cancel_batch = capabilityFor(EXT_ID, "creative-
 }),
   headers: z.object({
   "api-version": z.enum(["1.0"]).optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(z.object({
   "batchId": z.string().optional(),
@@ -139,9 +125,6 @@ export const creative_production_cancel_batch = capabilityFor(EXT_ID, "creative-
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: z.object({
@@ -151,6 +134,7 @@ export const creative_production_cancel_batch = capabilityFor(EXT_ID, "creative-
   "previousStatus": z.string().optional(),
   "assets": schemas.Schema_BatchAssetCounts.optional()
 }),
+      asyncMode: "none",
     })
   })
 
@@ -167,10 +151,7 @@ export const creative_production_list_batch_executions = capabilityFor(EXT_ID, "
 }).optional(),
   headers: z.object({
   "api-version": z.enum(["1.0"]).optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(z.object({
   "batchId": z.string().optional(),
@@ -193,9 +174,6 @@ export const creative_production_list_batch_executions = capabilityFor(EXT_ID, "
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: z.object({
@@ -209,5 +187,6 @@ export const creative_production_list_batch_executions = capabilityFor(EXT_ID, "
   "hasMore": z.boolean().optional()
 }).optional()
 }),
+      asyncMode: "none",
     })
   })

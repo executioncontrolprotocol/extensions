@@ -8,8 +8,10 @@ const FIXTURE_PSD_BASE64 =
   "OEJQUwABAAAAAAAAAAMAAAABAAAAAQAIAAMAAAAAAAAAAAAAAAAAAP8AAA=="
 
 /**
- * Upload a PSD to Azure, mint a write SAS for the manifest JSON, call Photoshop
- * generate-manifest (poll), then download the manifest blob.
+ * Upload a PSD to Azure, mint a write SAS for the manifest JSON, then call Photoshop
+ * generate-manifest. The capability polls internally and returns the PSD manifest JSON
+ * (layer tree) as step output — ready for author-time `ecp test` runTo inspection and
+ * runtime `ref("manifest.layers.0.id")` sequencing.
  */
 export default workflow("Azure Blob + Photoshop generate-manifest")
   .run([
@@ -34,7 +36,6 @@ export default workflow("Azure Blob + Photoshop generate-manifest")
       "Generate PSD manifest",
     )
       .with({
-        poll: true,
         body: {
           image: { source: { url: ref("upload.sasUrl") } },
           outputs: [
@@ -49,10 +50,4 @@ export default workflow("Azure Blob + Photoshop generate-manifest")
         },
       })
       .as("manifest"),
-
-    step("@executioncontrolprotocol/azure-blob-storage.download", "Download manifest JSON")
-      .with({
-        blobName: "sample-manifest.json",
-      })
-      .as("downloaded"),
   ])

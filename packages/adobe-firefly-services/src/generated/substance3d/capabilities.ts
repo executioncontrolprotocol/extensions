@@ -17,7 +17,6 @@ export const substance3d_v1_composites_compose = capabilityFor(EXT_ID, "substanc
   "X-User-Token": z.string().optional()
 }).optional(),
   body: schemas.Schema_restv1_ComposeSceneRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
@@ -32,12 +31,12 @@ export const substance3d_v1_composites_compose = capabilityFor(EXT_ID, "substanc
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_restv1beta_ComposeSceneResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -48,7 +47,6 @@ export const substance3d_v1_scenes_assemble = capabilityFor(EXT_ID, "substance3d
   "wait": z.boolean().optional()
 }).optional(),
   body: schemas.Schema_restv1beta_CreateSceneRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
@@ -63,12 +61,12 @@ export const substance3d_v1_scenes_assemble = capabilityFor(EXT_ID, "substance3d
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_restv1beta_CreateSceneResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -79,7 +77,6 @@ export const substance3d_v1_scenes_convert = capabilityFor(EXT_ID, "substance3d-
   "wait": z.boolean().optional()
 }).optional(),
   body: schemas.Schema_restv1beta_ModelConvertRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
@@ -94,12 +91,12 @@ export const substance3d_v1_scenes_convert = capabilityFor(EXT_ID, "substance3d-
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_restv1beta_ModelConvertResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -110,7 +107,6 @@ export const substance3d_v1_scenes_describe = capabilityFor(EXT_ID, "substance3d
   "wait": z.boolean().optional()
 }).optional(),
   body: schemas.Schema_restv1beta_SceneDescRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
@@ -125,12 +121,12 @@ export const substance3d_v1_scenes_describe = capabilityFor(EXT_ID, "substance3d
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_restv1beta_SceneDescResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -141,7 +137,6 @@ export const substance3d_v1_scenes_render = capabilityFor(EXT_ID, "substance3d-v
   "wait": z.boolean().optional()
 }).optional(),
   body: schemas.Schema_restv1beta_RenderSceneRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
@@ -156,12 +151,12 @@ export const substance3d_v1_scenes_render = capabilityFor(EXT_ID, "substance3d-v
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_restv1beta_RenderSceneResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -172,7 +167,6 @@ export const substance3d_v1_scenes_render_basic = capabilityFor(EXT_ID, "substan
   "wait": z.boolean().optional()
 }).optional(),
   body: schemas.Schema_restv1beta_RenderModelRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
@@ -187,22 +181,18 @@ export const substance3d_v1_scenes_render_basic = capabilityFor(EXT_ID, "substan
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_restv1beta_RenderModelResponse,
+      asyncMode: "submit",
     })
   })
 
 /** Create Space */
 export const substance3d_create_space_v1 = capabilityFor(EXT_ID, "substance3d-create-space-v1")
-  .withInput(z.object({
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
+  .withInput(z.object({}))
   .withOutput(schemas.Schema_rest_base_Space)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
@@ -214,22 +204,16 @@ export const substance3d_create_space_v1 = capabilityFor(EXT_ID, "substance3d-cr
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_rest_base_Space,
+      asyncMode: "none",
     })
   })
 
 /** Create Space API */
 export const substance3d_create_space_v2 = capabilityFor(EXT_ID, "substance3d-create-space-v2")
-  .withInput(z.object({
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
+  .withInput(z.object({}))
   .withOutput(schemas.Schema_rest_base_Space)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
@@ -241,22 +225,17 @@ export const substance3d_create_space_v2 = capabilityFor(EXT_ID, "substance3d-cr
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_rest_base_Space,
+      asyncMode: "none",
     })
   })
 
 /** Create Space From Frame IO API */
 export const substance3d_create_space_from_frame_io_v2 = capabilityFor(EXT_ID, "substance3d-create-space-from-frame-io-v2")
   .withInput(z.object({
-  body: schemas.Schema_rest_base_FileFrameIO,
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+  body: schemas.Schema_rest_base_FileFrameIO
 }))
   .withOutput(schemas.Schema_rest_base_Space)
   .withHandler(async (input, ctx) => {
@@ -269,22 +248,17 @@ export const substance3d_create_space_from_frame_io_v2 = capabilityFor(EXT_ID, "
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_rest_base_Space,
+      asyncMode: "none",
     })
   })
 
 /** Create Space From Next Frame IO API */
 export const substance3d_create_space_from_next_frame_io_v2 = capabilityFor(EXT_ID, "substance3d-create-space-from-next-frame-io-v2")
   .withInput(z.object({
-  body: schemas.Schema_rest_base_FileNextFrameIO,
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+  body: schemas.Schema_rest_base_FileNextFrameIO
 }))
   .withOutput(schemas.Schema_rest_base_Space)
   .withHandler(async (input, ctx) => {
@@ -297,22 +271,17 @@ export const substance3d_create_space_from_next_frame_io_v2 = capabilityFor(EXT_
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_rest_base_Space,
+      asyncMode: "none",
     })
   })
 
 /** Create Space from URL API */
 export const substance3d_create_space_url_v2 = capabilityFor(EXT_ID, "substance3d-create-space-url-v2")
   .withInput(z.object({
-  body: z.array(schemas.Schema_rest_base_FileURL).nullable(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+  body: z.array(schemas.Schema_rest_base_FileURL).nullable()
 }))
   .withOutput(schemas.Schema_rest_base_Space)
   .withHandler(async (input, ctx) => {
@@ -325,11 +294,9 @@ export const substance3d_create_space_url_v2 = capabilityFor(EXT_ID, "substance3
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_rest_base_Space,
+      asyncMode: "none",
     })
   })

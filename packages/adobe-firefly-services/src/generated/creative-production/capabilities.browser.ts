@@ -17,11 +17,10 @@ export const creative_production_batch_execute = capabilityFor(EXT_ID, "creative
   "api-version": z.enum(["1.0"]).optional()
 }).optional(),
   body: schemas.Schema_BatchExecuteRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_BatchExecuteAcceptedResponse)
+  .withOutput(schemas.Schema_BatchStatusResponse)
   .withHandler(hostHop)
 
 /** List batches */
@@ -37,10 +36,7 @@ export const creative_production_list_batches = capabilityFor(EXT_ID, "creative-
 }).optional(),
   headers: z.object({
   "api-version": z.enum(["1.0"]).optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_ListBatchesResponse)
   .withHandler(hostHop)
@@ -53,10 +49,7 @@ export const creative_production_get_batch_status = capabilityFor(EXT_ID, "creat
 }),
   headers: z.object({
   "api-version": z.enum(["1.0"]).optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_BatchStatusResponse)
   .withHandler(hostHop)
@@ -69,10 +62,7 @@ export const creative_production_cancel_batch = capabilityFor(EXT_ID, "creative-
 }),
   headers: z.object({
   "api-version": z.enum(["1.0"]).optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(z.object({
   "batchId": z.string().optional(),
@@ -96,10 +86,7 @@ export const creative_production_list_batch_executions = capabilityFor(EXT_ID, "
 }).optional(),
   headers: z.object({
   "api-version": z.enum(["1.0"]).optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(z.object({
   "batchId": z.string().optional(),

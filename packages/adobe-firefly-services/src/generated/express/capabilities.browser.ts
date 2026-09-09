@@ -17,10 +17,7 @@ export const express_tagged_documents = capabilityFor(EXT_ID, "express-tagged-do
   "start": z.number().int().optional(),
   "limit": z.number().int().optional(),
   "sortBy": schemas.Schema_TaggedDocumentsSortBy.optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_TaggedDocumentsResponse)
   .withHandler(hostHop)
@@ -33,10 +30,7 @@ export const express_tagged_document_details = capabilityFor(EXT_ID, "express-ta
 }),
   query: z.object({
   "start": z.number().int().optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_TaggedDocumentDetailsResponse)
   .withHandler(hostHop)
@@ -45,22 +39,20 @@ export const express_tagged_document_details = capabilityFor(EXT_ID, "express-ta
 export const express_generate_variation = capabilityFor(EXT_ID, "express-generate-variation")
   .withInput(z.object({
   body: schemas.Schema_GenerateVariationRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobResponse)
+  .withOutput(schemas.Schema_GenerateVariationResponse)
   .withHandler(hostHop)
 
 /** Export rendition */
 export const express_export_rendition = capabilityFor(EXT_ID, "express-export-rendition")
   .withInput(z.object({
   body: schemas.Schema_ExportRenditionRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobResponse)
+  .withOutput(schemas.Schema_ExportRenditionResponse)
   .withHandler(hostHop)
 
 /** Job status */
@@ -68,10 +60,7 @@ export const express_get_job_status = capabilityFor(EXT_ID, "express-get-job-sta
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(z.union([schemas.Schema_JobStatusResponse, schemas.Schema_ExportRenditionResponse, schemas.Schema_GenerateVariationResponse]))
   .withHandler(hostHop)

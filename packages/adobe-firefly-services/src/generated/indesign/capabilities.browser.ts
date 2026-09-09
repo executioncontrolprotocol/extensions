@@ -14,28 +14,20 @@ async function hostHop(): Promise<never> {
 export const indesign_data_merge = capabilityFor(EXT_ID, "indesign-data-merge")
   .withInput(z.object({
   body: schemas.Schema_MergeDataRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(hostHop)
 
 /** Get data merge tags */
 export const indesign_data_merge_tags = capabilityFor(EXT_ID, "indesign-data-merge-tags")
   .withInput(z.object({
   body: schemas.Schema_MergeDataTagsRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(hostHop)
 
 /** Remap links */
@@ -45,28 +37,20 @@ export const indesign_remap_links = capabilityFor(EXT_ID, "indesign-remap-links"
   "x-aem-token": z.string()
 }).optional(),
   body: schemas.Schema_RemapLinksRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(hostHop)
 
 /** Create JPEG, PNG, or PDF renditions */
 export const indesign_rendition_job = capabilityFor(EXT_ID, "indesign-rendition-job")
   .withInput(z.object({
   body: schemas.Schema_CreateRenditionRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(hostHop)
 
 /** List custom scripts API */
@@ -74,10 +58,7 @@ export const indesign_list_custom_scripts = capabilityFor(EXT_ID, "indesign-list
   .withInput(z.object({
   query: z.object({
   "page": z.number().int().optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_CustomScriptsListResponse)
   .withHandler(hostHop)
@@ -85,15 +66,10 @@ export const indesign_list_custom_scripts = capabilityFor(EXT_ID, "indesign-list
 /** Submit a Custom Script */
 export const indesign_submit_custom_script = capabilityFor(EXT_ID, "indesign-submit-custom-script")
   .withInput(z.object({
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "capability": z.string().optional(),
-  "version": z.string().optional(),
-  "url": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(hostHop)
 
 /** Submit a custom script execution request */
@@ -104,14 +80,10 @@ export const indesign_execute_custom_script = capabilityFor(EXT_ID, "indesign-ex
   "script_name": z.string()
 }),
   body: schemas.Schema_BaseJobRequestWithOutput,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(hostHop)
 
 /** Get Custom Script details */
@@ -119,10 +91,7 @@ export const indesign_get_custom_script_details = capabilityFor(EXT_ID, "indesig
   .withInput(z.object({
   path: z.object({
   "script_name": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(schemas.Schema_CustomScriptDetails)
   .withHandler(hostHop)
@@ -132,10 +101,7 @@ export const indesign_delete_custom_script = capabilityFor(EXT_ID, "indesign-del
   .withInput(z.object({
   path: z.object({
   "script_name": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(z.object({}))
   .withHandler(hostHop)
@@ -146,10 +112,7 @@ export const indesign_update_script_app_version = capabilityFor(EXT_ID, "indesig
   path: z.object({
   "script_name": z.string()
 }),
-  body: schemas.Schema_AppVersionUpdateRequest,
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+  body: schemas.Schema_AppVersionUpdateRequest
 }))
   .withOutput(z.object({
   "message": z.string().optional()
@@ -158,11 +121,7 @@ export const indesign_update_script_app_version = capabilityFor(EXT_ID, "indesig
 
 /** Get Current App Versions */
 export const indesign_list_app_versions = capabilityFor(EXT_ID, "indesign-list-app-versions")
-  .withInput(z.object({
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
+  .withInput(z.object({}))
   .withOutput(z.array(schemas.Schema_AppVersionInfo))
   .withHandler(hostHop)
 
@@ -170,14 +129,10 @@ export const indesign_list_app_versions = capabilityFor(EXT_ID, "indesign-list-a
 export const indesign_get_document_info = capabilityFor(EXT_ID, "indesign-get-document-info")
   .withInput(z.object({
   body: schemas.Schema_DocumentInfoRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(hostHop)
 
 /** Get status - Document Info API */
@@ -185,10 +140,7 @@ export const indesign_get_document_info_job_status = capabilityFor(EXT_ID, "inde
   .withInput(z.object({
   path: z.object({
   "document-info_job_id": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(z.union([schemas.Schema_notstartedEvent, schemas.Schema_runningEvent, schemas.Schema_succeededEvent, schemas.Schema_failedEvent, schemas.Schema_partialSuccessEvent]))
   .withHandler(hostHop)
@@ -197,14 +149,10 @@ export const indesign_get_document_info_job_status = capabilityFor(EXT_ID, "inde
 export const indesign_convert_pdfto_in_design = capabilityFor(EXT_ID, "indesign-convert-pdfto-in-design")
   .withInput(z.object({
   body: schemas.Schema_ConvertToInDesignRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string().optional(),
-  "statusUrl": z.string().optional()
-}))
+  .withOutput(schemas.Schema_succeededEvent)
   .withHandler(hostHop)
 
 /** Get status - Convert PDF to InDesign API */
@@ -212,10 +160,7 @@ export const indesign_get_convert_pdfto_in_design_job_status = capabilityFor(EXT
   .withInput(z.object({
   path: z.object({
   "convert-pdf-to-indesign_job_id": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(z.union([schemas.Schema_notstartedEvent, schemas.Schema_runningEvent, schemas.Schema_succeededEvent, schemas.Schema_failedEvent, schemas.Schema_partialSuccessEvent]))
   .withHandler(hostHop)
@@ -229,10 +174,7 @@ export const indesign_get_job_status = capabilityFor(EXT_ID, "indesign-get-job-s
   query: z.object({
   "size": z.number().int().min(1).optional(),
   "page": z.number().int().min(0).optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(z.union([schemas.Schema_notstartedEvent, schemas.Schema_runningEvent, schemas.Schema_succeededEvent, schemas.Schema_failedEvent, schemas.Schema_partialSuccessEvent]))
   .withHandler(hostHop)

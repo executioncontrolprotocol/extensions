@@ -10,7 +10,6 @@ const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 /** Submit a Custom Script */
 export const illustrator_register_custom_script_capability = capabilityFor(EXT_ID, "illustrator-register-custom-script-capability")
   .withInput(z.object({
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
@@ -25,12 +24,12 @@ export const illustrator_register_custom_script_capability = capabilityFor(EXT_I
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_CapabilityRegistrationResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -42,11 +41,10 @@ export const illustrator_execute_custom_script_capability = capabilityFor(EXT_ID
   "capabilityName": z.string()
 }),
   body: schemas.Schema_CustomScriptExecuteRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_CustomScriptExecuteResponse)
+  .withOutput(schemas.Schema_CustomScriptJobSucceededResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -57,12 +55,12 @@ export const illustrator_execute_custom_script_capability = capabilityFor(EXT_ID
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_CustomScriptExecuteResponse,
+      outputSchema: schemas.Schema_CustomScriptJobSucceededResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -71,10 +69,7 @@ export const illustrator_custom_scripts_job_status = capabilityFor(EXT_ID, "illu
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(z.union([schemas.Schema_CustomScriptJobSucceededResponse, schemas.Schema_CustomScriptJobRunningResponse, schemas.Schema_CustomScriptJobFailedResponse]))
   .withHandler(async (input, ctx) => {
@@ -87,12 +82,10 @@ export const illustrator_custom_scripts_job_status = capabilityFor(EXT_ID, "illu
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: z.union([schemas.Schema_CustomScriptJobSucceededResponse, schemas.Schema_CustomScriptJobRunningResponse, schemas.Schema_CustomScriptJobFailedResponse]),
+      asyncMode: "none",
     })
   })
 
@@ -100,11 +93,10 @@ export const illustrator_custom_scripts_job_status = capabilityFor(EXT_ID, "illu
 export const illustrator_data_merge = capabilityFor(EXT_ID, "illustrator-data-merge")
   .withInput(z.object({
   body: schemas.Schema_DataMergeRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobLinkResponse)
+  .withOutput(schemas.Schema_DataMergeJobApiResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -115,12 +107,12 @@ export const illustrator_data_merge = capabilityFor(EXT_ID, "illustrator-data-me
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobLinkResponse,
+      outputSchema: schemas.Schema_DataMergeJobApiResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -128,11 +120,10 @@ export const illustrator_data_merge = capabilityFor(EXT_ID, "illustrator-data-me
 export const illustrator_create_rendition = capabilityFor(EXT_ID, "illustrator-create-rendition")
   .withInput(z.object({
   body: schemas.Schema_CreateRenditionRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobLinkResponse)
+  .withOutput(schemas.Schema_CreateRenditionJobApiResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -143,12 +134,12 @@ export const illustrator_create_rendition = capabilityFor(EXT_ID, "illustrator-c
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobLinkResponse,
+      outputSchema: schemas.Schema_CreateRenditionJobApiResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -156,11 +147,10 @@ export const illustrator_create_rendition = capabilityFor(EXT_ID, "illustrator-c
 export const illustrator_trace_image = capabilityFor(EXT_ID, "illustrator-trace-image")
   .withInput(z.object({
   body: schemas.Schema_VectorizeRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobLinkResponse)
+  .withOutput(schemas.Schema_ImageTraceJobApiResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -171,12 +161,12 @@ export const illustrator_trace_image = capabilityFor(EXT_ID, "illustrator-trace-
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobLinkResponse,
+      outputSchema: schemas.Schema_ImageTraceJobApiResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -185,10 +175,7 @@ export const illustrator_image_trace_job_status = capabilityFor(EXT_ID, "illustr
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(z.union([schemas.Schema_ImageTraceJobApiResponse, schemas.Schema_JobStatusPollPayload, schemas.Schema_ImageTraceJobFailedResponse]))
   .withHandler(async (input, ctx) => {
@@ -201,12 +188,10 @@ export const illustrator_image_trace_job_status = capabilityFor(EXT_ID, "illustr
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: z.union([schemas.Schema_ImageTraceJobApiResponse, schemas.Schema_JobStatusPollPayload, schemas.Schema_ImageTraceJobFailedResponse]),
+      asyncMode: "none",
     })
   })
 
@@ -215,10 +200,7 @@ export const illustrator_facade_job_status = capabilityFor(EXT_ID, "illustrator-
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(z.union([schemas.Schema_DataMergeJobApiResponse, schemas.Schema_CreateRenditionJobApiResponse, schemas.Schema_JobStatusPollPayload, schemas.Schema_DataMergeJobFailedResponse, schemas.Schema_DataMergeJobPartiallySucceededResponse]))
   .withHandler(async (input, ctx) => {
@@ -231,11 +213,9 @@ export const illustrator_facade_job_status = capabilityFor(EXT_ID, "illustrator-
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: z.union([schemas.Schema_DataMergeJobApiResponse, schemas.Schema_CreateRenditionJobApiResponse, schemas.Schema_JobStatusPollPayload, schemas.Schema_DataMergeJobFailedResponse, schemas.Schema_DataMergeJobPartiallySucceededResponse]),
+      asyncMode: "none",
     })
   })

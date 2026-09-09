@@ -4,6 +4,7 @@ import { capabilityFor } from "@executioncontrolprotocol/core"
 import { z } from "zod"
 import * as schemas from "./schemas.js"
 import { invokeAdobeOperation } from "../../runtime/invoke.js"
+import { photoshopManifestDocumentSchema } from "../../runtime/photoshop-manifest.js"
 
 const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 
@@ -11,11 +12,10 @@ const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 export const photoshop_auto_crop = capabilityFor(EXT_ID, "photoshop-auto-crop")
   .withInput(z.object({
   body: schemas.Schema_AutoCropRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobAcceptedResponse)
+  .withOutput(schemas.Schema_JobStatusResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -26,12 +26,12 @@ export const photoshop_auto_crop = capabilityFor(EXT_ID, "photoshop-auto-crop")
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobAcceptedResponse,
+      outputSchema: schemas.Schema_JobStatusResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -39,11 +39,10 @@ export const photoshop_auto_crop = capabilityFor(EXT_ID, "photoshop-auto-crop")
 export const photoshop_create_artboard = capabilityFor(EXT_ID, "photoshop-create-artboard")
   .withInput(z.object({
   body: schemas.Schema_CreateArtboardRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobAcceptedResponse)
+  .withOutput(schemas.Schema_JobStatusResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -54,12 +53,12 @@ export const photoshop_create_artboard = capabilityFor(EXT_ID, "photoshop-create
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobAcceptedResponse,
+      outputSchema: schemas.Schema_JobStatusResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -67,11 +66,10 @@ export const photoshop_create_artboard = capabilityFor(EXT_ID, "photoshop-create
 export const photoshop_create_composite = capabilityFor(EXT_ID, "photoshop-create-composite")
   .withInput(z.object({
   body: schemas.Schema_CreateCompositeRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobAcceptedResponse)
+  .withOutput(schemas.Schema_JobStatusResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -82,12 +80,12 @@ export const photoshop_create_composite = capabilityFor(EXT_ID, "photoshop-creat
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobAcceptedResponse,
+      outputSchema: schemas.Schema_JobStatusResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -95,11 +93,10 @@ export const photoshop_create_composite = capabilityFor(EXT_ID, "photoshop-creat
 export const photoshop_edit = capabilityFor(EXT_ID, "photoshop-edit")
   .withInput(z.object({
   body: schemas.Schema_EditRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobAcceptedResponse)
+  .withOutput(schemas.Schema_JobStatusResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -110,12 +107,12 @@ export const photoshop_edit = capabilityFor(EXT_ID, "photoshop-edit")
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobAcceptedResponse,
+      outputSchema: schemas.Schema_JobStatusResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -123,11 +120,10 @@ export const photoshop_edit = capabilityFor(EXT_ID, "photoshop-edit")
 export const photoshop_execute_actions = capabilityFor(EXT_ID, "photoshop-execute-actions")
   .withInput(z.object({
   body: schemas.Schema_ActionsRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobAcceptedResponse)
+  .withOutput(schemas.Schema_JobStatusResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -138,12 +134,12 @@ export const photoshop_execute_actions = capabilityFor(EXT_ID, "photoshop-execut
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobAcceptedResponse,
+      outputSchema: schemas.Schema_JobStatusResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -151,11 +147,10 @@ export const photoshop_execute_actions = capabilityFor(EXT_ID, "photoshop-execut
 export const photoshop_generate_manifest = capabilityFor(EXT_ID, "photoshop-generate-manifest")
   .withInput(z.object({
   body: schemas.Schema_GenerateManifestRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobAcceptedResponse)
+  .withOutput(photoshopManifestDocumentSchema)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -166,12 +161,13 @@ export const photoshop_generate_manifest = capabilityFor(EXT_ID, "photoshop-gene
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobAcceptedResponse,
+      outputSchema: photoshopManifestDocumentSchema,
+      asyncMode: "submit",
+      materialize: "photoshop-manifest",
     })
   })
 
@@ -180,10 +176,7 @@ export const photoshop_get_job_status = capabilityFor(EXT_ID, "photoshop-get-job
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(schemas.Schema_JobStatusResponse)
   .withHandler(async (input, ctx) => {
@@ -196,11 +189,9 @@ export const photoshop_get_job_status = capabilityFor(EXT_ID, "photoshop-get-job
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_JobStatusResponse,
+      asyncMode: "none",
     })
   })

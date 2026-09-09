@@ -9,11 +9,7 @@ const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 
 /** Get available voices */
 export const audio_video_voices = capabilityFor(EXT_ID, "audio-video-voices")
-  .withInput(z.object({
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
+  .withInput(z.object({}))
   .withOutput(schemas.Schema_SuccessfulVoicesResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
@@ -25,12 +21,10 @@ export const audio_video_voices = capabilityFor(EXT_ID, "audio-video-voices")
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_SuccessfulVoicesResponse,
+      asyncMode: "none",
     })
   })
 
@@ -38,11 +32,10 @@ export const audio_video_voices = capabilityFor(EXT_ID, "audio-video-voices")
 export const audio_video_generate_speech = capabilityFor(EXT_ID, "audio-video-generate-speech")
   .withInput(z.object({
   body: schemas.Schema_TTSRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_SubmitAPIResponse)
+  .withOutput(schemas.Schema_StatusAPIResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -53,12 +46,12 @@ export const audio_video_generate_speech = capabilityFor(EXT_ID, "audio-video-ge
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_SubmitAPIResponse,
+      outputSchema: schemas.Schema_StatusAPIResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -67,10 +60,7 @@ export const audio_video_status = capabilityFor(EXT_ID, "audio-video-status")
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(schemas.Schema_StatusAPIResponse)
   .withHandler(async (input, ctx) => {
@@ -83,12 +73,10 @@ export const audio_video_status = capabilityFor(EXT_ID, "audio-video-status")
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_StatusAPIResponse,
+      asyncMode: "none",
     })
   })
 
@@ -96,11 +84,10 @@ export const audio_video_status = capabilityFor(EXT_ID, "audio-video-status")
 export const audio_video_template_describe = capabilityFor(EXT_ID, "audio-video-template-describe")
   .withInput(z.object({
   body: schemas.Schema_TemplateDescribeRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_TemplateDescribeResponse)
+  .withOutput(schemas.Schema_StatusAPIResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -111,22 +98,18 @@ export const audio_video_template_describe = capabilityFor(EXT_ID, "audio-video-
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_TemplateDescribeResponse,
+      outputSchema: schemas.Schema_StatusAPIResponse,
+      asyncMode: "submit",
     })
   })
 
 /** Fetch video rendering presets */
 export const audio_video_get_presets = capabilityFor(EXT_ID, "audio-video-get-presets")
-  .withInput(z.object({
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
+  .withInput(z.object({}))
   .withOutput(schemas.Schema_PresetsResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
@@ -138,12 +121,10 @@ export const audio_video_get_presets = capabilityFor(EXT_ID, "audio-video-get-pr
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_PresetsResponse,
+      asyncMode: "none",
     })
   })
 
@@ -151,11 +132,10 @@ export const audio_video_get_presets = capabilityFor(EXT_ID, "audio-video-get-pr
 export const audio_video_template_render = capabilityFor(EXT_ID, "audio-video-template-render")
   .withInput(z.object({
   body: schemas.Schema_TemplateRenderRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_TemplateRenderResponse)
+  .withOutput(schemas.Schema_JobStatus)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -166,12 +146,12 @@ export const audio_video_template_render = capabilityFor(EXT_ID, "audio-video-te
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_TemplateRenderResponse,
+      outputSchema: schemas.Schema_JobStatus,
+      asyncMode: "submit",
     })
   })
 
@@ -183,10 +163,7 @@ export const audio_video_cancel_render_job = capabilityFor(EXT_ID, "audio-video-
 }),
   headers: z.object({
   "x-request-id": z.string().optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_CancelAcceptedResponse)
   .withHandler(async (input, ctx) => {
@@ -199,12 +176,10 @@ export const audio_video_cancel_render_job = capabilityFor(EXT_ID, "audio-video-
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_CancelAcceptedResponse,
+      asyncMode: "none",
     })
   })
 
@@ -218,10 +193,7 @@ export const audio_video_list_render_jobs = capabilityFor(EXT_ID, "audio-video-l
 }).optional(),
   headers: z.object({
   "x-request-id": z.string().optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_RenderJobListResponse)
   .withHandler(async (input, ctx) => {
@@ -234,12 +206,10 @@ export const audio_video_list_render_jobs = capabilityFor(EXT_ID, "audio-video-l
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_RenderJobListResponse,
+      asyncMode: "none",
     })
   })
 
@@ -259,14 +229,10 @@ export const audio_video_generate_reframed_video = capabilityFor(EXT_ID, "audio-
   "aspectRatios": z.array(z.string())
 })
 }),
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string(),
-  "statusUrl": z.string()
-}))
+  .withOutput(schemas.Schema_StatusAPIResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -277,15 +243,12 @@ export const audio_video_generate_reframed_video = capabilityFor(EXT_ID, "audio-
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: z.object({
-  "jobId": z.string(),
-  "statusUrl": z.string()
-}),
+      outputSchema: schemas.Schema_StatusAPIResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -293,11 +256,10 @@ export const audio_video_generate_reframed_video = capabilityFor(EXT_ID, "audio-
 export const audio_video_transcribe = capabilityFor(EXT_ID, "audio-video-transcribe")
   .withInput(z.object({
   body: schemas.Schema_TranscribeRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobStatusLinkResponse)
+  .withOutput(schemas.Schema_FireflyJobResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -308,12 +270,12 @@ export const audio_video_transcribe = capabilityFor(EXT_ID, "audio-video-transcr
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobStatusLinkResponse,
+      outputSchema: schemas.Schema_FireflyJobResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -321,11 +283,10 @@ export const audio_video_transcribe = capabilityFor(EXT_ID, "audio-video-transcr
 export const audio_video_dub = capabilityFor(EXT_ID, "audio-video-dub")
   .withInput(z.object({
   body: schemas.Schema_DubRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobStatusLinkResponse)
+  .withOutput(schemas.Schema_FireflyJobResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -336,22 +297,18 @@ export const audio_video_dub = capabilityFor(EXT_ID, "audio-video-dub")
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobStatusLinkResponse,
+      outputSchema: schemas.Schema_FireflyJobResponse,
+      asyncMode: "submit",
     })
   })
 
 /** Get available avatars */
 export const audio_video_avatars = capabilityFor(EXT_ID, "audio-video-avatars")
-  .withInput(z.object({
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
+  .withInput(z.object({}))
   .withOutput(schemas.Schema_SuccessfulAvatarsResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
@@ -363,12 +320,10 @@ export const audio_video_avatars = capabilityFor(EXT_ID, "audio-video-avatars")
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_SuccessfulAvatarsResponse,
+      asyncMode: "none",
     })
   })
 
@@ -395,14 +350,10 @@ export const audio_video_generate_reframed_video_v2 = capabilityFor(EXT_ID, "aud
 })]))
 })
 }),
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string(),
-  "statusUrl": z.string()
-}))
+  .withOutput(schemas.Schema_StatusAPIResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -413,15 +364,12 @@ export const audio_video_generate_reframed_video_v2 = capabilityFor(EXT_ID, "aud
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: z.object({
-  "jobId": z.string(),
-  "statusUrl": z.string()
-}),
+      outputSchema: schemas.Schema_StatusAPIResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -430,10 +378,7 @@ export const audio_video_job_result_v2 = capabilityFor(EXT_ID, "audio-video-job-
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(z.union([z.object({
   "status": z.enum(["not_started", "running", "failed", "succeeded", "partially_succeeded"]),
@@ -486,9 +431,6 @@ export const audio_video_job_result_v2 = capabilityFor(EXT_ID, "audio-video-job-
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: z.union([z.object({
@@ -532,6 +474,7 @@ export const audio_video_job_result_v2 = capabilityFor(EXT_ID, "audio-video-job-
 }))
 })
 })]),
+      asyncMode: "none",
     })
   })
 
@@ -539,11 +482,10 @@ export const audio_video_job_result_v2 = capabilityFor(EXT_ID, "audio-video-job-
 export const audio_video_generate_avatar = capabilityFor(EXT_ID, "audio-video-generate-avatar")
   .withInput(z.object({
   body: schemas.Schema_AvatarRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_SubmitAPIResponse)
+  .withOutput(schemas.Schema_StatusAPIResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -554,12 +496,12 @@ export const audio_video_generate_avatar = capabilityFor(EXT_ID, "audio-video-ge
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_SubmitAPIResponse,
+      outputSchema: schemas.Schema_StatusAPIResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -567,11 +509,10 @@ export const audio_video_generate_avatar = capabilityFor(EXT_ID, "audio-video-ge
 export const audio_video_transcribe__v1_transcribe = capabilityFor(EXT_ID, "audio-video-transcribe-transcribe")
   .withInput(z.object({
   body: schemas.Schema_TranscribeRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobStatusLinkResponse)
+  .withOutput(schemas.Schema_FireflyJobResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -582,12 +523,12 @@ export const audio_video_transcribe__v1_transcribe = capabilityFor(EXT_ID, "audi
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobStatusLinkResponse,
+      outputSchema: schemas.Schema_FireflyJobResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -595,11 +536,10 @@ export const audio_video_transcribe__v1_transcribe = capabilityFor(EXT_ID, "audi
 export const audio_video_dub__v1_dub = capabilityFor(EXT_ID, "audio-video-dub-dub")
   .withInput(z.object({
   body: schemas.Schema_DubRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobStatusLinkResponse)
+  .withOutput(schemas.Schema_FireflyJobResponse)
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -610,12 +550,12 @@ export const audio_video_dub__v1_dub = capabilityFor(EXT_ID, "audio-video-dub-du
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
         pollIntervalMs?: number
         pollTimeoutMs?: number
       },
       ctx,
-      outputSchema: schemas.Schema_JobStatusLinkResponse,
+      outputSchema: schemas.Schema_FireflyJobResponse,
+      asyncMode: "submit",
     })
   })
 
@@ -624,10 +564,7 @@ export const audio_video_job_result = capabilityFor(EXT_ID, "audio-video-job-res
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(schemas.Schema_FireflyJobResponse)
   .withHandler(async (input, ctx) => {
@@ -640,11 +577,9 @@ export const audio_video_job_result = capabilityFor(EXT_ID, "audio-video-job-res
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-        poll?: boolean
-        pollIntervalMs?: number
-        pollTimeoutMs?: number
       },
       ctx,
       outputSchema: schemas.Schema_FireflyJobResponse,
+      asyncMode: "none",
     })
   })

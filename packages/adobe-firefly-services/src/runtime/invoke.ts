@@ -1,7 +1,8 @@
 import { z } from "zod"
 import { createImsTokenProvider } from "../auth/ims.js"
 import { buildUrl, createAdobeHttpClient } from "../http/client.js"
-import { pollAdobeJob } from "../http/async-job.js"
+import { extractAdobeStatusUrl, pollAdobeJob } from "../http/async-job.js"
+import { materializePhotoshopManifest } from "./photoshop-manifest.js"
 
 /**
  * Capability handler context fields used by Adobe invoke.
@@ -31,13 +32,23 @@ export interface AdobeOperationInput {
   headers?: Record<string, string>
   /** JSON body. */
   body?: unknown
-  /** When true, poll status URL if response includes one. */
-  poll?: boolean
-  /** Poll interval. */
+  /** Poll interval (async-submit only). */
   pollIntervalMs?: number
-  /** Poll timeout. */
+  /** Poll timeout (async-submit only). */
   pollTimeoutMs?: number
 }
+
+/**
+ * How the capability treats Adobe's async HTTP pattern.
+ * @category Runtime
+ */
+export type AdobeAsyncMode = "submit" | "none"
+
+/**
+ * Optional product materialization after a successful async poll.
+ * @category Runtime
+ */
+export type AdobeMaterializeMode = "photoshop-manifest"
 
 /**
  * Read optional extension config bag from a capability handler context.
@@ -52,6 +63,7 @@ export function readExtensionConfig(ctx: unknown): Record<string, unknown> {
 
 /**
  * Invoke a generated Adobe OpenAPI operation.
+ * Async-submit capabilities always poll and return the final result (not job-accepted).
  * @category Runtime
  */
 export async function invokeAdobeOperation(options: {
@@ -62,6 +74,10 @@ export async function invokeAdobeOperation(options: {
   /** Capability handler context (`CapabilityContext` + optional `extensionConfig`). */
   ctx: unknown
   outputSchema: z.ZodType
+  /** When \`submit\`, always poll status URL and require one. */
+  asyncMode?: AdobeAsyncMode
+  /** Optional post-poll materialization (e.g. PSD manifest JSON). */
+  materialize?: AdobeMaterializeMode
 }): Promise<unknown> {
   const rawCfg = readExtensionConfig(options.ctx)
   const clientId = typeof rawCfg.clientId === "string" ? rawCfg.clientId : undefined
@@ -93,20 +109,26 @@ export async function invokeAdobeOperation(options: {
   })
 
   let result: unknown = raw
-  if (options.input.poll && raw && typeof raw === "object") {
-    const record = raw as Record<string, unknown>
-    const statusUrl =
-      (typeof record.statusUrl === "string" && record.statusUrl) ||
-      (typeof record.status === "string" && record.status.startsWith("http") && record.status) ||
-      (typeof (record._links as { self?: { href?: string } } | undefined)?.self?.href === "string" &&
-        (record._links as { self: { href: string } }).self.href) ||
-      undefined
-    if (statusUrl) {
-      result = await pollAdobeJob({
-        statusUrl,
-        client,
-        intervalMs: options.input.pollIntervalMs,
-        timeoutMs: options.input.pollTimeoutMs,
+  const asyncMode = options.asyncMode ?? "none"
+
+  if (asyncMode === "submit") {
+    const statusUrl = extractAdobeStatusUrl(raw)
+    if (!statusUrl) {
+      throw new Error(
+        `Adobe async submit ${options.method} ${options.pathTemplate} returned no status URL`,
+      )
+    }
+    result = await pollAdobeJob({
+      statusUrl,
+      client,
+      intervalMs: options.input.pollIntervalMs,
+      timeoutMs: options.input.pollTimeoutMs,
+    })
+
+    if (options.materialize === "photoshop-manifest") {
+      result = await materializePhotoshopManifest({
+        jobStatus: result,
+        requestBody: options.input.body,
       })
     }
   }

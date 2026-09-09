@@ -52,6 +52,21 @@ Photoshop v1 and standalone Lightroom OpenAPI are **out of scope** (v2 supersede
 
 Firefly and Photoshop accept allow-listed HTTPS SAS URLs (including Azure `*.windows.net`). Use [`@executioncontrolprotocol/azure-blob-storage`](../azure-blob-storage/) to upload assets and mint read/write SAS URLs, then pass them into Firefly `referenceBlobs` / Photoshop `source.url` via `ref()`. See `examples/azure-adobe-assets/`.
 
+## Async capabilities return final results
+
+Adobe Firefly Services APIs are often **202 async**. This package hides that from
+workflows:
+
+- **Async submit** ops always poll internally via `pollAdobeJob` and return the
+  **completed** job / product payload (not `jobId` / `statusUrl` accept links).
+- Optional `pollIntervalMs` / `pollTimeoutMs` tune the wait; there is no `poll` flag.
+- **Status / cancel** caps remain for diagnostics; happy-path workflows should not need them.
+- **Sync** caps (list/get metadata) are unchanged.
+
+`photoshop-generate-manifest` materializes the **PSD manifest JSON** (layer tree)
+after the job succeeds so you can `ref("manifest.layers.0.id")` and inspect it with
+`ecp test` `runTo`.
+
 ## Capability input shape
 
 Generated handlers merge OpenAPI path/query/header/body into:
@@ -62,13 +77,11 @@ Generated handlers merge OpenAPI path/query/header/body into:
   query?: { ... },
   headers?: { ... },
   body?: { ... },
-  poll?: boolean,
+  // async-submit only:
   pollIntervalMs?: number,
   pollTimeoutMs?: number,
 }
 ```
-
-When `poll: true` and the response includes a status URL, the runtime polls until success/failure/timeout.
 
 ## Codegen
 

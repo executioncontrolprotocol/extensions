@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from "vitest"
 import { AdobeHttpError, buildUrl, createAdobeHttpClient } from "../src/http/client.js"
-import { pollAdobeJob } from "../src/http/async-job.js"
+import { extractAdobeStatusUrl, pollAdobeJob } from "../src/http/async-job.js"
+import {
+  collectManifestDestinationUrls,
+  extractEmbeddedManifestJson,
+  materializePhotoshopManifest,
+  photoshopManifestDocumentSchema,
+} from "../src/runtime/photoshop-manifest.js"
 
 describe("Adobe HTTP client", () => {
   it("buildUrl substitutes path and query params", () => {
@@ -47,6 +53,21 @@ describe("Adobe HTTP client", () => {
   })
 })
 
+describe("extractAdobeStatusUrl", () => {
+  it("reads statusUrl, links.status, and substance url", () => {
+    expect(extractAdobeStatusUrl({ statusUrl: "https://a.example/s" })).toBe("https://a.example/s")
+    expect(
+      extractAdobeStatusUrl({ links: { status: { href: "https://b.example/s" } } }),
+    ).toBe("https://b.example/s")
+    expect(extractAdobeStatusUrl({ url: "https://c.example/job" })).toBe("https://c.example/job")
+    expect(
+      extractAdobeStatusUrl({
+        links: { result: { href: "https://d.example/r", type: "result" } },
+      }),
+    ).toBe("https://d.example/r")
+  })
+})
+
 describe("pollAdobeJob", () => {
   it("returns when status succeeds", async () => {
     const request = vi
@@ -61,5 +82,38 @@ describe("pollAdobeJob", () => {
     })
     expect(result).toEqual({ status: "succeeded", jobId: "j1" })
     expect(request).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe("photoshop manifest materialize", () => {
+  it("parses destination URLs and embedded job JSON", () => {
+    expect(
+      collectManifestDestinationUrls({
+        outputs: [{ destination: { url: "https://blob.example/m.json" } }],
+      }),
+    ).toEqual(["https://blob.example/m.json"])
+    expect(
+      extractEmbeddedManifestJson({
+        result: { layers: [{ id: 1, name: "A" }] },
+      }),
+    ).toEqual({ layers: [{ id: 1, name: "A" }] })
+  })
+
+  it("downloads manifest JSON from destination when not embedded", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ layers: [{ id: 42, name: "Text" }] }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    )
+    const doc = await materializePhotoshopManifest({
+      jobStatus: { status: "succeeded", jobId: "j1" },
+      requestBody: {
+        outputs: [{ destination: { url: "https://blob.example/m.json" } }],
+      },
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    })
+    expect(doc).toEqual({ layers: [{ id: 42, name: "Text" }] })
+    expect(photoshopManifestDocumentSchema.safeParse(doc).success).toBe(true)
   })
 })

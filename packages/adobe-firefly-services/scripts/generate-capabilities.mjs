@@ -8,6 +8,11 @@ import { fileURLToPath } from "node:url"
 import { parse as parseYaml } from "yaml"
 import { SPEC_SOURCES, familyForSpec } from "./fetch-specs.mjs"
 import { ZodEmitter, toKebab, toSafeIdent } from "./lib/zod-emitter.mjs"
+import {
+  acceptSchemaNameForOperation,
+  classifyOperation,
+  resolveOutputForOperation,
+} from "./lib/operation-class.mjs"
 
 const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 
@@ -89,35 +94,13 @@ function resolveRef(doc, ref) {
 }
 
 /**
- * Pick primary 2xx application/json response schema.
- * @param {object} operation
- * @param {object} doc
- */
-function successResponseSchema(operation, doc) {
-  const responses = operation.responses ?? {}
-  const codes = Object.keys(responses).sort()
-  const successCodes = codes.filter((c) => c.startsWith("2") || c === "default")
-  for (const code of successCodes) {
-    const resp = responses[code]
-    const resolved = resp?.$ref ? resolveRef(doc, resp.$ref) : resp
-    const content = resolved?.content ?? {}
-    const json =
-      content["application/json"] ??
-      content["application/problem+json"] ??
-      content["*/*"]
-    if (json?.schema) return json.schema
-  }
-  // 204 / empty success
-  return { type: "object", properties: {}, additionalProperties: false }
-}
-
-/**
  * @param {object} operation
  * @param {object} doc
  * @param {ZodEmitter} emitter
  * @param {string} context
+ * @param {'async-submit' | 'status-cancel' | 'sync'} opClass
  */
-function buildInputZod(operation, doc, emitter, context) {
+function buildInputZod(operation, doc, emitter, context, opClass) {
   const pathProps = {}
   const queryProps = {}
   const headerProps = {}
@@ -176,10 +159,11 @@ function buildInputZod(operation, doc, emitter, context) {
     groups.push(`  body: ${requiredBody ? bodyExpr : `${bodyExpr}.optional()`}`)
   }
 
-  // Always allow optional poll/wait for async ops without breaking schema
-  groups.push(`  poll: z.boolean().optional()`)
-  groups.push(`  pollIntervalMs: z.number().int().positive().optional()`)
-  groups.push(`  pollTimeoutMs: z.number().int().positive().optional()`)
+  // Async submits always poll internally; only interval/timeout remain tunable.
+  if (opClass === "async-submit") {
+    groups.push(`  pollIntervalMs: z.number().int().positive().optional()`)
+    groups.push(`  pollTimeoutMs: z.number().int().positive().optional()`)
+  }
 
   if (!groups.length) return "z.object({})"
   return `z.object({\n${groups.join(",\n")}\n})`
@@ -277,10 +261,25 @@ function main() {
           const opName = capabilityOpName(family, opId, method, path)
           const exportName = toSafeIdent(opName.replace(/\./g, "_"))
           const context = `${rel}:${method.toUpperCase()} ${path}`
+          const responseCodes = Object.keys(operation.responses ?? {})
+          const acceptSchemaName = acceptSchemaNameForOperation(operation, doc)
+          const opClass = classifyOperation({
+            path,
+            operationId: opId,
+            method: method.toUpperCase(),
+            responseCodes,
+            acceptSchemaName,
+            opName,
+          })
 
-          const inputZod = buildInputZod(operation, doc, emitter, `${context}.input`)
-          const outputSchema = successResponseSchema(operation, doc)
-          const outputZod = emitter.schemaToZod(outputSchema, `${context}.output`)
+          const inputZod = buildInputZod(operation, doc, emitter, `${context}.input`, opClass)
+          const outputResolved = resolveOutputForOperation(
+            opName,
+            opClass,
+            operation,
+            doc,
+            (schema, ctx) => emitter.schemaToZod(schema, ctx),
+          )
 
           familyOps.push({
             family,
@@ -290,7 +289,9 @@ function main() {
             path,
             baseUrl: base,
             inputZod,
-            outputZod,
+            outputZod: outputResolved.outputZod,
+            opClass,
+            materialize: outputResolved.materialize,
             operationId: opId,
             summary: operation.summary ?? "",
             rel,
@@ -330,6 +331,14 @@ function main() {
     capLines.push(`import { z } from "zod"`)
     capLines.push(`import * as schemas from "./schemas.js"`)
     capLines.push(`import { invokeAdobeOperation } from "../../runtime/invoke.js"`)
+    const needsManifestSchema = ops.some(
+      (o) => o.outputZod === "photoshopManifestDocumentSchema",
+    )
+    if (needsManifestSchema) {
+      capLines.push(
+        `import { photoshopManifestDocumentSchema } from "../../runtime/photoshop-manifest.js"`,
+      )
+    }
     capLines.push(``)
     capLines.push(`const EXT_ID = ${JSON.stringify(EXT_ID)}`)
     capLines.push(``)
@@ -339,7 +348,22 @@ function main() {
         expr.replace(/\bSchema_([A-Za-z0-9_]+)\b/g, "schemas.Schema_$1")
 
       const inputZod = qualify(op.inputZod)
-      const outputZod = qualify(op.outputZod)
+      const outputZod =
+        op.outputZod === "photoshopManifestDocumentSchema"
+          ? "photoshopManifestDocumentSchema"
+          : qualify(op.outputZod)
+
+      const asyncMode = op.opClass === "async-submit" ? "submit" : "none"
+      const inputTypeLines = [
+        `        path?: Record<string, string | number | boolean>`,
+        `        query?: Record<string, string | number | boolean | undefined>`,
+        `        headers?: Record<string, string>`,
+        `        body?: unknown`,
+      ]
+      if (op.opClass === "async-submit") {
+        inputTypeLines.push(`        pollIntervalMs?: number`)
+        inputTypeLines.push(`        pollTimeoutMs?: number`)
+      }
 
       capLines.push(`/** ${op.summary || op.opName} */`)
       capLines.push(
@@ -353,16 +377,14 @@ function main() {
       capLines.push(`      pathTemplate: ${JSON.stringify(op.path)},`)
       capLines.push(`      baseUrl: ${JSON.stringify(op.baseUrl)},`)
       capLines.push(`      input: input as {`)
-      capLines.push(`        path?: Record<string, string | number | boolean>`)
-      capLines.push(`        query?: Record<string, string | number | boolean | undefined>`)
-      capLines.push(`        headers?: Record<string, string>`)
-      capLines.push(`        body?: unknown`)
-      capLines.push(`        poll?: boolean`)
-      capLines.push(`        pollIntervalMs?: number`)
-      capLines.push(`        pollTimeoutMs?: number`)
+      for (const line of inputTypeLines) capLines.push(line)
       capLines.push(`      },`)
       capLines.push(`      ctx,`)
       capLines.push(`      outputSchema: ${outputZod},`)
+      capLines.push(`      asyncMode: ${JSON.stringify(asyncMode)},`)
+      if (op.materialize) {
+        capLines.push(`      materialize: ${JSON.stringify(op.materialize)},`)
+      }
       capLines.push(`    })`)
       capLines.push(`  })`)
       capLines.push(``)
@@ -371,6 +393,7 @@ function main() {
         family,
         opName: op.opName,
         exportName: op.exportName,
+        opClass: op.opClass,
         importPath: `./${family}/capabilities.js`,
       })
     }
@@ -396,7 +419,19 @@ function main() {
       const qualify = (expr) =>
         expr.replace(/\bSchema_([A-Za-z0-9_]+)\b/g, "schemas.Schema_$1")
       const inputZod = qualify(op.inputZod)
-      const outputZod = qualify(op.outputZod)
+      const outputZod =
+        op.outputZod === "photoshopManifestDocumentSchema"
+          ? "photoshopManifestDocumentSchema"
+          : qualify(op.outputZod)
+      if (op.outputZod === "photoshopManifestDocumentSchema" && !browserCapLines.some((l) => l.includes("photoshopManifestDocumentSchema"))) {
+        // insert import after schemas import
+        const idx = browserCapLines.findIndex((l) => l.includes('from "./schemas.js"'))
+        browserCapLines.splice(
+          idx + 1,
+          0,
+          `import { photoshopManifestDocumentSchema } from "../../runtime/photoshop-manifest.js"`,
+        )
+      }
       browserCapLines.push(`/** ${op.summary || op.opName} */`)
       browserCapLines.push(
         `export const ${op.exportName} = capabilityFor(EXT_ID, ${JSON.stringify(op.opName)})`,
@@ -439,11 +474,22 @@ function main() {
     }
   }
 
+  const classCounts = { "async-submit": 0, "status-cancel": 0, sync: 0 }
+  for (const ops of byFamily.values()) {
+    for (const op of ops) {
+      classCounts[op.opClass] = (classCounts[op.opClass] ?? 0) + 1
+    }
+  }
+
   const meta = {
     generatedAt: new Date().toISOString(),
     operationCount: registry.length,
     families: [...byFamily.keys()].sort(),
+    operationClasses: classCounts,
     operations: registry.map((r) => `${EXT_ID}.${r.opName}`),
+    operationClassById: Object.fromEntries(
+      registry.map((r) => [`${EXT_ID}.${r.opName}`, r.opClass]),
+    ),
     specFiles: Object.keys(SPEC_SOURCES),
   }
 
@@ -468,7 +514,10 @@ function main() {
     writeFileSync(join(generatedDir, "codegen-errors.json"), JSON.stringify(allErrors, null, 2))
     process.exitCode = 1
   } else {
-    console.log(`Generated ${registry.length} capabilities across ${byFamily.size} families`)
+    console.log(
+      `Generated ${registry.length} capabilities across ${byFamily.size} families ` +
+        `(async-submit=${classCounts["async-submit"]}, status-cancel=${classCounts["status-cancel"]}, sync=${classCounts.sync})`,
+    )
   }
 }
 

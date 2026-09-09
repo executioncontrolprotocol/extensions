@@ -12,11 +12,7 @@ async function hostHop(): Promise<never> {
 
 /** Get available voices */
 export const audio_video_voices = capabilityFor(EXT_ID, "audio-video-voices")
-  .withInput(z.object({
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
+  .withInput(z.object({}))
   .withOutput(schemas.Schema_SuccessfulVoicesResponse)
   .withHandler(hostHop)
 
@@ -24,11 +20,10 @@ export const audio_video_voices = capabilityFor(EXT_ID, "audio-video-voices")
 export const audio_video_generate_speech = capabilityFor(EXT_ID, "audio-video-generate-speech")
   .withInput(z.object({
   body: schemas.Schema_TTSRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_SubmitAPIResponse)
+  .withOutput(schemas.Schema_StatusAPIResponse)
   .withHandler(hostHop)
 
 /** Get job status */
@@ -36,10 +31,7 @@ export const audio_video_status = capabilityFor(EXT_ID, "audio-video-status")
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(schemas.Schema_StatusAPIResponse)
   .withHandler(hostHop)
@@ -48,20 +40,15 @@ export const audio_video_status = capabilityFor(EXT_ID, "audio-video-status")
 export const audio_video_template_describe = capabilityFor(EXT_ID, "audio-video-template-describe")
   .withInput(z.object({
   body: schemas.Schema_TemplateDescribeRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_TemplateDescribeResponse)
+  .withOutput(schemas.Schema_StatusAPIResponse)
   .withHandler(hostHop)
 
 /** Fetch video rendering presets */
 export const audio_video_get_presets = capabilityFor(EXT_ID, "audio-video-get-presets")
-  .withInput(z.object({
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
+  .withInput(z.object({}))
   .withOutput(schemas.Schema_PresetsResponse)
   .withHandler(hostHop)
 
@@ -69,11 +56,10 @@ export const audio_video_get_presets = capabilityFor(EXT_ID, "audio-video-get-pr
 export const audio_video_template_render = capabilityFor(EXT_ID, "audio-video-template-render")
   .withInput(z.object({
   body: schemas.Schema_TemplateRenderRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_TemplateRenderResponse)
+  .withOutput(schemas.Schema_JobStatus)
   .withHandler(hostHop)
 
 /** Cancel a render job */
@@ -84,10 +70,7 @@ export const audio_video_cancel_render_job = capabilityFor(EXT_ID, "audio-video-
 }),
   headers: z.object({
   "x-request-id": z.string().optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_CancelAcceptedResponse)
   .withHandler(hostHop)
@@ -102,10 +85,7 @@ export const audio_video_list_render_jobs = capabilityFor(EXT_ID, "audio-video-l
 }).optional(),
   headers: z.object({
   "x-request-id": z.string().optional()
-}).optional(),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+}).optional()
 }))
   .withOutput(schemas.Schema_RenderJobListResponse)
   .withHandler(hostHop)
@@ -126,45 +106,35 @@ export const audio_video_generate_reframed_video = capabilityFor(EXT_ID, "audio-
   "aspectRatios": z.array(z.string())
 })
 }),
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string(),
-  "statusUrl": z.string()
-}))
+  .withOutput(schemas.Schema_StatusAPIResponse)
   .withHandler(hostHop)
 
 /** Transcribe media */
 export const audio_video_transcribe = capabilityFor(EXT_ID, "audio-video-transcribe")
   .withInput(z.object({
   body: schemas.Schema_TranscribeRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobStatusLinkResponse)
+  .withOutput(schemas.Schema_FireflyJobResponse)
   .withHandler(hostHop)
 
 /** Dub audio or video */
 export const audio_video_dub = capabilityFor(EXT_ID, "audio-video-dub")
   .withInput(z.object({
   body: schemas.Schema_DubRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobStatusLinkResponse)
+  .withOutput(schemas.Schema_FireflyJobResponse)
   .withHandler(hostHop)
 
 /** Get available avatars */
 export const audio_video_avatars = capabilityFor(EXT_ID, "audio-video-avatars")
-  .withInput(z.object({
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
+  .withInput(z.object({}))
   .withOutput(schemas.Schema_SuccessfulAvatarsResponse)
   .withHandler(hostHop)
 
@@ -191,14 +161,10 @@ export const audio_video_generate_reframed_video_v2 = capabilityFor(EXT_ID, "aud
 })]))
 })
 }),
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(z.object({
-  "jobId": z.string(),
-  "statusUrl": z.string()
-}))
+  .withOutput(schemas.Schema_StatusAPIResponse)
   .withHandler(hostHop)
 
 /** Get job result */
@@ -206,10 +172,7 @@ export const audio_video_job_result_v2 = capabilityFor(EXT_ID, "audio-video-job-
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(z.union([z.object({
   "status": z.enum(["not_started", "running", "failed", "succeeded", "partially_succeeded"]),
@@ -258,33 +221,30 @@ export const audio_video_job_result_v2 = capabilityFor(EXT_ID, "audio-video-job-
 export const audio_video_generate_avatar = capabilityFor(EXT_ID, "audio-video-generate-avatar")
   .withInput(z.object({
   body: schemas.Schema_AvatarRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_SubmitAPIResponse)
+  .withOutput(schemas.Schema_StatusAPIResponse)
   .withHandler(hostHop)
 
 /** Transcribe media */
 export const audio_video_transcribe__v1_transcribe = capabilityFor(EXT_ID, "audio-video-transcribe-transcribe")
   .withInput(z.object({
   body: schemas.Schema_TranscribeRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobStatusLinkResponse)
+  .withOutput(schemas.Schema_FireflyJobResponse)
   .withHandler(hostHop)
 
 /** Dub audio or video */
 export const audio_video_dub__v1_dub = capabilityFor(EXT_ID, "audio-video-dub-dub")
   .withInput(z.object({
   body: schemas.Schema_DubRequest,
-  poll: z.boolean().optional(),
   pollIntervalMs: z.number().int().positive().optional(),
   pollTimeoutMs: z.number().int().positive().optional()
 }))
-  .withOutput(schemas.Schema_JobStatusLinkResponse)
+  .withOutput(schemas.Schema_FireflyJobResponse)
   .withHandler(hostHop)
 
 /** Get the result for a job */
@@ -292,10 +252,7 @@ export const audio_video_job_result = capabilityFor(EXT_ID, "audio-video-job-res
   .withInput(z.object({
   path: z.object({
   "jobId": z.string()
-}),
-  poll: z.boolean().optional(),
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
+})
 }))
   .withOutput(schemas.Schema_FireflyJobResponse)
   .withHandler(hostHop)
