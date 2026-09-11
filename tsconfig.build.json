@@ -3,6 +3,7 @@
   "references": [
     { "path": "packages/fal" },
     { "path": "packages/slack" },
+    { "path": "packages/jsonata" },
     { "path": "packages/image-sharp" },
     { "path": "packages/adobe-firefly-services" },
     { "path": "packages/azure-blob-storage" }
