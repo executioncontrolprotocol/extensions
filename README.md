@@ -12,6 +12,7 @@ This README’s **Packages** table is the canonical vendor inventory. Core docs 
 | ------- | ------------ |
 | `@executioncontrolprotocol/fal` | `@executioncontrolprotocol/fal` |
 | `@executioncontrolprotocol/slack` | `@executioncontrolprotocol/slack` |
+| `@executioncontrolprotocol/jsonata` | `@executioncontrolprotocol/jsonata` |
 | `@executioncontrolprotocol/image-sharp` | `@executioncontrolprotocol/image-sharp` |
 | `@executioncontrolprotocol/adobe-firefly-services` | `@executioncontrolprotocol/adobe-firefly-services` |
 | `@executioncontrolprotocol/azure-blob-storage` | `@executioncontrolprotocol/azure-blob-storage` |

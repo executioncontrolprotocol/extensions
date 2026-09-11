@@ -1,0 +1,34 @@
+{
+  "name": "@executioncontrolprotocol/jsonata",
+  "version": "0.13.2",
+  "description": "JSONata expression transform extension for ECP",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "jsonata": "^2.2.2"
+  },
+  "peerDependencies": {
+    "@executioncontrolprotocol/core": "catalog:ecp",
+    "@executioncontrolprotocol/types": "catalog:ecp",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "zod": "catalog:"
+  }
+}
