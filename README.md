@@ -70,6 +70,7 @@ Vendor workflow examples live in this repo (see `examples/README.md`):
 - `examples/02-weekly-brief-with-slack` — memory + OpenAI + Slack
 - `examples/adobe-firefly-smoke` — Adobe Firefly Services auth smoke
 - `examples/azure-adobe-assets` — Azure Blob upload + Firefly Image5 recolor
+- `examples/azure-photoshop-manifest` — Azure Blob + Photoshop generate-manifest (host `ecp up --env`)
 
 They require a core monorepo checkout (or published `@executioncontrolprotocol/node`) plus these packages.
 
@@ -89,3 +90,9 @@ See [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 ## Publish
 
 On push to `main`, CI runs `pnpm run publish:workspaces` (requires `NPM_TOKEN`). Versions in this repo are independent of the core monorepo.
+
+## Related
+
+- **Docs:** https://executioncontrolprotocol.io/
+- **ECP protocol:** https://github.com/executioncontrolprotocol/executioncontrolprotocol
+- **Browser demo:** https://github.com/executioncontrolprotocol/browser-demo
