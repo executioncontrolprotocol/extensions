@@ -1,18 +1,11 @@
 import {
-  capabilityFor,
   catalogExtension,
   globalRegistry,
   type Registry,
 } from "@executioncontrolprotocol/core"
 import { handleMixedUpload } from "./capabilities/upload-mixed.js"
-import { uploadInputSchema, uploadOutputSchema } from "./capabilities/upload-schema.js"
-import {
-  createSasUrlInputSchema,
-  createSasUrlOutputSchema,
-} from "./capabilities/create-sas-url-schema.js"
-import { downloadInputSchema, downloadOutputSchema } from "./capabilities/download-schema.js"
+import { buildAzureBlobCapabilities } from "./capability-catalog.js"
 import { buildAzureBlobStorageExtension, EXT_ID, HOST_HOP_MESSAGE } from "./shared.js"
-import { AZURE_BLOB_STORAGE_CAPABILITY_METADATA as meta } from "./capability-metadata.js"
 
 async function hostHop(): Promise<never> {
   throw new Error(HOST_HOP_MESSAGE)
@@ -23,26 +16,12 @@ async function hostHop(): Promise<never> {
  * Does not import `@azure/storage-blob` or `node:fs`.
  * @category Extensions
  */
-export const azureBlobStorageExtension = buildAzureBlobStorageExtension([
-    capabilityFor(EXT_ID, "upload")
-      .withInput(uploadInputSchema)
-      .withOutput(uploadOutputSchema)
-      .withExecution("mixed")
-      .withMetadata(meta.upload)
-      .withHandler(async (input, ctx) => handleMixedUpload(input, ctx)),
-    capabilityFor(EXT_ID, "create-sas-url")
-      .withInput(createSasUrlInputSchema)
-      .withOutput(createSasUrlOutputSchema)
-      .withExecution("host")
-      .withMetadata(meta["create-sas-url"])
-      .withHandler(hostHop),
-    capabilityFor(EXT_ID, "download")
-      .withInput(downloadInputSchema)
-      .withOutput(downloadOutputSchema)
-      .withExecution("host")
-      .withMetadata(meta.download)
-      .withHandler(hostHop),
-  ],
+export const azureBlobStorageExtension = buildAzureBlobStorageExtension(
+  buildAzureBlobCapabilities({
+    upload: async (input, ctx) => handleMixedUpload(input, ctx),
+    createSasUrl: hostHop,
+    download: hostHop,
+  }),
 )
 
 catalogExtension(azureBlobStorageExtension)

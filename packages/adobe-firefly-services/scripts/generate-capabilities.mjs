@@ -400,30 +400,75 @@ function main() {
 
   for (const [family, ops] of [...byFamily.entries()].sort()) {
     const familyDir = join(generatedDir, family)
-    const capLines = []
-    capLines.push(`/* eslint-disable */`)
-    capLines.push(`/** Generated Adobe ${family} capabilities — do not edit. */`)
-    capLines.push(`import { capabilityFor } from "@executioncontrolprotocol/core"`)
-    capLines.push(`import { z } from "zod"`)
-    capLines.push(`import * as schemas from "./schemas.js"`)
-    capLines.push(`import { invokeAdobeOperation } from "../../runtime/invoke.js"`)
+
+    // Shared browser-safe shells: schemas + colocated metadata; host/browser only swap handlers.
+    const shellLines = []
+    shellLines.push(`/* eslint-disable */`)
+    shellLines.push(`/** Generated Adobe ${family} capability shells — do not edit. */`)
+    shellLines.push(
+      `import { capabilityFor, type CapabilityHandler } from "@executioncontrolprotocol/core"`,
+    )
+    shellLines.push(`import { z } from "zod"`)
+    shellLines.push(`import * as schemas from "./schemas.js"`)
     const needsManifestSchema = ops.some(
       (o) => o.outputZod === "photoshopManifestDocumentSchema",
     )
+    if (needsManifestSchema) {
+      shellLines.push(
+        `import { photoshopManifestDocumentSchema } from "../../runtime/photoshop-manifest.js"`,
+      )
+    }
+    shellLines.push(``)
+    shellLines.push(`const EXT_ID = ${JSON.stringify(EXT_ID)}`)
+    shellLines.push(``)
+
+    for (const op of ops) {
+      const qualify = (expr) =>
+        expr.replace(/\bSchema_([A-Za-z0-9_]+)\b/g, "schemas.Schema_$1")
+      const inputZod = qualify(op.inputZod)
+      const outputZod =
+        op.outputZod === "photoshopManifestDocumentSchema"
+          ? "photoshopManifestDocumentSchema"
+          : qualify(op.outputZod)
+      const capabilityMetadata = deriveCapabilityMetadata(op.operation, op.family, op.opName)
+
+      shellLines.push(`/** ${op.summary || op.opName} */`)
+      shellLines.push(
+        `export function ${op.exportName}(handler: CapabilityHandler) {`,
+      )
+      shellLines.push(
+        `  return capabilityFor(EXT_ID, ${JSON.stringify(op.opName)})`,
+      )
+      shellLines.push(`    .withInput(${inputZod})`)
+      shellLines.push(`    .withOutput(${outputZod})`)
+      shellLines.push(`    .withMetadata(${JSON.stringify(capabilityMetadata)})`)
+      shellLines.push(`    .withHandler(handler)`)
+      shellLines.push(`}`)
+      shellLines.push(``)
+    }
+    writeFileSync(join(familyDir, "shells.ts"), shellLines.join("\n"), "utf8")
+
+    const capLines = []
+    capLines.push(`/* eslint-disable */`)
+    capLines.push(`/** Generated Adobe ${family} capabilities — do not edit. */`)
+    capLines.push(`import * as shells from "./shells.js"`)
+    const needsZodInCaps = ops.some((o) => /\bz\./.test(String(o.outputZod)))
+    if (needsZodInCaps) {
+      capLines.push(`import { z } from "zod"`)
+    }
+    capLines.push(`import * as schemas from "./schemas.js"`)
+    capLines.push(`import { invokeAdobeOperation } from "../../runtime/invoke.js"`)
     if (needsManifestSchema) {
       capLines.push(
         `import { photoshopManifestDocumentSchema } from "../../runtime/photoshop-manifest.js"`,
       )
     }
     capLines.push(``)
-    capLines.push(`const EXT_ID = ${JSON.stringify(EXT_ID)}`)
-    capLines.push(``)
 
     for (const op of ops) {
       const qualify = (expr) =>
         expr.replace(/\bSchema_([A-Za-z0-9_]+)\b/g, "schemas.Schema_$1")
 
-      const inputZod = qualify(op.inputZod)
       const outputZod =
         op.outputZod === "photoshopManifestDocumentSchema"
           ? "photoshopManifestDocumentSchema"
@@ -441,31 +486,25 @@ function main() {
         inputTypeLines.push(`        pollTimeoutMs?: number`)
       }
 
-      const capabilityMetadata = deriveCapabilityMetadata(op.operation, op.family, op.opName)
-
       capLines.push(`/** ${op.summary || op.opName} */`)
       capLines.push(
-        `export const ${op.exportName} = capabilityFor(EXT_ID, ${JSON.stringify(op.opName)})`,
+        `export const ${op.exportName} = shells.${op.exportName}(async (input, ctx) => {`,
       )
-      capLines.push(`  .withInput(${inputZod})`)
-      capLines.push(`  .withOutput(${outputZod})`)
-      capLines.push(`  .withMetadata(${JSON.stringify(capabilityMetadata)})`)
-      capLines.push(`  .withHandler(async (input, ctx) => {`)
-      capLines.push(`    return invokeAdobeOperation({`)
-      capLines.push(`      method: ${JSON.stringify(op.method)},`)
-      capLines.push(`      pathTemplate: ${JSON.stringify(op.path)},`)
-      capLines.push(`      baseUrl: ${JSON.stringify(op.baseUrl)},`)
-      capLines.push(`      input: input as {`)
+      capLines.push(`  return invokeAdobeOperation({`)
+      capLines.push(`    method: ${JSON.stringify(op.method)},`)
+      capLines.push(`    pathTemplate: ${JSON.stringify(op.path)},`)
+      capLines.push(`    baseUrl: ${JSON.stringify(op.baseUrl)},`)
+      capLines.push(`    input: input as {`)
       for (const line of inputTypeLines) capLines.push(line)
-      capLines.push(`      },`)
-      capLines.push(`      ctx,`)
-      capLines.push(`      outputSchema: ${outputZod},`)
-      capLines.push(`      asyncMode: ${JSON.stringify(asyncMode)},`)
+      capLines.push(`    },`)
+      capLines.push(`    ctx,`)
+      capLines.push(`    outputSchema: ${outputZod},`)
+      capLines.push(`    asyncMode: ${JSON.stringify(asyncMode)},`)
       if (op.materialize) {
-        capLines.push(`      materialize: ${JSON.stringify(op.materialize)},`)
+        capLines.push(`    materialize: ${JSON.stringify(op.materialize)},`)
       }
-      capLines.push(`    })`)
       capLines.push(`  })`)
+      capLines.push(`})`)
       capLines.push(``)
 
       registry.push({
@@ -479,48 +518,23 @@ function main() {
 
     writeFileSync(join(familyDir, "capabilities.ts"), capLines.join("\n"), "utf8")
 
-    // Browser catalog: same I/O schemas, hostHop handlers (no IMS / invoke graph).
+    // Browser catalog: same shells; hostHop handlers (no IMS / invoke).
     const browserCapLines = []
     browserCapLines.push(`/* eslint-disable */`)
     browserCapLines.push(`/** Generated Adobe ${family} browser catalog — do not edit. */`)
-    browserCapLines.push(`import { capabilityFor } from "@executioncontrolprotocol/core"`)
-    browserCapLines.push(`import { z } from "zod"`)
-    browserCapLines.push(`import * as schemas from "./schemas.js"`)
+    browserCapLines.push(`import * as shells from "./shells.js"`)
     browserCapLines.push(`import { HOST_HOP_MESSAGE } from "../../shared.js"`)
     browserCapLines.push(``)
-    browserCapLines.push(`const EXT_ID = ${JSON.stringify(EXT_ID)}`)
     browserCapLines.push(`async function hostHop(): Promise<never> {`)
     browserCapLines.push(`  throw new Error(HOST_HOP_MESSAGE)`)
     browserCapLines.push(`}`)
     browserCapLines.push(``)
 
     for (const op of ops) {
-      const qualify = (expr) =>
-        expr.replace(/\bSchema_([A-Za-z0-9_]+)\b/g, "schemas.Schema_$1")
-      const inputZod = qualify(op.inputZod)
-      const outputZod =
-        op.outputZod === "photoshopManifestDocumentSchema"
-          ? "photoshopManifestDocumentSchema"
-          : qualify(op.outputZod)
-      if (op.outputZod === "photoshopManifestDocumentSchema" && !browserCapLines.some((l) => l.includes("photoshopManifestDocumentSchema"))) {
-        // insert import after schemas import
-        const idx = browserCapLines.findIndex((l) => l.includes('from "./schemas.js"'))
-        browserCapLines.splice(
-          idx + 1,
-          0,
-          `import { photoshopManifestDocumentSchema } from "../../runtime/photoshop-manifest.js"`,
-        )
-      }
-      const capabilityMetadata = deriveCapabilityMetadata(op.operation, op.family, op.opName)
-
       browserCapLines.push(`/** ${op.summary || op.opName} */`)
       browserCapLines.push(
-        `export const ${op.exportName} = capabilityFor(EXT_ID, ${JSON.stringify(op.opName)})`,
+        `export const ${op.exportName} = shells.${op.exportName}(hostHop)`,
       )
-      browserCapLines.push(`  .withInput(${inputZod})`)
-      browserCapLines.push(`  .withOutput(${outputZod})`)
-      browserCapLines.push(`  .withMetadata(${JSON.stringify(capabilityMetadata)})`)
-      browserCapLines.push(`  .withHandler(hostHop)`)
       browserCapLines.push(``)
     }
     writeFileSync(join(familyDir, "capabilities.browser.ts"), browserCapLines.join("\n"), "utf8")
