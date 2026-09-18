@@ -28,6 +28,20 @@ export function buildAzureBlobStorageExtension(
       /** Default SAS lifetime in seconds (default 3600). */
       defaultSasExpiresInSeconds: z.number().int().positive().optional(),
     })
+    .withMetadata({
+      summary: "Upload, download, and mint SAS URLs for Azure Blob Storage",
+      description:
+        "Host-backed blob storage for workflows that persist media, share time-limited read links, or fetch objects into artifacts. Supports connection-string or account key credentials and mixed browser upload via SAS.",
+      useCases: [
+        "Store generated media in Azure for later workflow steps",
+        "Mint read-only SAS URLs for external services that fetch by URL",
+        "Download blobs into local artifacts for processing",
+      ],
+      samplePrompts: [
+        "Upload this file to Azure Blob Storage",
+        "Create a read-only SAS URL for the uploaded blob",
+      ],
+    })
     .withCapabilities(capabilities)
     .build()
 }

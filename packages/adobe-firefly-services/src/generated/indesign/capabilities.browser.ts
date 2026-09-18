@@ -1,180 +1,56 @@
 /* eslint-disable */
 /** Generated Adobe indesign browser catalog — do not edit. */
-import { capabilityFor } from "@executioncontrolprotocol/core"
-import { z } from "zod"
-import * as schemas from "./schemas.js"
+import * as shells from "./shells.js"
 import { HOST_HOP_MESSAGE } from "../../shared.js"
 
-const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 async function hostHop(): Promise<never> {
   throw new Error(HOST_HOP_MESSAGE)
 }
 
 /** Perform a data merge */
-export const indesign_data_merge = capabilityFor(EXT_ID, "indesign-data-merge")
-  .withInput(z.object({
-  body: schemas.Schema_MergeDataRequest,
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_succeededEvent)
-  .withHandler(hostHop)
+export const indesign_data_merge = shells.indesign_data_merge(hostHop)
 
 /** Get data merge tags */
-export const indesign_data_merge_tags = capabilityFor(EXT_ID, "indesign-data-merge-tags")
-  .withInput(z.object({
-  body: schemas.Schema_MergeDataTagsRequest,
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_succeededEvent)
-  .withHandler(hostHop)
+export const indesign_data_merge_tags = shells.indesign_data_merge_tags(hostHop)
 
 /** Remap links */
-export const indesign_remap_links = capabilityFor(EXT_ID, "indesign-remap-links")
-  .withInput(z.object({
-  headers: z.object({
-  "x-aem-token": z.string()
-}).optional(),
-  body: schemas.Schema_RemapLinksRequest,
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_succeededEvent)
-  .withHandler(hostHop)
+export const indesign_remap_links = shells.indesign_remap_links(hostHop)
 
 /** Create JPEG, PNG, or PDF renditions */
-export const indesign_rendition_job = capabilityFor(EXT_ID, "indesign-rendition-job")
-  .withInput(z.object({
-  body: schemas.Schema_CreateRenditionRequest,
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_succeededEvent)
-  .withHandler(hostHop)
+export const indesign_rendition_job = shells.indesign_rendition_job(hostHop)
 
 /** List custom scripts API */
-export const indesign_list_custom_scripts = capabilityFor(EXT_ID, "indesign-list-custom-scripts")
-  .withInput(z.object({
-  query: z.object({
-  "page": z.number().int().optional()
-}).optional()
-}))
-  .withOutput(schemas.Schema_CustomScriptsListResponse)
-  .withHandler(hostHop)
+export const indesign_list_custom_scripts = shells.indesign_list_custom_scripts(hostHop)
 
 /** Submit a Custom Script */
-export const indesign_submit_custom_script = capabilityFor(EXT_ID, "indesign-submit-custom-script")
-  .withInput(z.object({
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_succeededEvent)
-  .withHandler(hostHop)
+export const indesign_submit_custom_script = shells.indesign_submit_custom_script(hostHop)
 
 /** Submit a custom script execution request */
-export const indesign_execute_custom_script = capabilityFor(EXT_ID, "indesign-execute-custom-script")
-  .withInput(z.object({
-  path: z.object({
-  "script_id": z.string(),
-  "script_name": z.string()
-}),
-  body: schemas.Schema_BaseJobRequestWithOutput,
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_succeededEvent)
-  .withHandler(hostHop)
+export const indesign_execute_custom_script = shells.indesign_execute_custom_script(hostHop)
 
 /** Get Custom Script details */
-export const indesign_get_custom_script_details = capabilityFor(EXT_ID, "indesign-get-custom-script-details")
-  .withInput(z.object({
-  path: z.object({
-  "script_name": z.string()
-})
-}))
-  .withOutput(schemas.Schema_CustomScriptDetails)
-  .withHandler(hostHop)
+export const indesign_get_custom_script_details = shells.indesign_get_custom_script_details(hostHop)
 
 /** Delete a Custom Script */
-export const indesign_delete_custom_script = capabilityFor(EXT_ID, "indesign-delete-custom-script")
-  .withInput(z.object({
-  path: z.object({
-  "script_name": z.string()
-})
-}))
-  .withOutput(z.object({}))
-  .withHandler(hostHop)
+export const indesign_delete_custom_script = shells.indesign_delete_custom_script(hostHop)
 
 /** Update Custom Script App Version */
-export const indesign_update_script_app_version = capabilityFor(EXT_ID, "indesign-update-script-app-version")
-  .withInput(z.object({
-  path: z.object({
-  "script_name": z.string()
-}),
-  body: schemas.Schema_AppVersionUpdateRequest
-}))
-  .withOutput(z.object({
-  "message": z.string().optional()
-}))
-  .withHandler(hostHop)
+export const indesign_update_script_app_version = shells.indesign_update_script_app_version(hostHop)
 
 /** Get Current App Versions */
-export const indesign_list_app_versions = capabilityFor(EXT_ID, "indesign-list-app-versions")
-  .withInput(z.object({}))
-  .withOutput(z.array(schemas.Schema_AppVersionInfo))
-  .withHandler(hostHop)
+export const indesign_list_app_versions = shells.indesign_list_app_versions(hostHop)
 
 /** Get document information */
-export const indesign_get_document_info = capabilityFor(EXT_ID, "indesign-get-document-info")
-  .withInput(z.object({
-  body: schemas.Schema_DocumentInfoRequest,
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_succeededEvent)
-  .withHandler(hostHop)
+export const indesign_get_document_info = shells.indesign_get_document_info(hostHop)
 
 /** Get status - Document Info API */
-export const indesign_get_document_info_job_status = capabilityFor(EXT_ID, "indesign-get-document-info-job-status")
-  .withInput(z.object({
-  path: z.object({
-  "document-info_job_id": z.string()
-})
-}))
-  .withOutput(z.union([schemas.Schema_notstartedEvent, schemas.Schema_runningEvent, schemas.Schema_succeededEvent, schemas.Schema_failedEvent, schemas.Schema_partialSuccessEvent]))
-  .withHandler(hostHop)
+export const indesign_get_document_info_job_status = shells.indesign_get_document_info_job_status(hostHop)
 
 /** Convert PDF to InDesign document */
-export const indesign_convert_pdfto_in_design = capabilityFor(EXT_ID, "indesign-convert-pdfto-in-design")
-  .withInput(z.object({
-  body: schemas.Schema_ConvertToInDesignRequest,
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_succeededEvent)
-  .withHandler(hostHop)
+export const indesign_convert_pdfto_in_design = shells.indesign_convert_pdfto_in_design(hostHop)
 
 /** Get status - Convert PDF to InDesign API */
-export const indesign_get_convert_pdfto_in_design_job_status = capabilityFor(EXT_ID, "indesign-get-convert-pdfto-in-design-job-status")
-  .withInput(z.object({
-  path: z.object({
-  "convert-pdf-to-indesign_job_id": z.string()
-})
-}))
-  .withOutput(z.union([schemas.Schema_notstartedEvent, schemas.Schema_runningEvent, schemas.Schema_succeededEvent, schemas.Schema_failedEvent, schemas.Schema_partialSuccessEvent]))
-  .withHandler(hostHop)
+export const indesign_get_convert_pdfto_in_design_job_status = shells.indesign_get_convert_pdfto_in_design_job_status(hostHop)
 
 /** Get the status of a job */
-export const indesign_get_job_status = capabilityFor(EXT_ID, "indesign-get-job-status")
-  .withInput(z.object({
-  path: z.object({
-  "id": z.string()
-}),
-  query: z.object({
-  "size": z.number().int().min(1).optional(),
-  "page": z.number().int().min(0).optional()
-}).optional()
-}))
-  .withOutput(z.union([schemas.Schema_notstartedEvent, schemas.Schema_runningEvent, schemas.Schema_succeededEvent, schemas.Schema_failedEvent, schemas.Schema_partialSuccessEvent]))
-  .withHandler(hostHop)
+export const indesign_get_job_status = shells.indesign_get_job_status(hostHop)

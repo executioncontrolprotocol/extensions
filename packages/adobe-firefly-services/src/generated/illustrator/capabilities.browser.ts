@@ -1,94 +1,32 @@
 /* eslint-disable */
 /** Generated Adobe illustrator browser catalog — do not edit. */
-import { capabilityFor } from "@executioncontrolprotocol/core"
-import { z } from "zod"
-import * as schemas from "./schemas.js"
+import * as shells from "./shells.js"
 import { HOST_HOP_MESSAGE } from "../../shared.js"
 
-const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
 async function hostHop(): Promise<never> {
   throw new Error(HOST_HOP_MESSAGE)
 }
 
 /** Submit a Custom Script */
-export const illustrator_register_custom_script_capability = capabilityFor(EXT_ID, "illustrator-register-custom-script-capability")
-  .withInput(z.object({
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_CapabilityRegistrationResponse)
-  .withHandler(hostHop)
+export const illustrator_register_custom_script_capability = shells.illustrator_register_custom_script_capability(hostHop)
 
 /** Submit a custom script execution request */
-export const illustrator_execute_custom_script_capability = capabilityFor(EXT_ID, "illustrator-execute-custom-script-capability")
-  .withInput(z.object({
-  path: z.object({
-  "orgId": z.string(),
-  "capabilityName": z.string()
-}),
-  body: schemas.Schema_CustomScriptExecuteRequest,
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_CustomScriptJobSucceededResponse)
-  .withHandler(hostHop)
+export const illustrator_execute_custom_script_capability = shells.illustrator_execute_custom_script_capability(hostHop)
 
 /** Retrieve job status */
-export const illustrator_custom_scripts_job_status = capabilityFor(EXT_ID, "illustrator-custom-scripts-job-status")
-  .withInput(z.object({
-  path: z.object({
-  "jobId": z.string()
-})
-}))
-  .withOutput(z.union([schemas.Schema_CustomScriptJobSucceededResponse, schemas.Schema_CustomScriptJobRunningResponse, schemas.Schema_CustomScriptJobFailedResponse]))
-  .withHandler(hostHop)
+export const illustrator_custom_scripts_job_status = shells.illustrator_custom_scripts_job_status(hostHop)
 
 /** Data merge */
-export const illustrator_data_merge = capabilityFor(EXT_ID, "illustrator-data-merge")
-  .withInput(z.object({
-  body: schemas.Schema_DataMergeRequest,
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_DataMergeJobApiResponse)
-  .withHandler(hostHop)
+export const illustrator_data_merge = shells.illustrator_data_merge(hostHop)
 
 /** Create rendition */
-export const illustrator_create_rendition = capabilityFor(EXT_ID, "illustrator-create-rendition")
-  .withInput(z.object({
-  body: schemas.Schema_CreateRenditionRequest,
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_CreateRenditionJobApiResponse)
-  .withHandler(hostHop)
+export const illustrator_create_rendition = shells.illustrator_create_rendition(hostHop)
 
 /** Submit a job */
-export const illustrator_trace_image = capabilityFor(EXT_ID, "illustrator-trace-image")
-  .withInput(z.object({
-  body: schemas.Schema_VectorizeRequest,
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_ImageTraceJobApiResponse)
-  .withHandler(hostHop)
+export const illustrator_trace_image = shells.illustrator_trace_image(hostHop)
 
 /** Retrieve job status */
-export const illustrator_image_trace_job_status = capabilityFor(EXT_ID, "illustrator-image-trace-job-status")
-  .withInput(z.object({
-  path: z.object({
-  "jobId": z.string()
-})
-}))
-  .withOutput(z.union([schemas.Schema_ImageTraceJobApiResponse, schemas.Schema_JobStatusPollPayload, schemas.Schema_ImageTraceJobFailedResponse]))
-  .withHandler(hostHop)
+export const illustrator_image_trace_job_status = shells.illustrator_image_trace_job_status(hostHop)
 
 /** Retrieve job status */
-export const illustrator_facade_job_status = capabilityFor(EXT_ID, "illustrator-facade-job-status")
-  .withInput(z.object({
-  path: z.object({
-  "jobId": z.string()
-})
-}))
-  .withOutput(z.union([schemas.Schema_DataMergeJobApiResponse, schemas.Schema_CreateRenditionJobApiResponse, schemas.Schema_JobStatusPollPayload, schemas.Schema_DataMergeJobFailedResponse, schemas.Schema_DataMergeJobPartiallySucceededResponse]))
-  .withHandler(hostHop)
+export const illustrator_facade_job_status = shells.illustrator_facade_job_status(hostHop)

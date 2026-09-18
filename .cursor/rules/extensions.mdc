@@ -29,6 +29,17 @@ Treat every package under `packages/` as published for **third-party** authors: 
 
 Keep **npm package name** identical to the extension id (e.g. `@executioncontrolprotocol/fal`).
 
+## Capability metadata
+
+Use `.withMetadata({ summary, description, useCases, samplePrompts })` on every capability (required fields). Extension-level metadata needs at least `summary` + `description`.
+
+| Do | Don't |
+| ---- | ----- |
+| Product prose only | Schema how-to (`inputSchema`, `withInput`, JSON Schema, …) |
+| Differentiate this capability’s product limits | Name or prefer/avoid other extension packages |
+
+Hosts expose inventory via bare `ecp.describe()` and detail via exact-id describe — authors do not invent a separate detail API.
+
 If the Node implementation imports native modules or Node-only SDKs, add a standard `exports["."].browser` catalog (`src/index.browser.ts`). Call `catalogExtension` on both entries. The browser graph must not import `sharp`, `@azure/storage-blob`, or `node:fs`. Capability execution remains `local` | `host` | `mixed`; do not rename those to bundler conditions. Consumers `import "@scope/name"` only.
 
 **Media I/O:** call `resolveFile` / `writeMediaArtifact` from core for buffers, paths, URLs, artifacts, and `ecp://browser/…` locators. Do not copy Sharp-style local artifact maps.

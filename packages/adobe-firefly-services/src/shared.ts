@@ -22,6 +22,19 @@ export function buildAdobeFireflyServicesExtension(
 ): ExtensionDefinition {
   return defineExtension("@executioncontrolprotocol", "adobe-firefly-services")
     .withSupportedRuntimes([NODE_RUNTIME_ID])
+    .withMetadata({
+      summary: "Call Adobe Firefly Services APIs across creative product families",
+      description:
+        "Generated capabilities for Adobe Firefly, Photoshop, Express, InDesign, Illustrator, Substance 3D, Creative Production, and Audio Video APIs. Uses OAuth server-to-server credentials and polls async jobs where required.",
+      useCases: [
+        "Generate or edit creative assets with Adobe cloud APIs",
+        "Automate Photoshop, Express, or Firefly operations from workflows",
+      ],
+      samplePrompts: [
+        "Generate images with Adobe Firefly",
+        "Run a Photoshop API job on this document",
+      ],
+    })
     .withConfig({
       /** Adobe Developer Console client id (x-api-key). */
       clientId: z.string().min(1),

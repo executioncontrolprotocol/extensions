@@ -55,6 +55,20 @@ export function buildImageSharpExtension(
         })
         .optional(),
     })
+    .withMetadata({
+      summary: "Resize, convert, inspect, and batch-process images with Sharp",
+      description:
+        "Local image processing for workflows that need format conversion, resizing, cropping, compositing, thumbnails, or multi-variant exports. Runs on the Node host with configurable size and variant limits.",
+      useCases: [
+        "Prepare uploaded images for web delivery or model input",
+        "Generate thumbnail sets or named variants from one source image",
+        "Inspect dimensions, format, and color stats before downstream steps",
+      ],
+      samplePrompts: [
+        "Convert this PNG to WebP and resize to 1200px wide",
+        "Generate small, medium, and large thumbnails from the hero image",
+      ],
+    })
     .withCapabilities(capabilities)
     .build()
 }

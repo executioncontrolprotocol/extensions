@@ -15,6 +15,19 @@ import type { FalInferenceMode } from "./schemas.js"
 /** @executioncontrolprotocol/fal extension. @category Extensions */
 export const falExtension = defineExtension("@executioncontrolprotocol", "fal")
   .withSupportedRuntimes([NODE_RUNTIME_ID])
+  .withMetadata({
+    summary: "Run inference on FAL-hosted generative models",
+    description:
+      "Calls FAL model endpoints for image, video, audio, and other generative tasks. Supports direct run and queue-backed subscribe modes with configurable default endpoint and API key binding.",
+    useCases: [
+      "Generate images or video from a FAL model endpoint",
+      "Run queued inference jobs with optional progress logs",
+    ],
+    samplePrompts: [
+      "Generate an image with flux schnell on FAL",
+      "Run this FAL endpoint with the provided prompt payload",
+    ],
+  })
   .withConfig({
     apiKey: z.string().optional(),
     defaultEndpoint: z.string().optional(),
@@ -24,6 +37,19 @@ export const falExtension = defineExtension("@executioncontrolprotocol", "fal")
     capabilityFor("@executioncontrolprotocol/fal", "generate")
       .withInput(falGenerateInputSchema)
       .withOutput(falGenerateOutputSchema)
+      .withMetadata({
+        summary: "Run a FAL model endpoint with a model-specific payload",
+        description:
+          "Invokes a FAL-hosted model by endpoint id using either a direct run or a subscribe flow that polls until completion. Returns the model result payload and optional request id.",
+        useCases: [
+          "Text-to-image or image-to-image generation on FAL",
+          "Long-running FAL jobs that need queue polling",
+        ],
+        samplePrompts: [
+          "Generate an image from this prompt using fal-ai/flux/schnell",
+          "Run the FAL endpoint and wait for the finished result",
+        ],
+      })
       .withHandler(async (input, ctx) => {
         const parsed = input as z.infer<typeof falGenerateInputSchema>
         const cfg = (ctx as { extensionConfig?: Record<string, unknown> }).extensionConfig ?? {}

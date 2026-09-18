@@ -1,21 +1,13 @@
 import {
-  capabilityFor,
-  globalRegistry,
   catalogExtension,
+  globalRegistry,
   type Registry,
 } from "@executioncontrolprotocol/core"
-import { handleUpload, uploadInputSchema, uploadOutputSchema } from "./capabilities/upload.js"
-import {
-  handleCreateSasUrl,
-  createSasUrlInputSchema,
-  createSasUrlOutputSchema,
-} from "./capabilities/create-sas-url.js"
-import {
-  handleDownload,
-  downloadInputSchema,
-  downloadOutputSchema,
-} from "./capabilities/download.js"
-import { buildAzureBlobStorageExtension, EXT_ID } from "./shared.js"
+import { handleUpload } from "./capabilities/upload.js"
+import { handleCreateSasUrl } from "./capabilities/create-sas-url.js"
+import { handleDownload } from "./capabilities/download.js"
+import { buildAzureBlobCapabilities } from "./capability-catalog.js"
+import { buildAzureBlobStorageExtension } from "./shared.js"
 
 /**
  * `@executioncontrolprotocol/azure-blob-storage` — Azure Blob upload, SAS, and download.
@@ -29,23 +21,12 @@ import { buildAzureBlobStorageExtension, EXT_ID } from "./shared.js"
  *
  * @category Extensions
  */
-export const azureBlobStorageExtension = buildAzureBlobStorageExtension([
-    capabilityFor(EXT_ID, "upload")
-      .withInput(uploadInputSchema)
-      .withOutput(uploadOutputSchema)
-      .withExecution("mixed")
-      .withHandler(async (input, ctx) => handleUpload(input, ctx)),
-    capabilityFor(EXT_ID, "create-sas-url")
-      .withInput(createSasUrlInputSchema)
-      .withOutput(createSasUrlOutputSchema)
-      .withExecution("host")
-      .withHandler(async (input, ctx) => handleCreateSasUrl(input, ctx)),
-    capabilityFor(EXT_ID, "download")
-      .withInput(downloadInputSchema)
-      .withOutput(downloadOutputSchema)
-      .withExecution("host")
-      .withHandler(async (input, ctx) => handleDownload(input, ctx)),
-  ],
+export const azureBlobStorageExtension = buildAzureBlobStorageExtension(
+  buildAzureBlobCapabilities({
+    upload: async (input, ctx) => handleUpload(input, ctx),
+    createSasUrl: async (input, ctx) => handleCreateSasUrl(input, ctx),
+    download: async (input, ctx) => handleDownload(input, ctx),
+  }),
 )
 
 catalogExtension(azureBlobStorageExtension)
@@ -58,7 +39,7 @@ catalogExtension(azureBlobStorageExtension)
 export async function registerAzureBlobStorageExtension(
   registry: Registry = globalRegistry,
 ): Promise<void> {
-  if (!registry.getExtension(EXT_ID)) {
+  if (!registry.getExtension("@executioncontrolprotocol/azure-blob-storage")) {
     await registry.registerExtension(azureBlobStorageExtension)
   }
 }

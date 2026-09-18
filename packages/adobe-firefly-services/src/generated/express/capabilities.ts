@@ -1,142 +1,100 @@
 /* eslint-disable */
 /** Generated Adobe express capabilities — do not edit. */
-import { capabilityFor } from "@executioncontrolprotocol/core"
+import * as shells from "./shells.js"
 import { z } from "zod"
 import * as schemas from "./schemas.js"
 import { invokeAdobeOperation } from "../../runtime/invoke.js"
 
-const EXT_ID = "@executioncontrolprotocol/adobe-firefly-services"
-
 /** Tagged documents */
-export const express_tagged_documents = capabilityFor(EXT_ID, "express-tagged-documents")
-  .withInput(z.object({
-  query: z.object({
-  "start": z.number().int().optional(),
-  "limit": z.number().int().optional(),
-  "sortBy": schemas.Schema_TaggedDocumentsSortBy.optional()
-}).optional()
-}))
-  .withOutput(schemas.Schema_TaggedDocumentsResponse)
-  .withHandler(async (input, ctx) => {
-    return invokeAdobeOperation({
-      method: "GET",
-      pathTemplate: "/beta/tagged-documents",
-      baseUrl: "https://express-api.adobe.io/",
-      input: input as {
+export const express_tagged_documents = shells.express_tagged_documents(async (input, ctx) => {
+  return invokeAdobeOperation({
+    method: "GET",
+    pathTemplate: "/beta/tagged-documents",
+    baseUrl: "https://express-api.adobe.io/",
+    input: input as {
         path?: Record<string, string | number | boolean>
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-      },
-      ctx,
-      outputSchema: schemas.Schema_TaggedDocumentsResponse,
-      asyncMode: "none",
-    })
+    },
+    ctx,
+    outputSchema: schemas.Schema_TaggedDocumentsResponse,
+    asyncMode: "none",
   })
+})
 
 /** Tagged document details */
-export const express_tagged_document_details = capabilityFor(EXT_ID, "express-tagged-document-details")
-  .withInput(z.object({
-  path: z.object({
-  "documentId": z.string()
-}),
-  query: z.object({
-  "start": z.number().int().optional()
-}).optional()
-}))
-  .withOutput(schemas.Schema_TaggedDocumentDetailsResponse)
-  .withHandler(async (input, ctx) => {
-    return invokeAdobeOperation({
-      method: "GET",
-      pathTemplate: "/beta/tagged-documents/{documentId}",
-      baseUrl: "https://express-api.adobe.io/",
-      input: input as {
+export const express_tagged_document_details = shells.express_tagged_document_details(async (input, ctx) => {
+  return invokeAdobeOperation({
+    method: "GET",
+    pathTemplate: "/beta/tagged-documents/{documentId}",
+    baseUrl: "https://express-api.adobe.io/",
+    input: input as {
         path?: Record<string, string | number | boolean>
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-      },
-      ctx,
-      outputSchema: schemas.Schema_TaggedDocumentDetailsResponse,
-      asyncMode: "none",
-    })
+    },
+    ctx,
+    outputSchema: schemas.Schema_TaggedDocumentDetailsResponse,
+    asyncMode: "none",
   })
+})
 
 /** Generate variation */
-export const express_generate_variation = capabilityFor(EXT_ID, "express-generate-variation")
-  .withInput(z.object({
-  body: schemas.Schema_GenerateVariationRequest,
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_GenerateVariationResponse)
-  .withHandler(async (input, ctx) => {
-    return invokeAdobeOperation({
-      method: "POST",
-      pathTemplate: "/beta/generate-variation",
-      baseUrl: "https://express-api.adobe.io/",
-      input: input as {
+export const express_generate_variation = shells.express_generate_variation(async (input, ctx) => {
+  return invokeAdobeOperation({
+    method: "POST",
+    pathTemplate: "/beta/generate-variation",
+    baseUrl: "https://express-api.adobe.io/",
+    input: input as {
         path?: Record<string, string | number | boolean>
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
         pollIntervalMs?: number
         pollTimeoutMs?: number
-      },
-      ctx,
-      outputSchema: schemas.Schema_GenerateVariationResponse,
-      asyncMode: "submit",
-    })
+    },
+    ctx,
+    outputSchema: schemas.Schema_GenerateVariationResponse,
+    asyncMode: "submit",
   })
+})
 
 /** Export rendition */
-export const express_export_rendition = capabilityFor(EXT_ID, "express-export-rendition")
-  .withInput(z.object({
-  body: schemas.Schema_ExportRenditionRequest,
-  pollIntervalMs: z.number().int().positive().optional(),
-  pollTimeoutMs: z.number().int().positive().optional()
-}))
-  .withOutput(schemas.Schema_ExportRenditionResponse)
-  .withHandler(async (input, ctx) => {
-    return invokeAdobeOperation({
-      method: "POST",
-      pathTemplate: "/beta/export-rendition",
-      baseUrl: "https://express-api.adobe.io/",
-      input: input as {
+export const express_export_rendition = shells.express_export_rendition(async (input, ctx) => {
+  return invokeAdobeOperation({
+    method: "POST",
+    pathTemplate: "/beta/export-rendition",
+    baseUrl: "https://express-api.adobe.io/",
+    input: input as {
         path?: Record<string, string | number | boolean>
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
         pollIntervalMs?: number
         pollTimeoutMs?: number
-      },
-      ctx,
-      outputSchema: schemas.Schema_ExportRenditionResponse,
-      asyncMode: "submit",
-    })
+    },
+    ctx,
+    outputSchema: schemas.Schema_ExportRenditionResponse,
+    asyncMode: "submit",
   })
+})
 
 /** Job status */
-export const express_get_job_status = capabilityFor(EXT_ID, "express-get-job-status")
-  .withInput(z.object({
-  path: z.object({
-  "jobId": z.string()
-})
-}))
-  .withOutput(z.union([schemas.Schema_JobStatusResponse, schemas.Schema_ExportRenditionResponse, schemas.Schema_GenerateVariationResponse]))
-  .withHandler(async (input, ctx) => {
-    return invokeAdobeOperation({
-      method: "GET",
-      pathTemplate: "/status/{jobId}",
-      baseUrl: "https://express-api.adobe.io/",
-      input: input as {
+export const express_get_job_status = shells.express_get_job_status(async (input, ctx) => {
+  return invokeAdobeOperation({
+    method: "GET",
+    pathTemplate: "/status/{jobId}",
+    baseUrl: "https://express-api.adobe.io/",
+    input: input as {
         path?: Record<string, string | number | boolean>
         query?: Record<string, string | number | boolean | undefined>
         headers?: Record<string, string>
         body?: unknown
-      },
-      ctx,
-      outputSchema: z.union([schemas.Schema_JobStatusResponse, schemas.Schema_ExportRenditionResponse, schemas.Schema_GenerateVariationResponse]),
-      asyncMode: "none",
-    })
+    },
+    ctx,
+    outputSchema: z.union([schemas.Schema_JobStatusResponse, schemas.Schema_ExportRenditionResponse, schemas.Schema_GenerateVariationResponse]),
+    asyncMode: "none",
   })
+})
