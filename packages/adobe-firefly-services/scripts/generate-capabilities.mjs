@@ -204,6 +204,81 @@ function baseUrl(doc) {
   return server.endsWith("/") ? server : `${server}/`
 }
 
+/**
+ * @param {string} text
+ */
+function cleanOpenApiProse(text) {
+  if (!text) return ""
+  return text
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+}
+
+/**
+ * @param {string} kebab
+ */
+function humanizeKebab(kebab) {
+  return kebab
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ")
+}
+
+/**
+ * @param {string} family
+ */
+function familyLabel(family) {
+  return humanizeKebab(family)
+}
+
+/**
+ * Derive agent-facing capability metadata from an OpenAPI operation.
+ * @param {object} operation
+ * @param {string} family
+ * @param {string} opName
+ */
+function deriveCapabilityMetadata(operation, family, opName) {
+  const suffix = opName.startsWith(`${family}-`) ? opName.slice(family.length + 1) : opName
+  const summaryRaw = (operation.summary ?? "").trim()
+  const summary = summaryRaw || humanizeKebab(suffix)
+  const descriptionRaw = cleanOpenApiProse(operation.description ?? "")
+  const description = descriptionRaw || summary
+
+  /** @type {string[]} */
+  const useCases = []
+  for (const tag of operation.tags ?? []) {
+    const tagText = String(tag).trim()
+    if (tagText) {
+      useCases.push(`${familyLabel(family)} ${tagText} tasks that need this operation`)
+    }
+  }
+  if (summaryRaw) {
+    const lead = summaryRaw.charAt(0).toLowerCase() + summaryRaw.slice(1)
+    useCases.push(`When the workflow goal is to ${lead}`)
+  }
+  if (!useCases.length) {
+    useCases.push(`When you need ${summary.toLowerCase()} through Adobe ${familyLabel(family)}`)
+  }
+
+  /** @type {string[]} */
+  const samplePrompts = []
+  if (summaryRaw) {
+    samplePrompts.push(summaryRaw)
+    samplePrompts.push(`${summaryRaw} with Adobe ${familyLabel(family)}`)
+  } else {
+    samplePrompts.push(`${summary} via Adobe ${familyLabel(family)}`)
+  }
+
+  return {
+    summary,
+    description,
+    useCases: useCases.slice(0, 3),
+    samplePrompts: samplePrompts.slice(0, 2),
+  }
+}
+
 function main() {
   rmSync(generatedDir, { recursive: true, force: true })
   mkdirSync(generatedDir, { recursive: true })
@@ -294,6 +369,7 @@ function main() {
             materialize: outputResolved.materialize,
             operationId: opId,
             summary: operation.summary ?? "",
+            operation,
             rel,
           })
         }
@@ -365,12 +441,15 @@ function main() {
         inputTypeLines.push(`        pollTimeoutMs?: number`)
       }
 
+      const capabilityMetadata = deriveCapabilityMetadata(op.operation, op.family, op.opName)
+
       capLines.push(`/** ${op.summary || op.opName} */`)
       capLines.push(
         `export const ${op.exportName} = capabilityFor(EXT_ID, ${JSON.stringify(op.opName)})`,
       )
       capLines.push(`  .withInput(${inputZod})`)
       capLines.push(`  .withOutput(${outputZod})`)
+      capLines.push(`  .withMetadata(${JSON.stringify(capabilityMetadata)})`)
       capLines.push(`  .withHandler(async (input, ctx) => {`)
       capLines.push(`    return invokeAdobeOperation({`)
       capLines.push(`      method: ${JSON.stringify(op.method)},`)
@@ -432,12 +511,15 @@ function main() {
           `import { photoshopManifestDocumentSchema } from "../../runtime/photoshop-manifest.js"`,
         )
       }
+      const capabilityMetadata = deriveCapabilityMetadata(op.operation, op.family, op.opName)
+
       browserCapLines.push(`/** ${op.summary || op.opName} */`)
       browserCapLines.push(
         `export const ${op.exportName} = capabilityFor(EXT_ID, ${JSON.stringify(op.opName)})`,
       )
       browserCapLines.push(`  .withInput(${inputZod})`)
       browserCapLines.push(`  .withOutput(${outputZod})`)
+      browserCapLines.push(`  .withMetadata(${JSON.stringify(capabilityMetadata)})`)
       browserCapLines.push(`  .withHandler(hostHop)`)
       browserCapLines.push(``)
     }

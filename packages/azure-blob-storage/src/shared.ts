@@ -1,5 +1,6 @@
 import { defineExtension, type CapabilityDefinition, type ExtensionDefinition } from "@executioncontrolprotocol/core"
 import { z } from "zod"
+import { AZURE_BLOB_STORAGE_EXTENSION_METADATA } from "./capability-metadata.js"
 
 /** Extension id. @category Azure */
 export const EXT_ID = "@executioncontrolprotocol/azure-blob-storage"
@@ -28,6 +29,7 @@ export function buildAzureBlobStorageExtension(
       /** Default SAS lifetime in seconds (default 3600). */
       defaultSasExpiresInSeconds: z.number().int().positive().optional(),
     })
+    .withMetadata(AZURE_BLOB_STORAGE_EXTENSION_METADATA)
     .withCapabilities(capabilities)
     .build()
 }

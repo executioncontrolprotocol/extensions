@@ -16,6 +16,7 @@ import {
   downloadOutputSchema,
 } from "./capabilities/download.js"
 import { buildAzureBlobStorageExtension, EXT_ID } from "./shared.js"
+import { AZURE_BLOB_STORAGE_CAPABILITY_METADATA as meta } from "./capability-metadata.js"
 
 /**
  * `@executioncontrolprotocol/azure-blob-storage` — Azure Blob upload, SAS, and download.
@@ -34,16 +35,19 @@ export const azureBlobStorageExtension = buildAzureBlobStorageExtension([
       .withInput(uploadInputSchema)
       .withOutput(uploadOutputSchema)
       .withExecution("mixed")
+      .withMetadata(meta.upload)
       .withHandler(async (input, ctx) => handleUpload(input, ctx)),
     capabilityFor(EXT_ID, "create-sas-url")
       .withInput(createSasUrlInputSchema)
       .withOutput(createSasUrlOutputSchema)
       .withExecution("host")
+      .withMetadata(meta["create-sas-url"])
       .withHandler(async (input, ctx) => handleCreateSasUrl(input, ctx)),
     capabilityFor(EXT_ID, "download")
       .withInput(downloadInputSchema)
       .withOutput(downloadOutputSchema)
       .withExecution("host")
+      .withMetadata(meta.download)
       .withHandler(async (input, ctx) => handleDownload(input, ctx)),
   ],
 )

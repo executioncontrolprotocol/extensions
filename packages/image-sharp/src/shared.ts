@@ -1,5 +1,6 @@
 import { defineExtension, type CapabilityDefinition, type ExtensionDefinition } from "@executioncontrolprotocol/core"
 import { z } from "zod"
+import { IMAGE_SHARP_EXTENSION_METADATA } from "./capability-metadata.js"
 
 /** Extension id. @category Extensions */
 export const EXT_ID = "@executioncontrolprotocol/image-sharp"
@@ -55,6 +56,7 @@ export function buildImageSharpExtension(
         })
         .optional(),
     })
+    .withMetadata(IMAGE_SHARP_EXTENSION_METADATA)
     .withCapabilities(capabilities)
     .build()
 }

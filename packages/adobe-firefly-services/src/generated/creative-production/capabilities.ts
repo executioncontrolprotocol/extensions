@@ -18,6 +18,7 @@ export const creative_production_batch_execute = capabilityFor(EXT_ID, "creative
   pollTimeoutMs: z.number().int().positive().optional()
 }))
   .withOutput(schemas.Schema_BatchStatusResponse)
+  .withMetadata({"summary":"Execute a batch of assets through a workflow","description":"Start a new batch job to process multiple assets through a published workflow. The request body supplies the workflow identifier and `inputs`: a list of runs, where each run is an array of node input mappings (`node_id` plus `content` and/or `template`). Each run is processed separately through the workflow in parallel. Returns a `batchId` and `links` that can be used to track progress and retrieve results.","useCases":["Creative Production Batches tasks that need this operation","When the workflow goal is to execute a batch of assets through a workflow"],"samplePrompts":["Execute a batch of assets through a workflow","Execute a batch of assets through a workflow with Adobe Creative Production"]})
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -53,6 +54,7 @@ export const creative_production_list_batches = capabilityFor(EXT_ID, "creative-
 }).optional()
 }))
   .withOutput(schemas.Schema_ListBatchesResponse)
+  .withMetadata({"summary":"List batches","description":"List all batches created by the authenticated user within their organization. Results are automatically filtered by the authenticated user's ID. Users can only view their own batches, not batches created by other users in the organization. Results are sorted by creation date (most recent first) and include pagination metadata.","useCases":["Creative Production Batches tasks that need this operation","When the workflow goal is to list batches"],"samplePrompts":["List batches","List batches with Adobe Creative Production"]})
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "GET",
@@ -81,6 +83,7 @@ export const creative_production_get_batch_status = capabilityFor(EXT_ID, "creat
 }).optional()
 }))
   .withOutput(schemas.Schema_BatchStatusResponse)
+  .withMetadata({"summary":"Get batch status","description":"Get the current status and progress of a batch job. Returns the batch identifier, workflow identifier, status, asset and execution counters (including execution IDs), timestamps, and hypermedia links to cancel or list executions.","useCases":["Creative Production Batches tasks that need this operation","When the workflow goal is to get batch status"],"samplePrompts":["Get batch status","Get batch status with Adobe Creative Production"]})
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "GET",
@@ -115,6 +118,7 @@ export const creative_production_cancel_batch = capabilityFor(EXT_ID, "creative-
   "previousStatus": z.string().optional(),
   "assets": schemas.Schema_BatchAssetCounts.optional()
 }))
+  .withMetadata({"summary":"Cancel a batch","description":"Cancel a batch job that is currently pending or running. Once cancelled, no new assets will be processed. Assets currently being processed may complete. The batch status will be updated to 'cancelled'. Cannot cancel batches that are already completed, failed, or cancelled.","useCases":["Creative Production Batches tasks that need this operation","When the workflow goal is to cancel a batch"],"samplePrompts":["Cancel a batch","Cancel a batch with Adobe Creative Production"]})
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "POST",
@@ -164,6 +168,7 @@ export const creative_production_list_batch_executions = capabilityFor(EXT_ID, "
   "hasMore": z.boolean().optional()
 }).optional()
 }))
+  .withMetadata({"summary":"List individual execution results","description":"List all individual asset execution results within a batch, with optional filtering. Returns detailed results for each asset including: - Execution status (pending, running, success, failed) - Input asset data - Output results (if successful) - Error messages (if failed) - Timing information The response supports pagination and filtering by execution status.","useCases":["Creative Production Batches tasks that need this operation","When the workflow goal is to list individual execution results"],"samplePrompts":["List individual execution results","List individual execution results with Adobe Creative Production"]})
   .withHandler(async (input, ctx) => {
     return invokeAdobeOperation({
       method: "GET",

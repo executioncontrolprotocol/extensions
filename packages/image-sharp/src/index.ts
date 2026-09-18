@@ -22,12 +22,14 @@ import {
 } from "./schemas.js"
 import { runPipeline, runInspect } from "./sharp-runner.js"
 import { buildImageSharpExtension, EXT_ID } from "./shared.js"
+import { IMAGE_SHARP_CAPABILITY_METADATA as meta } from "./capability-metadata.js"
 
 function caps(): CapabilityDefinition[] {
   return [
     capabilityFor(EXT_ID, "inspect")
       .withInput(inspectInputSchema)
       .withOutput(inspectOutputSchema)
+      .withMetadata(meta.inspect)
       .withHandler(async (input, ctx) => {
         const parsed = input as z.infer<typeof inspectInputSchema>
         return runInspect(
@@ -41,6 +43,7 @@ function caps(): CapabilityDefinition[] {
     capabilityFor(EXT_ID, "metadata")
       .withInput(z.object({ image: inspectInputSchema.shape.image }))
       .withOutput(z.object({ metadata: z.record(z.string(), z.unknown()) }))
+      .withMetadata(meta.metadata)
       .withHandler(async (input, ctx) => {
         const parsed = input as { image: z.infer<typeof inspectInputSchema>["image"] }
         const result = await runInspect(parsed.image, ["metadata"], ctx as Parameters<typeof runInspect>[2])
@@ -49,6 +52,7 @@ function caps(): CapabilityDefinition[] {
     capabilityFor(EXT_ID, "stats")
       .withInput(z.object({ image: inspectInputSchema.shape.image }))
       .withOutput(z.object({ stats: z.unknown() }))
+      .withMetadata(meta.stats)
       .withHandler(async (input, ctx) => {
         const parsed = input as { image: z.infer<typeof inspectInputSchema>["image"] }
         const result = await runInspect(parsed.image, ["stats"], ctx as Parameters<typeof runInspect>[2])
@@ -57,6 +61,7 @@ function caps(): CapabilityDefinition[] {
     capabilityFor(EXT_ID, "transform")
       .withInput(transformInputSchema)
       .withOutput(transformOutputSchema)
+      .withMetadata(meta.transform)
       .withHandler(async (input, ctx) => {
         const parsed = input as z.infer<typeof transformInputSchema>
         return runPipeline(
@@ -73,6 +78,7 @@ function caps(): CapabilityDefinition[] {
     capabilityFor(EXT_ID, "resize")
       .withInput(resizeInputSchema)
       .withOutput(transformOutputSchema)
+      .withMetadata(meta.resize)
       .withHandler(async (input, ctx) => {
         const parsed = input as z.infer<typeof resizeInputSchema>
         return runPipeline(
@@ -100,6 +106,7 @@ function caps(): CapabilityDefinition[] {
     capabilityFor(EXT_ID, "crop")
       .withInput(cropInputSchema)
       .withOutput(transformOutputSchema)
+      .withMetadata(meta.crop)
       .withHandler(async (input, ctx) => {
         const parsed = input as z.infer<typeof cropInputSchema>
         return runPipeline(
@@ -122,6 +129,7 @@ function caps(): CapabilityDefinition[] {
     capabilityFor(EXT_ID, "thumbnail")
       .withInput(thumbnailInputSchema)
       .withOutput(z.object({ thumbnails: z.record(z.string(), transformOutputSchema) }))
+      .withMetadata(meta.thumbnail)
       .withHandler(async (input, ctx) => {
         const parsed = input as z.infer<typeof thumbnailInputSchema>
         const thumbnails: Record<string, z.infer<typeof transformOutputSchema>> = {}
@@ -148,6 +156,7 @@ function caps(): CapabilityDefinition[] {
     capabilityFor(EXT_ID, "convert")
       .withInput(convertInputSchema)
       .withOutput(transformOutputSchema)
+      .withMetadata(meta.convert)
       .withHandler(async (input, ctx) => {
         const parsed = input as z.infer<typeof convertInputSchema>
         return runPipeline(
@@ -158,6 +167,7 @@ function caps(): CapabilityDefinition[] {
     capabilityFor(EXT_ID, "composite")
       .withInput(compositeInputSchema)
       .withOutput(transformOutputSchema)
+      .withMetadata(meta.composite)
       .withHandler(async (input, ctx) => {
         const parsed = input as z.infer<typeof compositeInputSchema>
         return runPipeline(
@@ -172,6 +182,7 @@ function caps(): CapabilityDefinition[] {
     capabilityFor(EXT_ID, "normalize")
       .withInput(normalizeInputSchema)
       .withOutput(transformOutputSchema)
+      .withMetadata(meta.normalize)
       .withHandler(async (input, ctx) => {
         const parsed = input as z.infer<typeof normalizeInputSchema>
         return runPipeline(
@@ -189,6 +200,7 @@ function caps(): CapabilityDefinition[] {
     capabilityFor(EXT_ID, "derive")
       .withInput(deriveInputSchema)
       .withOutput(deriveOutputSchema)
+      .withMetadata(meta.derive)
       .withHandler(async (input, ctx) => {
         const parsed = input as z.infer<typeof deriveInputSchema>
         const variants: Record<string, z.infer<typeof transformOutputSchema>> = {}
