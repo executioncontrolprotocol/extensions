@@ -52,5 +52,5 @@ Husky pre-commit runs `lint-staged` (secretlint), `pnpm run lint`, `pnpm run bui
 
 ## CI (two-track)
 
-- **`main`:** `pnpm install --frozen-lockfile` and CI (`build`, `lint`, `test`) against **published** `@executioncontrolprotocol/core` / `types` from the npm registry.
+- **`main`:** `pnpm install --frozen-lockfile`, then install published `@executioncontrolprotocol/core` / `types` peers from the catalog (they are not in the lockfile because `auto-install-peers=false`), then CI (`build`, `lint`, `test`).
 - **`development` (and PRs not targeting `main`):** CI checks out the sibling [core monorepo](https://github.com/executioncontrolprotocol/executioncontrolprotocol) at `development`, runs `pnpm run ci:setup` (build + `link:ecp`), then `pnpm run build`, `pnpm run lint`, and `pnpm run test`.

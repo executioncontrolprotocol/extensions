@@ -82,7 +82,7 @@ npx skills add executioncontrolprotocol/extensions --skill ecp-extensions -y
 
 ## CI (two-track)
 
-- **`main`:** registry install only — verifies against published `@executioncontrolprotocol/core` / `types`.
+- **`main`:** registry install, then published `core` / `types` peers (catalog ranges) — verifies against npm.
 - **`development`:** CI checks out core at `development`, runs `pnpm run ci:setup`, then `pnpm run check`.
 
 See [`.github/workflows/ci.yml`](.github/workflows/ci.yml).

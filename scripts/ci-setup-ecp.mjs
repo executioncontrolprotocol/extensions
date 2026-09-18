@@ -3,7 +3,8 @@
  * Two-track CI setup for ECP consumer repos (extensions, browser-demo).
  *
  * development track: checkout siblings at development, build, junction-link into consumer.
- * main track: caller only installs consumer from registry (no sibling checkout).
+ * main track: install consumer from registry, then install published core/types peers
+ *   (skipped by auto-install-peers=false) into node_modules for the build.
  *
  * Usage (from consumer repo root):
  *   node scripts/ci-setup-ecp.mjs
@@ -17,7 +18,17 @@
  *   CI_LINK_PACKAGES   — comma-separated @scope/pkg names to link (required for demo)
  */
 import { spawnSync } from "node:child_process"
-import { existsSync, mkdirSync, readFileSync, rmSync, symlinkSync } from "node:fs"
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs"
+import { tmpdir } from "node:os"
 import path from "node:path"
 
 const consumerRoot = path.resolve(process.env.CI_CONSUMER_ROOT ?? process.cwd())
@@ -26,6 +37,12 @@ const extensionsRoot = path.resolve(
   process.env.EXTENSIONS_ROOT ?? path.join(consumerRoot, "..", "extensions")
 )
 const linkType = process.platform === "win32" ? "junction" : "dir"
+
+/** Peers declared on vendor packages but skipped by auto-install-peers=false. */
+const MAIN_TRACK_ECP_PEERS = [
+  "@executioncontrolprotocol/core",
+  "@executioncontrolprotocol/types",
+]
 
 function run(command, args, cwd = consumerRoot, env = process.env) {
   console.log(`\n> ${command} ${args.join(" ")}  (${cwd})`)
@@ -147,12 +164,69 @@ function parseLinkList() {
   return [...names]
 }
 
+/** Read `catalogs.ecp` range for a package from pnpm-workspace.yaml. */
+function readEcpCatalogSpec(pkgName) {
+  const yamlPath = path.join(consumerRoot, "pnpm-workspace.yaml")
+  if (!existsSync(yamlPath)) {
+    throw new Error(`Missing pnpm-workspace.yaml at ${yamlPath}`)
+  }
+  const text = readFileSync(yamlPath, "utf8")
+  const escaped = pkgName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  const match = text.match(new RegExp(`"${escaped}"\\s*:\\s*([^\\s#]+)`))
+  if (!match) {
+    throw new Error(`No catalogs.ecp entry for ${pkgName} in pnpm-workspace.yaml`)
+  }
+  return match[1].replace(/['"]/g, "")
+}
+
+/**
+ * Main track: vendor packages declare core/types as peers only, and
+ * auto-install-peers=false keeps them out of the lockfile. Install published
+ * peers from the catalog into node_modules so tsc can resolve them.
+ */
+function installPublishedEcpPeers() {
+  const deps = Object.fromEntries(
+    MAIN_TRACK_ECP_PEERS.map((name) => [name, readEcpCatalogSpec(name)])
+  )
+  // Outside the consumer workspace so pnpm does not hoist into the monorepo.
+  const peerRoot = mkdtempSync(path.join(tmpdir(), "ecp-peers-"))
+  writeFileSync(
+    path.join(peerRoot, "package.json"),
+    `${JSON.stringify({ name: "ci-ecp-peers", private: true, dependencies: deps }, null, 2)}\n`
+  )
+  console.log("\nMain track: installing published ECP peers from registry…")
+  run("pnpm", ["install", "--ignore-workspace"], peerRoot)
+
+  const packagesDir = path.join(consumerRoot, "packages")
+  const packageDirs = existsSync(packagesDir)
+    ? readdirSync(packagesDir, { withFileTypes: true })
+        .filter((e) => e.isDirectory())
+        .map((e) => path.join(packagesDir, e.name))
+    : []
+
+  for (const name of MAIN_TRACK_ECP_PEERS) {
+    const src = path.join(peerRoot, "node_modules", ...name.split("/"))
+    if (!existsSync(path.join(src, "package.json"))) {
+      console.error(`Failed to install ${name} from registry at ${src}`)
+      process.exit(1)
+    }
+    const rootDest = path.join(consumerRoot, "node_modules", ...name.split("/"))
+    ensureSymlink(rootDest, src)
+    console.log(`Linked peer ${name} -> ${src}`)
+    for (const pkgDir of packageDirs) {
+      ensureSymlink(path.join(pkgDir, "node_modules", ...name.split("/")), src)
+    }
+  }
+}
+
 const track = detectTrack()
 console.log(`CI track: ${track}`)
 
 if (track === "main") {
-  console.log("Main track: install consumer from registry only (no sibling link).")
+  console.log("Main track: install consumer from registry (no sibling link).")
   run("pnpm", ["install", "--frozen-lockfile"])
+  installPublishedEcpPeers()
+  console.log("\nCI main setup complete.")
   process.exit(0)
 }
 
