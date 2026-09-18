@@ -172,7 +172,7 @@ function readEcpCatalogSpec(pkgName) {
   }
   const text = readFileSync(yamlPath, "utf8")
   const escaped = pkgName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-  const match = text.match(new RegExp(`"${escaped}"\\s*:\\s*([^\\s#]+)`))
+  const match = text.match(new RegExp(`['"]${escaped}['"]\\s*:\\s*([^\\s#]+)`))
   if (!match) {
     throw new Error(`No catalogs.ecp entry for ${pkgName} in pnpm-workspace.yaml`)
   }

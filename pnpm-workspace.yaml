@@ -14,5 +14,5 @@ catalog:
 
 catalogs:
   ecp:
-    "@executioncontrolprotocol/core": ^0.13.2
-    "@executioncontrolprotocol/types": ^0.13.2
+    "@executioncontrolprotocol/core": ^0.14.0
+    "@executioncontrolprotocol/types": ^0.14.0
