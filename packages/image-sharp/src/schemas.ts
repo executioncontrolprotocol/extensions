@@ -282,7 +282,7 @@ export const outputOptionsSchema = z.object({
   preserveMetadata: z.boolean().optional(),
   artifact: z
     .object({
-      store: z.string().optional(),
+      store: z.enum(["temp", "durable", "storage", "memory"]).optional(),
       name: z.string().optional(),
       prefix: z.string().optional(),
     })
