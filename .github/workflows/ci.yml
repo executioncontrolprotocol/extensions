@@ -4,6 +4,11 @@ on:
   push:
     branches: [main, development]
   pull_request:
+  # Re-check against core@development between extension pushes (core merges do not
+  # trigger this workflow; browser-demo / core vendor-extensions also cover this).
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
 
 permissions:
   contents: read
