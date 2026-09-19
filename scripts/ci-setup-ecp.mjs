@@ -2,7 +2,8 @@
 /**
  * Two-track CI setup for ECP consumer repos (extensions, browser-demo).
  *
- * development track: checkout siblings at development, build, junction-link into consumer.
+ * development track: build sibling core, pack/link core+types via install-ecp-from-siblings
+ *   (unpublished catalog ranges OK).
  * main track: install consumer from registry, then install published core/types peers
  *   (skipped by auto-install-peers=false) into node_modules for the build.
  *
@@ -30,12 +31,10 @@ import {
 } from "node:fs"
 import { tmpdir } from "node:os"
 import path from "node:path"
+import { installEcpFromSiblings } from "./install-ecp-from-siblings.mjs"
 
 const consumerRoot = path.resolve(process.env.CI_CONSUMER_ROOT ?? process.cwd())
 const ecpRoot = path.resolve(process.env.ECP_ROOT ?? path.join(consumerRoot, "..", "executioncontrolprotocol"))
-const extensionsRoot = path.resolve(
-  process.env.EXTENSIONS_ROOT ?? path.join(consumerRoot, "..", "extensions")
-)
 const linkType = process.platform === "win32" ? "junction" : "dir"
 
 /** Peers declared on vendor packages but skipped by auto-install-peers=false. */
@@ -97,71 +96,6 @@ function runPackageScript(repoRoot, scriptName) {
     return
   }
   run("npm", ["run", scriptName], repoRoot)
-}
-
-/** @param {string} pkgName e.g. @executioncontrolprotocol/core */
-function corePackageDir(pkgName) {
-  const segment = pkgName.split("/")[1]
-  const direct = path.join(ecpRoot, "packages", segment)
-  if (existsSync(path.join(direct, "package.json"))) return direct
-  const runtimes = path.join(ecpRoot, "packages", "runtimes", segment)
-  if (existsSync(path.join(runtimes, "package.json"))) return runtimes
-  const harnesses = path.join(ecpRoot, "packages", "harnesses", segment)
-  if (existsSync(path.join(harnesses, "package.json"))) return harnesses
-  const extensions = path.join(ecpRoot, "packages", "extensions", segment)
-  if (existsSync(path.join(extensions, "package.json"))) return extensions
-  if (segment === "extension-ollama") {
-    return path.join(ecpRoot, "packages", "extensions", "ollama")
-  }
-  if (segment === "extension-openai") {
-    return path.join(ecpRoot, "packages", "extensions", "openai")
-  }
-  if (segment.startsWith("harnesses-")) {
-    const short = segment.replace(/^harnesses-/, "")
-    return path.join(ecpRoot, "packages", "harnesses", short)
-  }
-  throw new Error(`Cannot resolve core package path for ${pkgName}`)
-}
-
-function linkPackagesIntoConsumer(packageNames) {
-  for (const name of packageNames) {
-    let src
-    if (name === "@executioncontrolprotocol/fal" || name === "@executioncontrolprotocol/image-sharp") {
-      const segment = name.split("/")[1]
-      src = path.join(extensionsRoot, "packages", segment)
-    } else {
-      src = corePackageDir(name)
-    }
-    if (!existsSync(path.join(src, "dist"))) {
-      console.error(`Missing dist/ for ${name} at ${src} — build sibling repo first`)
-      process.exit(1)
-    }
-    const dest = path.join(consumerRoot, "node_modules", ...name.split("/"))
-    ensureSymlink(dest, src)
-    console.log(`Linked ${name} -> ${src}`)
-  }
-}
-
-function parseLinkList() {
-  const raw = process.env.CI_LINK_PACKAGES ?? ""
-  const explicit = raw
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean)
-  if (explicit.length > 0) return explicit
-
-  const pkgPath = path.join(consumerRoot, "package.json")
-  if (!existsSync(pkgPath)) return []
-  const pkg = JSON.parse(readFileSync(pkgPath, "utf8"))
-  const names = new Set()
-  for (const section of ["dependencies", "devDependencies", "peerDependencies"]) {
-    const block = pkg[section]
-    if (!block || typeof block !== "object") continue
-    for (const name of Object.keys(block)) {
-      if (name.startsWith("@executioncontrolprotocol/")) names.add(name)
-    }
-  }
-  return [...names]
 }
 
 /** Read `catalogs.ecp` range for a package from pnpm-workspace.yaml. */
@@ -230,7 +164,7 @@ if (track === "main") {
   process.exit(0)
 }
 
-console.log("Development track: build siblings at development and link.")
+console.log("Development track: build core, then pack/link peers into extensions.")
 
 if (!existsSync(path.join(ecpRoot, "package.json"))) {
   console.error(`Core monorepo not found at ${ecpRoot}. Set ECP_ROOT.`)
@@ -241,28 +175,6 @@ installDependencies(ecpRoot)
 runPackageScript(ecpRoot, "build")
 runPackageScript(ecpRoot, "generate:schema")
 
-const linkPackages = parseLinkList()
-const needsExtensions = linkPackages.some(
-  (n) => n === "@executioncontrolprotocol/fal" || n === "@executioncontrolprotocol/image-sharp"
-)
-
-if (needsExtensions) {
-  if (!existsSync(path.join(extensionsRoot, "package.json"))) {
-    console.error(`Extensions repo not found at ${extensionsRoot}. Set EXTENSIONS_ROOT.`)
-    process.exit(1)
-  }
-  installDependencies(extensionsRoot)
-  for (const peer of ["@executioncontrolprotocol/core", "@executioncontrolprotocol/types"]) {
-    const peerTarget = path.join(ecpRoot, "packages", peer.split("/")[1])
-    const peerLink = path.join(extensionsRoot, "node_modules", ...peer.split("/"))
-    ensureSymlink(peerLink, peerTarget)
-  }
-  runPackageScript(extensionsRoot, "build")
-}
-
-run("pnpm", ["install", "--frozen-lockfile"])
-if (linkPackages.length > 0) {
-  linkPackagesIntoConsumer(linkPackages)
-}
+installEcpFromSiblings()
 
 console.log("\nCI development setup complete.")

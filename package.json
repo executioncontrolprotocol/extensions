@@ -19,8 +19,11 @@
     "check:no-file-deps": "node scripts/check-no-file-deps.mjs",
     "lint:yaml": "node scripts/lint-yaml.mjs",
     "link:ecp": "node scripts/link-ecp-core.mjs",
+    "sync:ecp": "node scripts/sync-ecp.mjs",
     "ci:setup": "node scripts/ci-setup-ecp.mjs",
-    "check": "pnpm run build && pnpm run lint && pnpm run secrets:scan && pnpm run check:no-file-deps && pnpm run test",
+    "check:lockfile-sync": "node scripts/check-lockfile-sync.mjs",
+    "check": "pnpm run build && pnpm run lint && pnpm run secrets:scan && pnpm run check:no-file-deps && pnpm run check:lockfile-sync && pnpm run test",
+    "preflight": "pnpm run check:no-file-deps && pnpm run check:lockfile-sync && pnpm run secrets:scan && pnpm run lint && pnpm run build && pnpm run test",
     "version:bump": "node scripts/bump-all-ecp-versions.mjs",
     "publish:workspaces": "node scripts/publish-workspaces.mjs",
     "prepare": "husky"

@@ -36,6 +36,9 @@ jobs:
       - name: Secretlint (working tree)
         working-directory: extensions
         run: pnpm run secrets:scan
+      - name: Lockfile sync
+        working-directory: extensions
+        run: pnpm run check:lockfile-sync
       - name: Install gitleaks
         env:
           GITLEAKS_VERSION: "8.24.3"
