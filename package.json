@@ -18,8 +18,6 @@
     "secrets:scan": "secretlint \"**/*\"",
     "check:no-file-deps": "node scripts/check-no-file-deps.mjs",
     "lint:yaml": "node scripts/lint-yaml.mjs",
-    "link:ecp": "node scripts/link-ecp-core.mjs",
-    "ci:setup": "node scripts/ci-setup-ecp.mjs",
     "check": "pnpm run build && pnpm run lint && pnpm run secrets:scan && pnpm run check:no-file-deps && pnpm run test",
     "version:bump": "node scripts/bump-all-ecp-versions.mjs",
     "publish:workspaces": "node scripts/publish-workspaces.mjs",
